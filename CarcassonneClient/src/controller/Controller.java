@@ -2,9 +2,15 @@ package controller;
 
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import view.CarcassonneGameView;
 import view.LoadingScreen;
@@ -42,7 +48,9 @@ public class Controller extends UnicastRemoteObject implements RemoteObserver {
 
     @Override
     public void update(Object observable, Object updateMsg) throws RemoteException {
-        System.out.println(updateMsg);
+        if(updateMsg.equals("startgame")) {
+            startGame();
+        }
     }
 
     public void clickJoinGame(String name) {
@@ -58,5 +66,15 @@ public class Controller extends UnicastRemoteObject implements RemoteObserver {
     public void displayLoadingScreen() {
         loadingScreen = new LoadingScreen();
         scene.setRoot(loadingScreen);
+    }
+    
+    private void startGame() {
+        try {
+           // File file = new File("fxml_carcassonne_game.fxml");
+            //System.out.println(getClass().getClassLoader().getResource("main/resources/fxml_carcassonne_game.fxml"));
+            scene.setRoot((Group)FXMLLoader.load(getClass().getClassLoader().getResource("main/resources/fxml_carcassonne_game.fxml")/*Paths.get(file.getAbsolutePath()).toUri().toURL()*/));
+        } catch (IOException ex) {
+            System.err.println("Nem sikerült betölteni az fxml-t!");
+        }
     }
 }

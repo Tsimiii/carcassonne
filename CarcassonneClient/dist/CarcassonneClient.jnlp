@@ -8,8 +8,8 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="CarcassonneClient.jar" size="14850633" download="eager" />
-    <jar href="lib\CarcassonneShared.jar" size="2251" download="eager" />
+    <jar href="CarcassonneClient.jar" size="14849974" download="eager" />
+    <jar href="lib\CarcassonneShared.jar" size="1393" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="CarcassonneClient" >
     <param name="requiredFXVersion" value="8.0+"/>

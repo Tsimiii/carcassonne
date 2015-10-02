@@ -3,14 +3,10 @@ package carcassonneserver;
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
 import java.io.Serializable;
-import java.net.ServerSocket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -21,19 +17,6 @@ public class CarcassonneServer extends Observable implements RmiService {
 
     public CarcassonneServer() {
         thread.start();
-
-        /*   System.out.println("EZAZZZZZZZZ, kezdődik a játék!");
-         for (Socket gamer : gamers) {
-         OutputStream out = null;
-         try {
-         out = gamer.getOutputStream();
-         } catch (IOException ex) {
-         Logger.getLogger(CarcassonneServer.class.getName()).log(Level.SEVERE, null, ex);
-         }
-         PrintWriter pw = new PrintWriter(out);
-         pw.println("kesz");
-         pw.flush();
-         }*/
     }
 
     Thread thread = new Thread() {
@@ -42,7 +25,7 @@ public class CarcassonneServer extends Observable implements RmiService {
             while (true) {
                 if (countObservers() == playerNumber) {
                     setChanged();
-                    notifyObservers("indul a játék");
+                    notifyObservers("startgame");
                     break;
                 }
             }
