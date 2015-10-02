@@ -65,8 +65,7 @@ public class MainMenuView extends Group{
             if(nameTextField.getText().equals("")) {
                 errorNameText.setText("Nem adtál meg nevet!");
             } else {
-                delegate.joinGame(nameTextField.getText());
-                delegate.displayLoadingScreen();
+                delegate.clickJoinGame(nameTextField.getText());
             }
         }
     };

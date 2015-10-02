@@ -1,85 +1,93 @@
 package carcassonneserver;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.BindException;
+import carcassonneshared.RemoteObserver;
+import carcassonneshared.RmiService;
+import java.io.Serializable;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Observable;
+import java.util.Observer;
 
-public class CarcassonneServer {
+public class CarcassonneServer extends Observable implements RmiService {
 
-    private static List<Socket> gamers = new ArrayList<>();
     private static boolean timesUp = false;
-    private static ServerSocket server = null;
     private static int playerNumber = 2;
 
     public CarcassonneServer() {
-        int portNumber = 8080;
-        while (true) {
-            try {
-                server = new ServerSocket(portNumber);
-                break;
-            } catch (BindException | IllegalArgumentException e) {
-                System.err.println("Az adott porton nem lehet socketet létrehozni. Írj be egy másikat.");
-                Scanner in = new Scanner(System.in); //nyilván átírni
-                portNumber = in.nextInt();
-            } catch (IOException e) {
-                System.err.println("I/O hiba a szerver lĂ©trehozĂˇsakor: " + e.getMessage());
-                System.exit(0);
-            }
-        }
+        thread.start();
 
-        System.out.println("A szerver elindult.");
+        /*   System.out.println("EZAZZZZZZZZ, kezdődik a játék!");
+         for (Socket gamer : gamers) {
+         OutputStream out = null;
+         try {
+         out = gamer.getOutputStream();
+         } catch (IOException ex) {
+         Logger.getLogger(CarcassonneServer.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         PrintWriter pw = new PrintWriter(out);
+         pw.println("kesz");
+         pw.flush();
+         }*/
+    }
 
-        Socket client = null;
-        while (gamers.size() < playerNumber) {
-            System.out.println("itt");
-            try {
-                client = server.accept();
-                ObjectInputStream ois = null;
-                try {
-                    ois = ois = new ObjectInputStream(client.getInputStream());
-                    try {
-                        gamers.add(client);
-                        Object message = ois.readObject();
-                    } catch (ClassNotFoundException ex) {
-                        System.err.println("Az ObjectInputStream nem találja a megadott osztályt.");
-                        System.exit(0);
-                    }
-                } catch (IOException e) {
+    Thread thread = new Thread() {
+        @Override
+        public void run() {
+            while (true) {
+                if (countObservers() == playerNumber) {
+                    setChanged();
+                    notifyObservers("indul a játék");
+                    break;
                 }
-            } catch (SocketTimeoutException e) {
-                System.err.println("Nem érkezett csatlakozási kérelem.");
-                System.exit(0);
-            } catch (IOException e) {
-                System.err.println("I/O hiba accept utasításnál: " + e.getMessage());
-                System.exit(0);
             }
         }
-        System.out.println("EZAZZZZZZZZ, kezdődik a játék!");
-        for (Socket gamer : gamers) {
-            OutputStream out = null;
+    ;
+
+    };
+    
+        private class WrappedObserver implements Observer, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private RemoteObserver ro = null;
+
+        public WrappedObserver(RemoteObserver ro) {
+            this.ro = ro;
+        }
+
+        @Override
+        public void update(Observable o, Object arg) {
             try {
-                out = gamer.getOutputStream();
-            } catch (IOException ex) {
-                Logger.getLogger(CarcassonneServer.class.getName()).log(Level.SEVERE, null, ex);
+                ro.update(o.toString(), arg);
+            } catch (RemoteException e) {
+                System.out
+                        .println("Remote exception removing observer:" + this);
+                o.deleteObserver(this);
             }
-            PrintWriter pw = new PrintWriter(out);
-            pw.println("kesz");
-            pw.flush();
         }
     }
 
+    @Override
+    public void addObserver(RemoteObserver o) throws RemoteException {
+        WrappedObserver mo = new WrappedObserver(o);
+        addObserver(mo);
+        System.out.println("Added observer:" + mo);
+    }
+
     public static void main(String[] args) {
-        CarcassonneServer carcassonneServer = new CarcassonneServer();
+        try {
+            Registry reg = LocateRegistry.createRegistry(8080);
+            RmiService carcassonneServer = (RmiService) UnicastRemoteObject.exportObject(new CarcassonneServer(), 8080);
+            reg.rebind("carcassonneServer", carcassonneServer);
+        } catch (RemoteException ex) {
+            System.err.println("Szerver oldali hiba!");
+        }
+        System.out.println("Elindult a szerver.");
     }
 }

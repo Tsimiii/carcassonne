@@ -6,7 +6,7 @@ public interface MenuDelegate {
     
     //void callCreateNewGameView();
     
-    void joinGame(String name);
+    void clickJoinGame(String name);
     
     void displayLoadingScreen();
     
