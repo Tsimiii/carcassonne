@@ -1,0 +1,4 @@
+#menu_and_loading_pane{
+    -fx-background-image: url("../images/stoneWall.jpg");
+    -fx-background-repeat: stretch;
+}

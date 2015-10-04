@@ -9,6 +9,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
 
 public class CarcassonneServer extends Observable implements RmiService {
 
@@ -29,9 +30,7 @@ public class CarcassonneServer extends Observable implements RmiService {
                     break;
                 }
             }
-        }
-    ;
-
+        };
     };
     
         private class WrappedObserver implements Observer, Serializable {

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane fx:id="content" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.FXMLMenuController">
+    <BorderPane id="borderPane" minHeight="768" minWidth="1154">
+        <center>
+            <VBox spacing="80">
+                <children>
+                    <VBox spacing="5">
+                       <children>
+                             <HBox spacing="30">
+                                <children>
+                                    <Label text="Név"></Label>
+                                    <TextField id="nameTextField"></TextField>
+                                </children>
+                            </HBox>
+                            <Label id="errorNameText" text="" disable="true" textFill="RED"></Label>
+                        </children>
+                    </VBox>
+                    <Button text="Csatlakozás a játékhoz." onAction="#joinGame"></Button>
+                </children>
+            </VBox>
+        </center>
+    </BorderPane>
+</Pane>

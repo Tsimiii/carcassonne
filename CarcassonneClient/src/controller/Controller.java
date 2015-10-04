@@ -4,6 +4,7 @@ import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -70,9 +71,11 @@ public class Controller extends UnicastRemoteObject implements RemoteObserver {
     
     private void startGame() {
         try {
-           // File file = new File("fxml_carcassonne_game.fxml");
-            //System.out.println(getClass().getClassLoader().getResource("main/resources/fxml_carcassonne_game.fxml"));
-            scene.setRoot((Group)FXMLLoader.load(getClass().getClassLoader().getResource("main/resources/fxml_carcassonne_game.fxml")/*Paths.get(file.getAbsolutePath()).toUri().toURL()*/));
+            
+            URL resource = this.getClass().getResource("/main/resources/fxml_carcassonne_game.fxml");
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        Parent fxmlContent = fxmlLoader.load(resource.openStream());
+        scene.setRoot(fxmlContent);
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
         }

@@ -29,8 +29,8 @@
                 </ImageView>
                 <HBox>
                     <children>
-                        <Button text="bal" onaction="#clickLeftAction"></Button>
-                        <Button text="jobb" onaction="#clickRightAction"></Button>
+                        <Button text="bal" onAction="#clickLeftAction"></Button>
+                        <Button text="jobb" onAction="#clickRightAction"></Button>
                     </children>
                 </HBox>
             </children>

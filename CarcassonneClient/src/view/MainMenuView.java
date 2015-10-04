@@ -1,14 +1,17 @@
 package view;
 
 import controller.Controller;
-import javafx.beans.property.ReadOnlyDoubleProperty;
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -31,7 +34,7 @@ public class MainMenuView extends Group{
         borderpane = new BorderPane();
         borderpane.prefWidth(width);
         borderpane.prefHeight(height);
-        //borderpane.setId("menu_and_loading_pane");
+        borderpane.setId("menu_and_loading_pane");
 
         //borderpane.setStyle("-fx-background-image: classpath('images/stoneWall.jpg');");
         this.getChildren().add(borderpane);
