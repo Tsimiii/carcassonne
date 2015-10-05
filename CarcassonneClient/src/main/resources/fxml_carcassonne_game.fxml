@@ -19,7 +19,7 @@
         </ScrollPane>
     </center>
     <right>
-        <VBox>
+        <VBox spacing="10">
             <children>
                 <GridPane fx:id="rightGridPane"></GridPane>
                 <ImageView fitHeight="200" fitWidth="200">
@@ -27,7 +27,7 @@
                         <Image url="resources/images/woodenFrame.jpg" />
                     </image>
                 </ImageView>
-                <HBox>
+                <HBox spacing="100" >
                     <children>
                         <Button text="bal" onAction="#clickLeftAction"></Button>
                         <Button text="jobb" onAction="#clickRightAction"></Button>

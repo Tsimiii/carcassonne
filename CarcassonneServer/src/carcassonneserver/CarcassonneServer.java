@@ -56,7 +56,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
 
     @Override
-    public void addObserver(RemoteObserver o) throws RemoteException {
+    public void addObserver(RemoteObserver o, String name) throws RemoteException {
         WrappedObserver mo = new WrappedObserver(o);
         addObserver(mo);
         System.out.println("Added observer:" + mo);

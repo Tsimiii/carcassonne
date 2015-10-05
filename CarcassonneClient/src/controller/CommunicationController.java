@@ -58,13 +58,13 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     public void clickJoinGame(String name) {
         try {
             RmiService remoteService = (RmiService) Naming.lookup("//localhost:8080/carcassonneServer");
-            remoteService.addObserver(this);
+            remoteService.addObserver(this, name);
             displayLoadingScreen();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-
+    
     public void displayLoadingScreen() {
         loadingScreen = new LoadingScreen();
         scene.setRoot(loadingScreen);
