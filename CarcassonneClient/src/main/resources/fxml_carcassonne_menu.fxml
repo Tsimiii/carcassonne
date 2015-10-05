@@ -16,7 +16,7 @@
                              <HBox spacing="30">
                                 <children>
                                     <Label text="Név"></Label>
-                                    <TextField id="nameTextField"></TextField>
+                                    <TextField fx:id="nameTextField"></TextField>
                                 </children>
                             </HBox>
                             <Label id="errorNameText" text="" disable="true" textFill="RED"></Label>

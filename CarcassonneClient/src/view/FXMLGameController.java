@@ -1,5 +1,7 @@
 package view;
 
+import controller.CommunicationController;
+import controller.CommunicationController;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -10,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import view.GameButton;
 
 public class FXMLGameController implements Initializable {
 
@@ -18,6 +21,8 @@ public class FXMLGameController implements Initializable {
     private Rectangle[][] centerRectangles = new Rectangle[143][143];
     private Button[][] rightButtons = new Button[18][4];
     private Image[] landtiles = new Image[72];
+    
+    public CommunicationController delegate;
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {

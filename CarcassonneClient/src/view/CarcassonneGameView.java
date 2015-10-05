@@ -1,6 +1,6 @@
 package view;
 
-import controller.Controller;
+import controller.CommunicationController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -19,7 +19,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 public class CarcassonneGameView extends Group {
-    public Controller delegate;
+    public CommunicationController delegate;
     
     private BorderPane borderpane;
     private StackPane stackPane;

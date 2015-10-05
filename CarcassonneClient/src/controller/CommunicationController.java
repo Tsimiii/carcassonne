@@ -1,39 +1,30 @@
 package controller;
 
+import view.FXMLMenuController;
+import view.FXMLGameController;
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import view.CarcassonneGameView;
 import view.LoadingScreen;
-/*import model.Model;
- import view.GameView;*/
-import view.MainMenuView;
-//import view.ViewDelegate;
 
-public class Controller extends UnicastRemoteObject implements RemoteObserver {
+public class CommunicationController extends UnicastRemoteObject implements RemoteObserver {
 
-    private MainMenuView mainMenuView;
     private LoadingScreen loadingScreen;
     private CarcassonneGameView carcassonneGameView;
-    /* private GameView gameview;
-     private Model model;*/
     public Scene scene;
 
-    /*private int centerHeight;
-     private int centerWidth;
-     private int rightHeight;
-     private int rightWidth;*/
-    public Controller(Scene scene) throws RemoteException {
+    public CommunicationController(Scene scene) throws RemoteException, IOException {
         super();
 
         this.scene = scene;
@@ -41,16 +32,30 @@ public class Controller extends UnicastRemoteObject implements RemoteObserver {
          centerWidth = 21;
          rightHeight = 18;
          rightWidth = 4;   */
-        mainMenuView = new MainMenuView(scene.getWidth(), scene.getHeight());
-        mainMenuView.delegate = this;
-        scene.setRoot(mainMenuView);
 
+        callMenu();
+
+        /*mainMenuView = new MainMenuView(scene.getWidth(), scene.getHeight());
+         mainMenuView.delegate = this;
+         scene.setRoot(mainMenuView);*/
+    }
+
+    private void callMenu() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/main/resources/fxml_carcassonne_menu.fxml"));
+        scene.setRoot(loader.load());
+        FXMLMenuController controller = (FXMLMenuController) loader.getController();
+        controller.delegate = this;
     }
 
     @Override
     public void update(Object observable, Object updateMsg) throws RemoteException {
-        if(updateMsg.equals("startgame")) {
-            startGame();
+        if (updateMsg.equals("startgame")) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    startGame();
+                }
+            });
         }
     }
 
@@ -68,16 +73,16 @@ public class Controller extends UnicastRemoteObject implements RemoteObserver {
         loadingScreen = new LoadingScreen();
         scene.setRoot(loadingScreen);
     }
-    
+
     private void startGame() {
         try {
-            
-            URL resource = this.getClass().getResource("/main/resources/fxml_carcassonne_game.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        Parent fxmlContent = fxmlLoader.load(resource.openStream());
-        scene.setRoot(fxmlContent);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/main/resources/fxml_carcassonne_game.fxml"));
+            scene.setRoot(loader.load());
+            FXMLGameController controller = loader.<FXMLGameController>getController();
+            controller.delegate = this;
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
         }
     }
+
 }

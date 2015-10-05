@@ -1,6 +1,6 @@
 package carcassonneclient;
 
-import controller.Controller;
+import controller.CommunicationController;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.scene.Scene;
@@ -22,20 +22,21 @@ public class CarcassonneClient extends Application {
     @Override
     public void start(Stage primaryStage) throws URISyntaxException, RemoteException, IOException {
 
-        URL resource = this.getClass().getResource("/main/resources/fxml_carcassonne_menu.fxml");
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            Parent fxmlContent = fxmlLoader.load(resource.openStream());
+        /*URL resource = this.getClass().getResource("/main/resources/fxml_carcassonne_menu.fxml");
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        Parent fxmlContent = fxmlLoader.load(resource.openStream());*/
 
         Group group = new Group();
         scene = new Scene(group, 700, 700);
         scene.getStylesheets().add(this.getClass().getResource("/resources/css/style.css").toExternalForm());
         //scene.setRoot(fxmlContent);
+        
+        /*FXMLLoader loader = new FXMLLoader(getClass().getResource("/main/resources/fxml_carcassonne_menu.fxml"));
+        scene.setRoot(loader.load());*/
 
-       //Controller controller = new Controller(scene);
+       CommunicationController controller = new CommunicationController(scene);
         
-        scene.setRoot(fxmlContent);
-        
-        Screen screen = Screen.getPrimary();
+       Screen screen = Screen.getPrimary();
         
         
 

@@ -7,6 +7,8 @@ package view;
 
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
+import controller.CommunicationController;
+import controller.CommunicationController;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.Naming;
@@ -23,42 +25,32 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
-public class FXMLMenuController extends UnicastRemoteObject implements Initializable, RemoteObserver {
+public class FXMLMenuController implements Initializable {
 
     @FXML protected Pane content;
     @FXML protected BorderPane borderPane;
     @FXML protected TextField nameTextField;
     @FXML protected Label errorNameText;
+    
+    public CommunicationController delegate;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
     } 
     
     @FXML private void joinGame(ActionEvent event) {
-        /*if(nameTextField.getText().equals("")) {
-            errorNameText.setText("Nem adtál meg nevet!");
-        } else {*/
-            try {
+        delegate.clickJoinGame(nameTextField.getText());
+           /* try {
                 RmiService remoteService = (RmiService) Naming.lookup("//localhost:8080/carcassonneServer");
                 remoteService.addObserver(this);
                 displayLoadingScreen();
             } catch (Exception ex) {
                 ex.printStackTrace();
-            }
+            }*/
        // }
     }
-    
-    public void displayLoadingScreen() {
-        /*loadingScreen = new LoadingScreen();
-        scene.setRoot(loadingScreen);*/
-    }
 
-    public FXMLMenuController() throws RemoteException {
-        super();
-    }
-
-    @Override
+    /*@Override
     public void update(Object observable, Object updateMsg) throws RemoteException {
         if(updateMsg.equals("startgame")) {
             startGame();
@@ -76,6 +68,6 @@ public class FXMLMenuController extends UnicastRemoteObject implements Initializ
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
         }
-    }
+    }*/
     
 }
