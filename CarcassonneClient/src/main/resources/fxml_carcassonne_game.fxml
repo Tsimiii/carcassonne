@@ -10,9 +10,9 @@
 
 <BorderPane fx:id="borderPane" xmlns:fx="http://javafx.com/fxml" fx:controller="view.FXMLGameController">
     <center>
-        <ScrollPane fx:id="scrollPane" prefWidth="680" prefHeight="680"  >
+        <ScrollPane fx:id="scrollPane" prefWidth="680" prefHeight="680" >
             <StackPane fx:id="stackPane">
-                <GridPane fx:id="centerGridPane" alignment="CENTER" >
+                <GridPane fx:id="centerGridPane" alignment="CENTER">
                     <padding><Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/></padding>
                 </GridPane>
             </StackPane>

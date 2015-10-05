@@ -14,7 +14,7 @@ import java.util.Timer;
 public class CarcassonneServer extends Observable implements RmiService {
 
     private static boolean timesUp = false;
-    private static int playerNumber = 2;
+    private static int playerNumber = 1;
 
     public CarcassonneServer() {
         thread.start();

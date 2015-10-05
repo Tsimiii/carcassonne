@@ -5,3 +5,14 @@
     -fx-background-position: center center;*/
     //-fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0); 
 }
+#right_buttons{
+    -fx-graphic: url("../images/landtileback_icon.jpg");
+    /*-fx-background-position: center center;*/
+    //-fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0); 
+}
+#loading_background{
+    -fx-background-image: url("../images/loading_screen.jpg");
+    -fx-background-size: cover;
+    /*-fx-background-position: center center;*/
+    //-fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0); 
+}

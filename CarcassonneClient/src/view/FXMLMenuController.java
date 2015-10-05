@@ -40,34 +40,5 @@ public class FXMLMenuController implements Initializable {
     
     @FXML private void joinGame(ActionEvent event) {
         delegate.clickJoinGame(nameTextField.getText());
-           /* try {
-                RmiService remoteService = (RmiService) Naming.lookup("//localhost:8080/carcassonneServer");
-                remoteService.addObserver(this);
-                displayLoadingScreen();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }*/
-       // }
-    }
-
-    /*@Override
-    public void update(Object observable, Object updateMsg) throws RemoteException {
-        if(updateMsg.equals("startgame")) {
-            startGame();
-        }
-    }
-    
-    private void startGame() {
-        try {
-            
-            URL resource = this.getClass().getResource("/main/resources/fxml_carcassonne_game.fxml");
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            Parent fxmlContent = fxmlLoader.load(resource.openStream());
-            borderPane.getChildren().clear();
-            borderPane.getChildren().add(fxmlContent);
-        } catch (IOException ex) {
-            System.err.println("Nem sikerült betölteni az fxml-t!");
-        }
-    }*/
-    
+    }    
 }
