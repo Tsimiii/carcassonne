@@ -143,16 +143,16 @@ public class FXMLGameController extends Group implements Initializable {
     };
     
     private void expansionOfTheTable(int i, int j) {
-        if(i > 0 && centerRectangles[i-1][j].isDisable()) {
+        if(i > 0 && !centerRectangles[i-1][j].isVisible()) {
             setFieldEnabledOnTheTable(i-1, j);
         }
-        if(i < 142 && centerRectangles[i+1][j].isDisable()) {
+        if(i < 142 && !centerRectangles[i+1][j].isVisible()) {
             setFieldEnabledOnTheTable(i+1, j);
         }
-        if(j > 0 && centerRectangles[i][j-1].isDisable()) {
+        if(j > 0 && !centerRectangles[i][j-1].isVisible()) {
             setFieldEnabledOnTheTable(i, j-1);
         }
-        if(j < 142 && centerRectangles[i][j+1].isDisable()) {
+        if(j < 142 && !centerRectangles[i][j+1].isVisible()) {
             setFieldEnabledOnTheTable(i, j+1);
         }
     }
