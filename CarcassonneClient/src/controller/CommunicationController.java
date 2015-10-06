@@ -4,6 +4,7 @@ import view.FXMLMenuController;
 import view.FXMLGameController;
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
+import java.awt.Point;
 import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -16,6 +17,8 @@ import view.LoadingScreen;
 
 public class CommunicationController extends UnicastRemoteObject implements RemoteObserver {
 
+    private RmiService remoteService;
+    
     private LoadingScreen loadingScreen;
     private CarcassonneGameView carcassonneGameView;
     public Scene scene;
@@ -57,8 +60,8 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
 
     public void clickJoinGame(String name) {
         try {
-            RmiService remoteService = (RmiService) Naming.lookup("//localhost:8080/carcassonneServer");
-            remoteService.addObserver(this, name);
+            remoteService = (RmiService) Naming.lookup("//localhost:8080/carcassonneServer");
+            remoteService.addObserver(this);
             displayLoadingScreen();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -79,6 +82,10 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
         }
+    }
+    
+    public void chooseFaceDownLandTile(int index) throws RemoteException {
+        remoteService.chooseFaceDownLandTile(index);
     }
 
 }

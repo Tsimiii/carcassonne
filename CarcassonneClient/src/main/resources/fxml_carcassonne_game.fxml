@@ -22,7 +22,7 @@
         <VBox spacing="10">
             <children>
                 <GridPane fx:id="rightGridPane"></GridPane>
-                <ImageView fitHeight="200" fitWidth="200">
+                <ImageView fx:id="imageView" fitHeight="200" fitWidth="200">
                     <image>
                         <Image url="resources/images/woodenFrame.jpg" />
                     </image>

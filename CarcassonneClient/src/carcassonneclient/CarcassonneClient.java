@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import javafx.scene.Group;
 import javafx.stage.Screen;
+import view.imageloader.LandTileImageLoader;
 
 public class CarcassonneClient extends Application {
 

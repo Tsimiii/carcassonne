@@ -10,9 +10,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
+import model.CarcassonneGameModel;
 
 public class CarcassonneServer extends Observable implements RmiService {
 
+    private CarcassonneGameModel carcassonneGameModel;
+    
     private static boolean timesUp = false;
     private static int playerNumber = 1;
 
@@ -25,6 +28,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         public void run() {
             while (true) {
                 if (countObservers() == playerNumber) {
+                    carcassonneGameModel = new CarcassonneGameModel();
                     setChanged();
                     notifyObservers("startgame");
                     break;
@@ -48,18 +52,22 @@ public class CarcassonneServer extends Observable implements RmiService {
             try {
                 ro.update(o.toString(), arg);
             } catch (RemoteException e) {
-                System.out
-                        .println("Remote exception removing observer:" + this);
+                System.out.println("Remote exception removing observer:" + this);
                 o.deleteObserver(this);
             }
         }
     }
 
     @Override
-    public void addObserver(RemoteObserver o, String name) throws RemoteException {
+    public void addObserver(RemoteObserver o) throws RemoteException {
         WrappedObserver mo = new WrappedObserver(o);
         addObserver(mo);
         System.out.println("Added observer:" + mo);
+    }
+    
+    @Override
+    public void chooseFaceDownLandTile(int index) throws RemoteException {
+        carcassonneGameModel.choseFaceDownLandTile(index);
     }
 
     public static void main(String[] args) {
