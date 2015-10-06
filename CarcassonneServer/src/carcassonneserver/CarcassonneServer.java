@@ -7,17 +7,21 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Timer;
 import model.CarcassonneGameModel;
 
 public class CarcassonneServer extends Observable implements RmiService {
 
     private CarcassonneGameModel carcassonneGameModel;
     
+    private WrappedObserver wrappedObserver;
+    
     private static boolean timesUp = false;
-    private static int playerNumber = 1;
+    private final static int PLAYERNUMBER = 1;
+    private static List<RemoteObserver> player = new ArrayList<RemoteObserver>();
 
     public CarcassonneServer() {
         thread.start();
@@ -27,7 +31,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         @Override
         public void run() {
             while (true) {
-                if (countObservers() == playerNumber) {
+                if (countObservers() == PLAYERNUMBER) {
                     carcassonneGameModel = new CarcassonneGameModel();
                     setChanged();
                     notifyObservers("startgame");
@@ -60,14 +64,15 @@ public class CarcassonneServer extends Observable implements RmiService {
 
     @Override
     public void addObserver(RemoteObserver o) throws RemoteException {
-        WrappedObserver mo = new WrappedObserver(o);
-        addObserver(mo);
-        System.out.println("Added observer:" + mo);
+        player.add(o);
+        wrappedObserver = new WrappedObserver(o);
+        addObserver(wrappedObserver);
+        System.out.println("Added observer:" + wrappedObserver);
     }
     
     @Override
     public void chooseFaceDownLandTile(int index) throws RemoteException {
-        carcassonneGameModel.choseFaceDownLandTile(index);
+        String message = carcassonneGameModel.choseFaceDownLandTile(index);
     }
 
     public static void main(String[] args) {

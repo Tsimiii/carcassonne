@@ -12,7 +12,6 @@ import java.rmi.server.UnicastRemoteObject;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import view.CarcassonneGameView;
 import view.LoadingScreen;
 
 public class CommunicationController extends UnicastRemoteObject implements RemoteObserver {
@@ -20,23 +19,12 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     private RmiService remoteService;
     
     private LoadingScreen loadingScreen;
-    private CarcassonneGameView carcassonneGameView;
     public Scene scene;
 
     public CommunicationController(Scene scene) throws RemoteException, IOException {
         super();
-
         this.scene = scene;
-        /*centerHeight = 21;
-         centerWidth = 21;
-         rightHeight = 18;
-         rightWidth = 4;   */
-
         callMenu();
-
-        /*mainMenuView = new MainMenuView(scene.getWidth(), scene.getHeight());
-         mainMenuView.delegate = this;
-         scene.setRoot(mainMenuView);*/
     }
 
     private void callMenu() throws IOException {

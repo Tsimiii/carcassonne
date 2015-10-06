@@ -29,7 +29,11 @@ public class CarcassonneGameModel {
         }
     }
     
-    public void choseFaceDownLandTile(int index) {
-        chosenLandTile = landTiles[index];
+    public String choseFaceDownLandTile(int index) {
+        if(chosenLandTile == null) {
+            chosenLandTile = landTiles[index];
+            return "successChoose";
+        }
+        return "failChoose";
     }
 }
