@@ -71,8 +71,8 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
     
     @Override
-    public void chooseFaceDownLandTile(int index) throws RemoteException {
-        String message = carcassonneGameModel.choseFaceDownLandTile(index);
+    public String chooseFaceDownLandTile(int index) throws RemoteException {
+        return carcassonneGameModel.choseFaceDownLandTile(index);
     }
 
     public static void main(String[] args) {

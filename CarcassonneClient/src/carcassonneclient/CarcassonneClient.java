@@ -11,7 +11,6 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import javafx.scene.Group;
 import javafx.stage.Screen;
-import view.imageloader.LandTileImageLoader;
 
 public class CarcassonneClient extends Application {
 
@@ -29,7 +28,7 @@ public class CarcassonneClient extends Application {
        Screen screen = Screen.getPrimary();
        
         primaryStage.setScene(scene);
-        primaryStage.setFullScreen(true);
+        //primaryStage.setFullScreen(true);
         primaryStage.show();
     }
 

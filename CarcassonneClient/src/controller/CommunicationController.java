@@ -72,8 +72,9 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         }
     }
     
-    public void chooseFaceDownLandTile(int index) throws RemoteException {
-        remoteService.chooseFaceDownLandTile(index);
+    public String chooseFaceDownLandTile(int index) throws RemoteException {
+        String msg = remoteService.chooseFaceDownLandTile(index);
+        return msg;
     }
 
 }

@@ -1,18 +1,17 @@
 package view;
 
 import controller.CommunicationController;
-import java.awt.Point;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.effect.Bloom;
 import javafx.scene.image.Image;
@@ -126,10 +125,18 @@ public class FXMLGameController extends Group implements Initializable {
             for(int i=0; i<15; i++) {
                 for(int j=0; j<5; j++) {
                     if(t.getSource() == rightButtons[i][j]) {
-                        rightButtons[i][j].setDisable(true);
-                        imageView.setImage(landTiles[i*5+j]);
                         try {
-                            delegate.chooseFaceDownLandTile(i*5+j);
+                            if(delegate.chooseFaceDownLandTile(i*5+j).equals("successChoose")) {
+                                rightButtons[i][j].setDisable(true);
+                                imageView.setImage(landTiles[i*5+j]);
+                            } else {
+                                Alert alert = new Alert(AlertType.WARNING);
+                                alert.setTitle("Hiba kártyahúzáskor");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Már húztál egy kártyát!");
+
+                                alert.showAndWait();
+                            }
                         } catch (RemoteException ex) {
                             System.err.println("Hiba az adat küldése során!");
                         }
