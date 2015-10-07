@@ -10,4 +10,8 @@ public interface RmiService extends Remote{
     
     boolean chooseFaceDownLandTile(Point p) throws RemoteException;
     
+    void rotateLeftLandTile() throws RemoteException;
+    
+    void rotateRightLandTile() throws RemoteException;
+    
 }

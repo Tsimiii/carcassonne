@@ -23,5 +23,9 @@ public class LandTile {
     public int getId() {
         return id;
     }
+
+    public void setContinuousParts(int value, int ind1, int ind2) {
+        continuousParts[ind1][ind2] = value;
+    }
     
 }

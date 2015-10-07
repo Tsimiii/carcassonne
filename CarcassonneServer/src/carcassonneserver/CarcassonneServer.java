@@ -9,9 +9,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import model.CarcassonneGameModel;
@@ -19,11 +17,11 @@ import model.CarcassonneGameModel;
 public class CarcassonneServer extends Observable implements RmiService {
 
     private CarcassonneGameModel carcassonneGameModel;
-    
+
     private WrappedObserver wrappedObserver;
-    
+
     private static boolean timesUp = false;
-    private final static int PLAYERNUMBER = 1;
+    private final static int PLAYERNUMBER = 2;
     private static List<RemoteObserver> player = new ArrayList<RemoteObserver>();
 
     public CarcassonneServer() {
@@ -43,7 +41,9 @@ public class CarcassonneServer extends Observable implements RmiService {
                     break;
                 }
             }
-        };
+        }
+    ;
+
     };
     
         private class WrappedObserver implements Observer, Serializable {
@@ -74,16 +74,35 @@ public class CarcassonneServer extends Observable implements RmiService {
         addObserver(wrappedObserver);
         System.out.println("Added observer:" + wrappedObserver);
     }
-    
+
     @Override
-    public boolean chooseFaceDownLandTile(Point p) throws RemoteException {   
+    public boolean chooseFaceDownLandTile(Point p) throws RemoteException {
         setChanged();
         boolean ischosen = carcassonneGameModel.chooseFaceDownLandTile(p);
-        if(ischosen) {
+        if (ischosen) {
+            setChanged();
             notifyObservers(p);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void rotateLeftLandTile() throws RemoteException {
+        boolean successRotateLeft = carcassonneGameModel.setNewContinuousPartsAfterRotateLeft();
+        if(successRotateLeft) {
+            setChanged();
+            notifyObservers("successRotateLeft");
+        }
+    }
+
+    @Override
+    public void rotateRightLandTile() throws RemoteException {
+        boolean successRotateRight = carcassonneGameModel.setNewContinuousPartsAfterRotateRight();
+        if(successRotateRight) {
+            setChanged();
+            notifyObservers("successRotateRight");
+        }
     }
 
     public static void main(String[] args) {

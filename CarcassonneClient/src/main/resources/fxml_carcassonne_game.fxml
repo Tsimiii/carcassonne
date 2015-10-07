@@ -29,8 +29,8 @@
                 </ImageView>
                 <HBox spacing="100" >
                     <children>
-                        <Button text="bal" onAction="#clickLeftAction"></Button>
-                        <Button text="jobb" onAction="#clickRightAction"></Button>
+                        <Button fx:id="leftRotateButton" text="bal" onAction="#clickLeftAction" disable="true" ></Button>
+                        <Button fx:id="rightRotateButton" text="jobb" onAction="#clickRightAction" disable="true"></Button>
                     </children>
                 </HBox>
             </children>

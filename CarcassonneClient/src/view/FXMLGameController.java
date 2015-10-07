@@ -2,7 +2,6 @@ package view;
 
 import controller.CommunicationController;
 import java.awt.Point;
-import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
@@ -29,6 +28,8 @@ public class FXMLGameController extends Group implements Initializable {
     @FXML protected GridPane centerGridPane;
     @FXML protected GridPane rightGridPane;
     @FXML protected ImageView imageView;
+    @FXML protected Button leftRotateButton;
+    @FXML protected Button rightRotateButton;
     private Rectangle[][] centerRectangles;
     private Button[][] rightButtons = new Button[15][5];
     private Image[] landTiles = new Image[71];
@@ -91,12 +92,20 @@ public class FXMLGameController extends Group implements Initializable {
         }
     }
     
-    @FXML private void clickLeftAction(ActionEvent event) {
+    @FXML private void clickLeftAction(ActionEvent event) throws RemoteException {
+        delegate.clickRotateLeft();
+    }
+    
+    @FXML private void clickRightAction(ActionEvent event) throws RemoteException {
+        delegate.clickRotateRight();
+    }
+    
+    public void rotateLeftUpdate() {
         degree -= 90;
         imageView.setRotate(degree);
     }
     
-    @FXML private void clickRightAction(ActionEvent event) {
+    public void rotateRightUpdate() {
         degree += 90;
         imageView.setRotate(degree);
     }
@@ -137,6 +146,8 @@ public class FXMLGameController extends Group implements Initializable {
     public void chooseLandTileUpdate(Point p) {
         rightButtons[p.x][p.y].setDisable(true);
         imageView.setImage(landTiles[p.x*5+p.y]);
+        leftRotateButton.setDisable(false);
+        rightRotateButton.setDisable(false);
     }
     
     public void chooseLandTileWarningMessage() {

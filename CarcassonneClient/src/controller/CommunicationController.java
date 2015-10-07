@@ -9,9 +9,6 @@ import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -49,16 +46,19 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             } catch (IOException ex) {
                 System.err.println("A területkártyák képeinek betöltése sikertelen!");
             }
-        }
-        else if (updateMsg.equals("startgame")) {
+        } else if (updateMsg.equals("startgame")) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
                     startGame();
                 }
             });
-        } else if(((Point)updateMsg).x > -1) {
+        } else if(updateMsg instanceof Point && ((Point)updateMsg).x > -1) {
             gameController.chooseLandTileUpdate((Point)updateMsg);
+        } else if(updateMsg.equals("successRotateLeft")) {
+            gameController.rotateLeftUpdate();
+        } else if(updateMsg.equals("successRotateRight")) {
+            gameController.rotateRightUpdate();
         }
     }
 
@@ -93,6 +93,14 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         if(!successChoose) {
             gameController.chooseLandTileWarningMessage();
         }
+    }
+    
+    public void clickRotateLeft() throws RemoteException {
+        remoteService.rotateLeftLandTile();
+    }
+    
+    public void clickRotateRight() throws RemoteException {
+        remoteService.rotateRightLandTile();
     }
 
 }
