@@ -9,10 +9,14 @@ import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import view.LoadingScreen;
+import view.imageloader.LandTileImageLoader;
 
 public class CommunicationController extends UnicastRemoteObject implements RemoteObserver {
 
@@ -37,7 +41,16 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
 
     @Override
     public void update(Object observable, Object updateMsg) throws RemoteException {
-        if (updateMsg.equals("startgame")) {
+        if(updateMsg instanceof int[]) {
+            int[] shuffledIdArray = (int[])updateMsg;
+            try {
+                LandTileImageLoader landTileImageLoader = LandTileImageLoader.getInstance();
+                landTileImageLoader.init(shuffledIdArray);
+            } catch (IOException ex) {
+                System.err.println("A területkártyák képeinek betöltése sikertelen!");
+            }
+        }
+        else if (updateMsg.equals("startgame")) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {

@@ -9,7 +9,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import model.CarcassonneGameModel;
@@ -21,7 +23,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     private WrappedObserver wrappedObserver;
     
     private static boolean timesUp = false;
-    private final static int PLAYERNUMBER = 3;
+    private final static int PLAYERNUMBER = 1;
     private static List<RemoteObserver> player = new ArrayList<RemoteObserver>();
 
     public CarcassonneServer() {
@@ -34,6 +36,8 @@ public class CarcassonneServer extends Observable implements RmiService {
             while (true) {
                 if (countObservers() == PLAYERNUMBER) {
                     carcassonneGameModel = new CarcassonneGameModel();
+                    setChanged();
+                    notifyObservers(carcassonneGameModel.getShuffledIdArray());
                     setChanged();
                     notifyObservers("startgame");
                     break;

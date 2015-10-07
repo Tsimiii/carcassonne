@@ -29,7 +29,6 @@ public class FXMLGameController extends Group implements Initializable {
     @FXML protected GridPane centerGridPane;
     @FXML protected GridPane rightGridPane;
     @FXML protected ImageView imageView;
-    private LandTileImageLoader imageLoader;
     private Rectangle[][] centerRectangles;
     private Button[][] rightButtons = new Button[15][5];
     private Image[] landTiles = new Image[71];
@@ -39,12 +38,7 @@ public class FXMLGameController extends Group implements Initializable {
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            imageLoader = new LandTileImageLoader();
-            landTiles = imageLoader.getLandTileImages();
-        } catch (IOException ex) {
-            System.err.println("A területkártyák betöltése sikertelen!");
-        }
+        landTiles = LandTileImageLoader.getInstance().getLandTileImages();
         
         createRectanglesOnTheTable();
         createRectanglesOnTheRightSide();
@@ -59,7 +53,7 @@ public class FXMLGameController extends Group implements Initializable {
                Rectangle rectangle = new Rectangle(0, 0, 120, 120);
                if(i==143/2 && j == 143/2) {
                    rectangle.setDisable(true);
-                   rectangle.setFill(new ImagePattern(imageLoader.getStarterLandTile()));
+                   rectangle.setFill(new ImagePattern(LandTileImageLoader.getInstance().getStarterLandTile()));
                }
                else if((i==143/2 && (j==143/2-1 || j==143/2+1)) || (j==143/2 && (i==143/2-1 || i==143/2+1))) {
                    rectangle.setFill(Color.GREEN);
