@@ -2,6 +2,7 @@ package carcassonneserver;
 
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
+import java.awt.Point;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -20,7 +21,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     private WrappedObserver wrappedObserver;
     
     private static boolean timesUp = false;
-    private final static int PLAYERNUMBER = 1;
+    private final static int PLAYERNUMBER = 3;
     private static List<RemoteObserver> player = new ArrayList<RemoteObserver>();
 
     public CarcassonneServer() {
@@ -71,8 +72,14 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
     
     @Override
-    public String chooseFaceDownLandTile(int index) throws RemoteException {
-        return carcassonneGameModel.choseFaceDownLandTile(index);
+    public boolean chooseFaceDownLandTile(Point p) throws RemoteException {   
+        setChanged();
+        boolean ischosen = carcassonneGameModel.chooseFaceDownLandTile(p);
+        if(ischosen) {
+            notifyObservers(p);
+            return true;
+        }
+        return false;
     }
 
     public static void main(String[] args) {

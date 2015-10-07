@@ -1,5 +1,6 @@
 package carcassonneshared;
 
+import java.awt.Point;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -7,6 +8,6 @@ public interface RmiService extends Remote{
     
     void addObserver(RemoteObserver o) throws RemoteException;
     
-    String chooseFaceDownLandTile(int index) throws RemoteException;
+    boolean chooseFaceDownLandTile(Point p) throws RemoteException;
     
 }

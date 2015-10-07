@@ -17,6 +17,7 @@ import view.LoadingScreen;
 public class CommunicationController extends UnicastRemoteObject implements RemoteObserver {
 
     private RmiService remoteService;
+    private FXMLGameController gameController;
     
     private LoadingScreen loadingScreen;
     public Scene scene;
@@ -43,6 +44,8 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
                     startGame();
                 }
             });
+        } else if(((Point)updateMsg).x > -1) {
+            gameController.chooseLandTileUpdate((Point)updateMsg);
         }
     }
 
@@ -65,16 +68,18 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/main/resources/fxml_carcassonne_game.fxml"));
             scene.setRoot(loader.load());
-            FXMLGameController controller = loader.<FXMLGameController>getController();
-            controller.delegate = this;
+            gameController = loader.<FXMLGameController>getController();
+            gameController.delegate = this;
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
         }
     }
     
-    public String chooseFaceDownLandTile(int index) throws RemoteException {
-        String msg = remoteService.chooseFaceDownLandTile(index);
-        return msg;
+    public void chooseFaceDownLandTile(Point p) throws RemoteException {
+        boolean successChoose = remoteService.chooseFaceDownLandTile(p);
+        if(!successChoose) {
+            gameController.chooseLandTileWarningMessage();
+        }
     }
 
 }

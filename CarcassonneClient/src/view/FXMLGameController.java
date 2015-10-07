@@ -1,6 +1,7 @@
 package view;
 
 import controller.CommunicationController;
+import java.awt.Point;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -125,18 +126,8 @@ public class FXMLGameController extends Group implements Initializable {
             for(int i=0; i<15; i++) {
                 for(int j=0; j<5; j++) {
                     if(t.getSource() == rightButtons[i][j]) {
-                        try {
-                            if(delegate.chooseFaceDownLandTile(i*5+j).equals("successChoose")) {
-                                rightButtons[i][j].setDisable(true);
-                                imageView.setImage(landTiles[i*5+j]);
-                            } else {
-                                Alert alert = new Alert(AlertType.WARNING);
-                                alert.setTitle("Hiba kártyahúzáskor");
-                                alert.setHeaderText(null);
-                                alert.setContentText("Már húztál egy kártyát!");
-
-                                alert.showAndWait();
-                            }
+                        try { 
+                            delegate.chooseFaceDownLandTile(new Point(i,j));
                         } catch (RemoteException ex) {
                             System.err.println("Hiba az adat küldése során!");
                         }
@@ -148,6 +139,19 @@ public class FXMLGameController extends Group implements Initializable {
             }
         }
     };
+    
+    public void chooseLandTileUpdate(Point p) {
+        rightButtons[p.x][p.y].setDisable(true);
+        imageView.setImage(landTiles[p.x*5+p.y]);
+    }
+    
+    public void chooseLandTileWarningMessage() {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Hiba kártyahúzáskor");
+        alert.setHeaderText(null);
+        alert.setContentText("Már húztál egy kártyát!");
+        alert.showAndWait();
+    }
     
     private void expansionOfTheTable(int i, int j) {
         if(i > 0 && !centerRectangles[i-1][j].isVisible()) {

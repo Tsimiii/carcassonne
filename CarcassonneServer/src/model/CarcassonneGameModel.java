@@ -29,11 +29,11 @@ public class CarcassonneGameModel {
         }
     }
     
-    public String choseFaceDownLandTile(int index) {
+    public boolean chooseFaceDownLandTile(Point p) {
         if(chosenLandTile == null) {
-            chosenLandTile = landTiles[index];
-            return "successChoose";
+            chosenLandTile = landTiles[p.x*5+p.y];
+            return true;
         }
-        return "failChoose";
+        return false;
     }
 }
