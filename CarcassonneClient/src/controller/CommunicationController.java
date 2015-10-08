@@ -61,10 +61,9 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         } else if(updateMsg.equals("successRotateRight")) {
             gameController.rotateRightUpdate();
         } else if(updateMsg instanceof List<?>) {
-           /* for(Point p: (List<Point>)updateMsg) {
-                System.out.println(p.x + " " + p.y);
-            }*/
             gameController.illegalPlacesOnTableUpdate((List<Point>)updateMsg);
+        } else if(updateMsg instanceof Object[] && ((Object[])updateMsg)[0].equals("locateLandTile")) {
+            gameController.locateLandTileUpdate((Point)((Object[])updateMsg)[1]);
         }
     }
 
@@ -107,6 +106,13 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     
     public void clickRotateRight() throws RemoteException {
         remoteService.rotateRightLandTile();
+    }
+    
+    public void locateLandTileOnTheTable(Point p) throws RemoteException {
+        boolean successLocate = remoteService.locateLandTileOnTheTable(p);
+        if(!successLocate) {
+            gameController.locateLandTileWarningMessage();
+        }
     }
 
 }

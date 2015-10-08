@@ -41,9 +41,7 @@ public class CarcassonneServer extends Observable implements RmiService {
                     break;
                 }
             }
-        }
-    ;
-
+        };
     };
     
         private class WrappedObserver implements Observer, Serializable {
@@ -120,5 +118,16 @@ public class CarcassonneServer extends Observable implements RmiService {
             System.err.println("Szerver oldali hiba!");
         }
         System.out.println("Elindult a szerver.");
+    }
+    
+    @Override
+    public boolean locateLandTileOnTheTable(Point where) throws RemoteException {
+        boolean successLocate = carcassonneGameModel.locateLandTileOnTheTable(where);
+        if(successLocate) {
+            setChanged();
+            notifyObservers(new Object[] {"locateLandTile", where});
+            return true;
+        }
+        return false;
     }
 }

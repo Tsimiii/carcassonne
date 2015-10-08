@@ -23,6 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Rotate;
 import view.imageloader.LandTileImageLoader;
 
 public class FXMLGameController extends Group implements Initializable {
@@ -136,7 +137,11 @@ public class FXMLGameController extends Group implements Initializable {
             for(int i=0; i<143; i++) {
                 for(int j=0; j<143; j++) {
                     if(centerRectangles[i][j] == t.getSource()) {
-                        expansionOfTheTable(i, j);
+                        try {
+                            delegate.locateLandTileOnTheTable(new Point(i,j));
+                        } catch (RemoteException ex) {
+                            System.out.println("Hiba a kártya elhelyezése során.");
+                        }
                     }
                 }
             }
@@ -177,6 +182,25 @@ public class FXMLGameController extends Group implements Initializable {
         alert.setContentText("Már húztál egy kártyát!");
         alert.showAndWait();
     }
+    
+    public void locateLandTileUpdate(Point p) {
+        removePreviousIllegalPlacesOnTable();
+        centerRectangles[p.x][p.y].setFill(new ImagePattern(imageView.getImage()));
+        centerRectangles[p.x][p.y].setDisable(true);
+        centerRectangles[p.x][p.y].getTransforms().add(new Rotate(degree, 60, 60));
+        imageView.setImage(null);
+        imageView.setRotate(360);
+        expansionOfTheTable(p.x, p.y);
+        degree = 0;
+    }
+    
+    public void locateLandTileWarningMessage() {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Hiba a kártya elhelyezésekor");
+        alert.setHeaderText(null);
+        alert.setContentText("Még nem húztál kártyát!");
+        alert.showAndWait();
+    }  
     
     private void expansionOfTheTable(int i, int j) {
         if(i > 0 && !centerRectangles[i-1][j].isVisible()) {

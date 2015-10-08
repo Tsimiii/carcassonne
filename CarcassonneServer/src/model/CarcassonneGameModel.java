@@ -196,6 +196,15 @@ public class CarcassonneGameModel {
         }
         return true;
     }
+    
+    public boolean locateLandTileOnTheTable(Point p) {
+        if(chosenLandTile != null) {
+            cells[p.x][p.y].setLandTile(chosenLandTile);
+            chosenLandTile = null;
+            return true;
+        }
+        return false;
+    }
 
     private void initShuffledIdArray() {
         for (int i = 0; i < landTiles.length; i++) {
