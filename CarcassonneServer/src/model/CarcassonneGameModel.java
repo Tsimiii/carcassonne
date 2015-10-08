@@ -1,78 +1,200 @@
 package model;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import model.landtile.LandTile;
 import model.landtile.LandTileLoader;
+import model.tablecell.TableCell;
 
 public class CarcassonneGameModel {
+    
+    private final int FIELD = 0;
+    private final int ROAD = 1;
+    private final int CITY = 2;
+    private final int CITYWITHPENNANT = 3;
+    private final int CLOISTER = 4;
+    private final int NOTHING = 5;
 
     private LandTileLoader landTileLoader;
     private LandTile[] landTiles;
     private LandTile chosenLandTile;
+    private TableCell[][] cells;
     private int[] shuffledIdArray;
+    private List<LandTile> locatedLandTiles;
+    private List<Point> forbiddenPlacesOnTheTable;
 
     public CarcassonneGameModel() {
         landTileLoader = new LandTileLoader();
         landTiles = landTileLoader.getLandTiles();
         shuffledIdArray = new int[71];
         chosenLandTile = null;
+        locatedLandTiles = new ArrayList<>();
+        locatedLandTiles.add(landTileLoader.getStarterLandTile());
+        forbiddenPlacesOnTheTable = new ArrayList<>();
+        initCells();
         shuffleLandTileArray();
+    }
+    
+    private void initCells() {
+        cells = new TableCell[143][143];
+        for (int i=0; i<143; i++) {
+            for(int j=0; j<143; j++) {
+                 cells[i][j] = new TableCell();
+            }
+        }
+        cells[143/2][143/2].setLandTile(landTileLoader.getStarterLandTile());
     }
 
     private void shuffleLandTileArray() {
-        Random rnd = new Random();
-        for (int i = landTiles.length - 1; i > 0; i--) {
-            int ind = rnd.nextInt(i + 1);
-            LandTile landTile = landTiles[ind];
-            landTiles[ind] = landTiles[i];
-            landTiles[i] = landTile;
-        }
+        Collections.shuffle(Arrays.asList(landTiles));
         initShuffledIdArray();
     }
 
     public boolean chooseFaceDownLandTile(Point p) {
         if (chosenLandTile == null) {
             chosenLandTile = landTiles[p.x * 5 + p.y];
+            forbidIllegalPlaces();
+            return true;
+        }
+        return false;
+    }    
+    
+    public boolean rotateLeftLandTile() {
+        if(chosenLandTile != null) {
+            setNewContinuousPartsAfterRotateLeft(); 
+            chosenLandTile.setComponents(getLeftRotateArray(chosenLandTile)); 
+            forbidIllegalPlaces();
             return true;
         }
         return false;
     }
-
-    public boolean setNewContinuousPartsAfterRotateRight() {
+    
+    public boolean rotateRightLandTile() {
         if(chosenLandTile != null) {
-        int contPartNum;
-            for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
-                for (int j = 0; j < chosenLandTile.getContinuousParts()[i].length; j++) {
-                    contPartNum = chosenLandTile.getContinuousParts()[i][j];
-                    if (contPartNum == 0 || contPartNum == 1 || contPartNum == 2) {
-                        chosenLandTile.setContinuousParts(contPartNum + 9, i, j);
-                    } else if (contPartNum != 12) {
-                        chosenLandTile.setContinuousParts(contPartNum - 3, i, j);
-                    }
-                }
-            }
+            setNewContinuousPartsAfterRotateRight(); 
+            chosenLandTile.setComponents(getRightRotateArray(chosenLandTile)); 
+            forbidIllegalPlaces();
             return true;
         }
         return false;
     }
-
-    public boolean setNewContinuousPartsAfterRotateLeft() {
-        if(chosenLandTile != null) {
+    
+    private int[] getRightRotateArray(LandTile actualLandTile){
+        int[] rotateArray = new int[13];
+        int temp1 = actualLandTile.getComponents()[0];
+        int temp2 = actualLandTile.getComponents()[1];
+        int temp3 = actualLandTile.getComponents()[2];       
+        for(int i=0; i<actualLandTile.getComponents().length-4; i++) {
+            rotateArray[i] = actualLandTile.getComponents()[i+3];
+        }
+        rotateArray[9] = temp1;
+        rotateArray[10] = temp2;
+        rotateArray[11] = temp3;
+        rotateArray[12] = actualLandTile.getComponents()[12];
+        return rotateArray;
+    }
+    
+    private int[] getLeftRotateArray(LandTile actualLandTile) {
+        int[] rotateArray = new int[13];
+        int temp1 = actualLandTile.getComponents()[9];
+        int temp2 = actualLandTile.getComponents()[10];
+        int temp3 = actualLandTile.getComponents()[11];     
+        for(int i=0; i<actualLandTile.getComponents().length-4; i++) {
+            rotateArray[i+3] = actualLandTile.getComponents()[i];
+        }
+        rotateArray[0] = temp1;
+        rotateArray[1] = temp2;
+        rotateArray[2] = temp3;
+        rotateArray[12] = actualLandTile.getComponents()[12];
+        return rotateArray;
+    }
+    
+    private void setNewContinuousPartsAfterRotateRight() {
         int contPartNum;
-            for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
-                for (int j = 0; j < chosenLandTile.getContinuousParts()[i].length; j++) {
-                    contPartNum = chosenLandTile.getContinuousParts()[i][j];
-                    if (contPartNum == 9 || contPartNum == 10 || contPartNum == 11) {
-                        chosenLandTile.setContinuousParts(contPartNum - 9, i, j);
-                    } else if (contPartNum != 12) {
-                        chosenLandTile.setContinuousParts(contPartNum + 3, i, j);
-                    }
+        for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
+            for (int j = 0; j < chosenLandTile.getContinuousParts()[i].length; j++) {
+                contPartNum = chosenLandTile.getContinuousParts()[i][j];
+                if (contPartNum == 0 || contPartNum == 1 || contPartNum == 2) {
+                    chosenLandTile.setContinuousParts(contPartNum + 9, i, j);
+                } else if (contPartNum != 12) {
+                    chosenLandTile.setContinuousParts(contPartNum - 3, i, j);
                 }
             }
-            return true;
         }
-        return false;
+    }
+
+    private void setNewContinuousPartsAfterRotateLeft() {
+        
+        int contPartNum;
+        for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
+            for (int j = 0; j < chosenLandTile.getContinuousParts()[i].length; j++) {
+                contPartNum = chosenLandTile.getContinuousParts()[i][j];
+                if (contPartNum == 9 || contPartNum == 10 || contPartNum == 11) {
+                    chosenLandTile.setContinuousParts(contPartNum - 9, i, j);
+                } else if (contPartNum != 12) {
+                    chosenLandTile.setContinuousParts(contPartNum + 3, i, j);
+                }
+            }
+        }
+    }
+    
+    private void forbidIllegalPlaces() {
+        forbiddenPlacesOnTheTable.clear();
+        int x;
+        int y;
+        for(LandTile lt: locatedLandTiles) {
+            x = lt.getPositionOnTheTable().x;
+            y = lt.getPositionOnTheTable().y;
+            addForbiddenPointsToList(x,y-1,8,0,lt);
+            addForbiddenPointsToList(x+1,y,11,3,lt);
+            addForbiddenPointsToList(x,y+1,0,8,lt);
+            addForbiddenPointsToList(x-1,y,3,11,lt);
+        }
+    }
+    
+    private void addForbiddenPointsToList(int x, int y, int index1, int index2, LandTile lt) {
+        if(cells[x][y].getLandTile() == null) {
+            if(!neighboringComponentsAreEqual(lt, index1, index2)) {
+                forbiddenPlacesOnTheTable.add(new Point(x, y));
+            }
+        }
+    }
+    
+    private boolean neighboringComponentsAreEqual(LandTile lt, int index1, int index2) {
+        if(index1 >= 8) {
+            if(chosenLandTile.getComponents()[index1] != lt.getComponents()[index2] &&
+                    !(chosenLandTile.getComponents()[index1] == CITY && lt.getComponents()[index2] == CITYWITHPENNANT) &&
+                        !(chosenLandTile.getComponents()[index1] == CITYWITHPENNANT && lt.getComponents()[index2] == CITY)) {
+                return false;
+            } else if(chosenLandTile.getComponents()[index1-1] != lt.getComponents()[index2+1] &&
+                        !(chosenLandTile.getComponents()[index1-1] == CITY && lt.getComponents()[index2+1] == CITYWITHPENNANT) &&
+                            !(chosenLandTile.getComponents()[index1-1] == CITYWITHPENNANT && lt.getComponents()[index2+1] == CITY)) {
+                return false;
+            } else if(chosenLandTile.getComponents()[index1-2] != lt.getComponents()[index2+2] &&
+                        !(chosenLandTile.getComponents()[index1-2] == CITY && lt.getComponents()[index2+2] == CITYWITHPENNANT) &&
+                            !(chosenLandTile.getComponents()[index1-2] == CITYWITHPENNANT && lt.getComponents()[index2+2] == CITY)) {
+                return false;
+            }
+        } else {
+            if(chosenLandTile.getComponents()[index1] != lt.getComponents()[index2] &&
+                    !(chosenLandTile.getComponents()[index1] == CITY && lt.getComponents()[index2] == CITYWITHPENNANT) &&
+                        !(chosenLandTile.getComponents()[index1] == CITYWITHPENNANT && lt.getComponents()[index2] == CITY)) {
+                return false;
+            } else if(chosenLandTile.getComponents()[index1+1] != lt.getComponents()[index2-1] &&
+                        !(chosenLandTile.getComponents()[index1+1] == CITY && lt.getComponents()[index2-1] == CITYWITHPENNANT) &&
+                            !(chosenLandTile.getComponents()[index1+1] == CITYWITHPENNANT && lt.getComponents()[index2-1] == CITY)) {
+                return false;
+            } else if(chosenLandTile.getComponents()[index1+2] != lt.getComponents()[index2-2] &&
+                        !(chosenLandTile.getComponents()[index1+2] == CITY && lt.getComponents()[index2-2] == CITYWITHPENNANT) &&
+                            !(chosenLandTile.getComponents()[index1+2] == CITYWITHPENNANT && lt.getComponents()[index2-2] == CITY)) {
+                return false;
+            }    
+        }
+        return true;
     }
 
     private void initShuffledIdArray() {
@@ -83,5 +205,9 @@ public class CarcassonneGameModel {
 
     public int[] getShuffledIdArray() {
         return shuffledIdArray;
+    }
+
+    public List<Point> getForbiddenPlacesOnTheTable() {
+        return forbiddenPlacesOnTheTable;
     }
 }

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -59,6 +60,11 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             gameController.rotateLeftUpdate();
         } else if(updateMsg.equals("successRotateRight")) {
             gameController.rotateRightUpdate();
+        } else if(updateMsg instanceof List<?>) {
+           /* for(Point p: (List<Point>)updateMsg) {
+                System.out.println(p.x + " " + p.y);
+            }*/
+            gameController.illegalPlacesOnTableUpdate((List<Point>)updateMsg);
         }
     }
 

@@ -4,6 +4,8 @@ import controller.CommunicationController;
 import java.awt.Point;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -34,6 +36,7 @@ public class FXMLGameController extends Group implements Initializable {
     private Button[][] rightButtons = new Button[15][5];
     private Image[] landTiles = new Image[71];
     private double degree;
+    private List<Point> forbiddenPlacesOnTheTable = new ArrayList<>();
     
     public CommunicationController delegate;
     
@@ -108,6 +111,23 @@ public class FXMLGameController extends Group implements Initializable {
     public void rotateRightUpdate() {
         degree += 90;
         imageView.setRotate(degree);
+    }
+    
+    public void illegalPlacesOnTableUpdate(List<Point> illegalPoints) {
+        removePreviousIllegalPlacesOnTable();
+        for(Point p : illegalPoints) {
+            centerRectangles[p.x][p.y].setDisable(true);
+            centerRectangles[p.x][p.y].setFill(Color.ORANGE);
+            forbiddenPlacesOnTheTable.add(p);
+        }
+    }
+    
+    private void removePreviousIllegalPlacesOnTable() {
+        for(Point p : forbiddenPlacesOnTheTable) {
+            centerRectangles[p.x][p.y].setDisable(false);
+            centerRectangles[p.x][p.y].setFill(Color.GREEN);
+        }
+        forbiddenPlacesOnTheTable.clear();
     }
     
     private final EventHandler<MouseEvent> rectangleClickAction = new EventHandler<MouseEvent>() {

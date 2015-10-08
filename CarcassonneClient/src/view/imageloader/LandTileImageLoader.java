@@ -31,11 +31,11 @@ public class LandTileImageLoader {
         
         if(directory.isDirectory()) {
             File[] files = directory.listFiles();
-            for(int i=1; i<72; i++) {
+            for(int i=0; i<71; i++) {
                 for (File file : files) {
                     String name = Integer.toString(i);
-                    if (file != null && file.getName().startsWith(name)) {
-                        landTileImages[shuffledIdArray[i-1]] = new Image("file:" + file.getPath());
+                    if (file != null && file.getName().startsWith(Integer.toString(shuffledIdArray[i]))) {
+                        landTileImages[i] = new Image("file:" + file.getPath());
                         break;
                     }
                 }

@@ -82,6 +82,8 @@ public class CarcassonneServer extends Observable implements RmiService {
         if (ischosen) {
             setChanged();
             notifyObservers(p);
+            setChanged();
+            notifyObservers(carcassonneGameModel.getForbiddenPlacesOnTheTable());
             return true;
         }
         return false;
@@ -89,19 +91,23 @@ public class CarcassonneServer extends Observable implements RmiService {
 
     @Override
     public void rotateLeftLandTile() throws RemoteException {
-        boolean successRotateLeft = carcassonneGameModel.setNewContinuousPartsAfterRotateLeft();
+        boolean successRotateLeft = carcassonneGameModel.rotateLeftLandTile();
         if(successRotateLeft) {
             setChanged();
             notifyObservers("successRotateLeft");
+            setChanged();
+            notifyObservers(carcassonneGameModel.getForbiddenPlacesOnTheTable());
         }
     }
 
     @Override
     public void rotateRightLandTile() throws RemoteException {
-        boolean successRotateRight = carcassonneGameModel.setNewContinuousPartsAfterRotateRight();
+        boolean successRotateRight = carcassonneGameModel.rotateRightLandTile();
         if(successRotateRight) {
             setChanged();
             notifyObservers("successRotateRight");
+            setChanged();
+            notifyObservers(carcassonneGameModel.getForbiddenPlacesOnTheTable());
         }
     }
 
