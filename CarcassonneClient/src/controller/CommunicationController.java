@@ -94,9 +94,11 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     }
     
     public void chooseFaceDownLandTile(Point p) throws RemoteException {
-        boolean successChoose = remoteService.chooseFaceDownLandTile(p);
-        if(!successChoose) {
-            gameController.chooseLandTileWarningMessage();
+        String chooseInformation = remoteService.chooseFaceDownLandTile(p);
+        if(chooseInformation.equals("multipleChoose")) {
+            gameController.chooseLandTileWarningMessage();  
+        } else if(chooseInformation.equals("cantBeLocated")) {
+            gameController.landTileCantBeLocatednformationMessage();
         }
     }
     

@@ -21,7 +21,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     private WrappedObserver wrappedObserver;
 
     private static boolean timesUp = false;
-    private final static int PLAYERNUMBER = 2;
+    private final static int PLAYERNUMBER = 1;
     private static List<RemoteObserver> player = new ArrayList<RemoteObserver>();
 
     public CarcassonneServer() {
@@ -74,17 +74,20 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
 
     @Override
-    public boolean chooseFaceDownLandTile(Point p) throws RemoteException {
+    public String chooseFaceDownLandTile(Point p) throws RemoteException {
         setChanged();
-        boolean ischosen = carcassonneGameModel.chooseFaceDownLandTile(p);
-        if (ischosen) {
+        boolean firstchoose = carcassonneGameModel.chooseFaceDownLandTile(p);
+        if (firstchoose) {
             setChanged();
             notifyObservers(p);
             setChanged();
             notifyObservers(carcassonneGameModel.getForbiddenPlacesOnTheTable());
-            return true;
+            if(!carcassonneGameModel.isLandTileCanBeLocated()) {
+                return "cantBeLocated";
+            }
+            return "success";
         }
-        return false;
+        return "multipleChoose";
     }
 
     @Override

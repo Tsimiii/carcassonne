@@ -12,6 +12,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -181,6 +182,23 @@ public class FXMLGameController extends Group implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText("Már húztál egy kártyát!");
         alert.showAndWait();
+    }
+    
+    public void landTileCantBeLocatednformationMessage() {
+        ImageView img = new ImageView(imageView.getImage());
+        img.setFitHeight(200);
+        img.setFitWidth(200);
+        
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("A kártyát nem lehet elhelyezni");
+        alert.setHeaderText(null);
+        alert.setGraphic(img);
+        alert.setContentText("A kártyát nem lehet elhelyezni a táblán. Továbbra is Te következel, húzz egy másik kártyát!");
+        alert.showAndWait();
+        
+        removePreviousIllegalPlacesOnTable();
+        imageView.setImage(null);
+        imageView.setRotate(360);
     }
     
     public void locateLandTileUpdate(Point p) {

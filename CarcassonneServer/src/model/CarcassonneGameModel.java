@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import model.landtile.LandTile;
 import model.landtile.LandTileLoader;
 import model.tablecell.TableCell;
@@ -26,6 +25,7 @@ public class CarcassonneGameModel {
     private int[] shuffledIdArray;
     private List<LandTile> locatedLandTiles;
     private List<Point> forbiddenPlacesOnTheTable;
+    private boolean landTileCanBeLocated;
 
     public CarcassonneGameModel() {
         landTileLoader = new LandTileLoader();
@@ -56,12 +56,28 @@ public class CarcassonneGameModel {
 
     public boolean chooseFaceDownLandTile(Point p) {
         if (chosenLandTile == null) {
+            landTileCanBeLocated = false;
             chosenLandTile = landTiles[p.x * 5 + p.y];
             forbidIllegalPlaces();
+            checkWhetherLandTileCanBeLocatedAfterRotates();
             return true;
         }
         return false;
-    }    
+    }
+    
+    private boolean checkWhetherLandTileCanBeLocatedAfterRotates() {
+        for(int i=0; i<4; i++) {
+            rotateLeftLandTile();
+            if(landTileCanBeLocated) {
+                for(int j=0; j<i+1; j++) {
+                    rotateRightLandTile();
+                }
+                return true;
+            }
+        }
+        chosenLandTile = null;
+        return false;
+    }
     
     public boolean rotateLeftLandTile() {
         if(chosenLandTile != null) {
@@ -160,6 +176,8 @@ public class CarcassonneGameModel {
         if(cells[x][y].getLandTile() == null) {
             if(!neighboringComponentsAreEqual(lt, index1, index2)) {
                 forbiddenPlacesOnTheTable.add(new Point(x, y));
+            } else {
+                landTileCanBeLocated = true;
             }
         }
     }
@@ -200,6 +218,8 @@ public class CarcassonneGameModel {
     public boolean locateLandTileOnTheTable(Point p) {
         if(chosenLandTile != null) {
             cells[p.x][p.y].setLandTile(chosenLandTile);
+            locatedLandTiles.add(chosenLandTile);
+            chosenLandTile.setPositionOnTheTable(p.x, p.y);
             chosenLandTile = null;
             return true;
         }
@@ -209,6 +229,7 @@ public class CarcassonneGameModel {
     private void initShuffledIdArray() {
         for (int i = 0; i < landTiles.length; i++) {
             shuffledIdArray[i] = landTiles[i].getId();
+            System.out.println(shuffledIdArray[i]);
         }
     }
 
@@ -218,5 +239,9 @@ public class CarcassonneGameModel {
 
     public List<Point> getForbiddenPlacesOnTheTable() {
         return forbiddenPlacesOnTheTable;
+    }
+
+    public boolean isLandTileCanBeLocated() {
+        return landTileCanBeLocated;
     }
 }
