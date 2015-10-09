@@ -31,7 +31,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     }
 
     private void callMenu() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/main/resources/fxml_carcassonne_menu.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/fxml_carcassonne_menu.fxml"));
         scene.setRoot(loader.load());
         FXMLMenuController controller = (FXMLMenuController) loader.getController();
         controller.delegate = this;
@@ -84,7 +84,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
 
     private void startGame() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/main/resources/fxml_carcassonne_game.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/fxml_carcassonne_game.fxml"));
             scene.setRoot(loader.load());
             gameController = loader.<FXMLGameController>getController();
             gameController.delegate = this;

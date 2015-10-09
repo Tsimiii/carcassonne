@@ -229,7 +229,6 @@ public class CarcassonneGameModel {
     private void initShuffledIdArray() {
         for (int i = 0; i < landTiles.length; i++) {
             shuffledIdArray[i] = landTiles[i].getId();
-            System.out.println(shuffledIdArray[i]);
         }
     }
 
