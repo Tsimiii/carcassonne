@@ -13,6 +13,9 @@ import java.util.List;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+import view.FXMLLocateFollowerController;
 import view.LoadingScreen;
 import view.imageloader.LandTileImageLoader;
 
@@ -20,6 +23,11 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
 
     private RmiService remoteService;
     private FXMLGameController gameController;
+    private FXMLLocateFollowerController locateFollowerController;
+    
+    private Stage stage;
+    private Image img;
+    private double degree;
     
     private LoadingScreen loadingScreen;
     public Scene scene;
@@ -93,6 +101,26 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         }
     }
     
+    public void openLocateFollowerWindow(Image img, double degree) {
+        this.img = img;
+        this.degree = degree;
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/fxml_carcassonne_locate_follower.fxml"));
+        try {
+            locateFollowerController = new FXMLLocateFollowerController(degree,img);
+            loader.setController(locateFollowerController);
+            locateFollowerController.delegate = this;
+            
+            Scene scene = new Scene(loader.load(), 500, 500);
+            stage = new Stage();
+            stage.setTitle("Alattvaló elhelyezése");
+            stage.setScene(scene);
+            stage.show();
+            
+        } catch (IOException ex) {
+            System.err.println("Nem sikerült betölteni az fxml-t!");
+        }      
+    }
+    
     public void chooseFaceDownLandTile(Point p) throws RemoteException {
         String chooseInformation = remoteService.chooseFaceDownLandTile(p);
         if(chooseInformation.equals("multipleChoose")) {
@@ -110,11 +138,33 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         remoteService.rotateRightLandTile();
     }
     
-    public void locateLandTileOnTheTable(Point p) throws RemoteException {
+    public boolean locateLandTileOnTheTable(Point p) throws RemoteException {
         boolean successLocate = remoteService.locateLandTileOnTheTable(p);
         if(!successLocate) {
             gameController.locateLandTileWarningMessage();
         }
+        return successLocate;
+    }
+    
+    public int[] getFollowerPoints() throws RemoteException {
+        int[] followerPoints = remoteService.getFollowerPointsOfActualLandTile();
+        return followerPoints;
+    }
+    
+    public void clickSkipAction() {
+        stage.close();
+    }
+    
+    public void clickLocateFollowerAction() {
+        
+    }
+
+    public Image getImg() {
+        return img;
+    }
+
+    public double getDegree() {
+        return degree;
     }
 
 }

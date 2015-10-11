@@ -26,6 +26,7 @@ public class CarcassonneGameModel {
     private List<LandTile> locatedLandTiles;
     private List<Point> forbiddenPlacesOnTheTable;
     private boolean landTileCanBeLocated;
+    private int[] pointsOfFollowers;
 
     public CarcassonneGameModel() {
         landTileLoader = new LandTileLoader();
@@ -210,7 +211,7 @@ public class CarcassonneGameModel {
                         !(chosenLandTile.getComponents()[index1+2] == CITY && lt.getComponents()[index2-2] == CITYWITHPENNANT) &&
                             !(chosenLandTile.getComponents()[index1+2] == CITYWITHPENNANT && lt.getComponents()[index2-2] == CITY)) {
                 return false;
-            }    
+            }
         }
         return true;
     }
@@ -220,10 +221,64 @@ public class CarcassonneGameModel {
             cells[p.x][p.y].setLandTile(chosenLandTile);
             locatedLandTiles.add(chosenLandTile);
             chosenLandTile.setPositionOnTheTable(p.x, p.y);
+            checkNeighboringLandTileReservations(p);
+            initFollowerPointsOnTheLandTile();
             chosenLandTile = null;
             return true;
         }
         return false;
+    }
+    
+    private void checkNeighboringLandTileReservations(Point landTilePos) { //még nincs tesztelve!!!
+        LandTile actualLandTile = cells[landTilePos.x][landTilePos.y].getLandTile();
+
+        setReservedPlaces(actualLandTile, cells[landTilePos.x][landTilePos.y-1].getLandTile(), 0, 8);
+        setReservedPlaces(actualLandTile, cells[landTilePos.x+1][landTilePos.y].getLandTile(), 3, 11);
+        setReservedPlaces(actualLandTile, cells[landTilePos.x][landTilePos.y+1].getLandTile(), 8, 0);
+        setReservedPlaces(actualLandTile, cells[landTilePos.x-1][landTilePos.y].getLandTile(), 11, 3);
+    }
+    
+    private void setReservedPlaces(LandTile actual, LandTile other, int actualStarterPlace, int otherStarterPlace) {
+        boolean hasChanged = false;
+        if(other != null) {
+            if(actualStarterPlace < 8) {
+                for(int i=0; i<3; i++) {
+                    if(other.getReserved(otherStarterPlace-i) && !actual.getReserved(actualStarterPlace+i)) {
+                        actual.setReserved(actualStarterPlace+i);
+                        hasChanged = true;
+                    }
+                }
+            } else {
+                for(int i=0; i<3; i++) {
+                    if(other.getReserved(otherStarterPlace+i) && !actual.getReserved(actualStarterPlace-i)) {
+                        actual.setReserved(actualStarterPlace-i);
+                        hasChanged = true;
+                    }
+                }
+            }
+        }
+        if(hasChanged) {
+            checkNeighboringLandTileReservations(other.getPositionOnTheTable());
+        }
+    }
+    
+    private void initFollowerPointsOnTheLandTile() {
+        pointsOfFollowers = new int[chosenLandTile.getContinuousParts().length];
+        for(int i=0; i<chosenLandTile.getContinuousParts().length; i++) {
+            if(chosenLandTile.contains(i, 12) && !chosenLandTile.getReserved(12)) {
+                pointsOfFollowers[i] = 12;
+            } else if(chosenLandTile.contains(i, 1) && !chosenLandTile.getReserved(1)) {
+                pointsOfFollowers[i] = 1;
+            } else if(chosenLandTile.contains(i, 4) && !chosenLandTile.getReserved(4)) {
+                pointsOfFollowers[i] = 4;
+            } else if(chosenLandTile.contains(i, 7) && !chosenLandTile.getReserved(7)) {
+                pointsOfFollowers[i] = 7;
+            } else if(chosenLandTile.contains(i, 10) && !chosenLandTile.getReserved(10)) {
+                pointsOfFollowers[i] = 10;
+            } else if(!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0])){
+                pointsOfFollowers[i] = chosenLandTile.getContinuousParts()[i][0];
+            }
+        }
     }
 
     private void initShuffledIdArray() {
@@ -242,5 +297,9 @@ public class CarcassonneGameModel {
 
     public boolean isLandTileCanBeLocated() {
         return landTileCanBeLocated;
+    }
+
+    public int[] getPointsOfFollowers() {
+        return pointsOfFollowers;
     }
 }

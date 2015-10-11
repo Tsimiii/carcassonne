@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+
+<VBox fx:id="vBox" spacing="40"  xmlns:fx="http://javafx.com/fxml/1"> <!--fx:controller="view.FXMLLocateFollowerController"-->
+ <children>
+       <StackPane fx:id="stackPane">
+            <children> 
+                <ImageView fx:id="imageView" fitHeight="200" fitWidth="200">
+                </ImageView> 
+            </children>  
+        </StackPane>
+        <HBox fx:id="hBox" spacing="20" >
+            <children>
+                <Button fx:id="locateButton" text="Alattvaló elhelyezése" disable="true"></Button>
+                <Button fx:id="skipButton" text="Kihagyás"></Button> 
+            </children> 
+        </HBox> 
+    </children> 
+</VBox>

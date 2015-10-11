@@ -1,5 +1,8 @@
 package model.landtile;
 
+import java.awt.Point;
+import java.util.Arrays;
+
 public class LandTileLoader {
     
     private final int FIELD = 0;

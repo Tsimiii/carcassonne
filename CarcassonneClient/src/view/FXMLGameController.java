@@ -12,7 +12,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -139,7 +139,13 @@ public class FXMLGameController extends Group implements Initializable {
                 for(int j=0; j<143; j++) {
                     if(centerRectangles[i][j] == t.getSource()) {
                         try {
-                            delegate.locateLandTileOnTheTable(new Point(i,j));
+                            boolean successLocate = delegate.locateLandTileOnTheTable(new Point(i,j));
+                            if(successLocate) {
+                                delegate.openLocateFollowerWindow(imageView.getImage(), degree);
+                                imageView.setImage(null);
+                                imageView.setRotate(360);
+                                degree = 0;
+                            }
                         } catch (RemoteException ex) {
                             System.out.println("Hiba a kártya elhelyezése során.");
                         }
@@ -206,10 +212,7 @@ public class FXMLGameController extends Group implements Initializable {
         centerRectangles[p.x][p.y].setFill(new ImagePattern(imageView.getImage()));
         centerRectangles[p.x][p.y].setDisable(true);
         centerRectangles[p.x][p.y].getTransforms().add(new Rotate(degree, 60, 60));
-        imageView.setImage(null);
-        imageView.setRotate(360);
         expansionOfTheTable(p.x, p.y);
-        degree = 0;
     }
     
     public void locateLandTileWarningMessage() {

@@ -111,17 +111,6 @@ public class CarcassonneServer extends Observable implements RmiService {
             notifyObservers(carcassonneGameModel.getForbiddenPlacesOnTheTable());
         }
     }
-
-    public static void main(String[] args) {
-        try {
-            Registry reg = LocateRegistry.createRegistry(8080);
-            RmiService carcassonneServer = (RmiService) UnicastRemoteObject.exportObject(new CarcassonneServer(), 8080);
-            reg.rebind("carcassonneServer", carcassonneServer);
-        } catch (RemoteException ex) {
-            System.err.println("Szerver oldali hiba!");
-        }
-        System.out.println("Elindult a szerver.");
-    }
     
     @Override
     public boolean locateLandTileOnTheTable(Point where) throws RemoteException {
@@ -133,4 +122,20 @@ public class CarcassonneServer extends Observable implements RmiService {
         }
         return false;
     }
+    
+    @Override
+    public int[] getFollowerPointsOfActualLandTile() throws RemoteException {
+        return carcassonneGameModel.getPointsOfFollowers();
+    }
+
+    public static void main(String[] args) {
+        try {
+            Registry reg = LocateRegistry.createRegistry(8080);
+            RmiService carcassonneServer = (RmiService) UnicastRemoteObject.exportObject(new CarcassonneServer(), 8080);
+            reg.rebind("carcassonneServer", carcassonneServer);
+        } catch (RemoteException ex) {
+            System.err.println("Szerver oldali hiba!");
+        }
+        System.out.println("Elindult a szerver.");
+    }  
 }

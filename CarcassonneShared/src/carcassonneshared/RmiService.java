@@ -16,4 +16,6 @@ public interface RmiService extends Remote{
     
     boolean locateLandTileOnTheTable(Point where) throws RemoteException;
     
+    int[] getFollowerPointsOfActualLandTile() throws RemoteException;
+    
 }
