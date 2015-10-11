@@ -146,8 +146,8 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         return successLocate;
     }
     
-    public int[] getFollowerPoints() throws RemoteException {
-        int[] followerPoints = remoteService.getFollowerPointsOfActualLandTile();
+    public List<Integer> getFollowerPoints() throws RemoteException {
+        List<Integer> followerPoints = remoteService.getFollowerPointsOfActualLandTile();
         return followerPoints;
     }
     
@@ -155,8 +155,9 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         stage.close();
     }
     
-    public void clickLocateFollowerAction() {
-        
+    public void clickLocateFollowerAction(int reservedPlace) throws RemoteException {
+        remoteService.locateFollower(reservedPlace);
+        stage.close();
     }
 
     public Image getImg() {

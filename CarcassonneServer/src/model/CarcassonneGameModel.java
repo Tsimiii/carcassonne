@@ -26,7 +26,7 @@ public class CarcassonneGameModel {
     private List<LandTile> locatedLandTiles;
     private List<Point> forbiddenPlacesOnTheTable;
     private boolean landTileCanBeLocated;
-    private int[] pointsOfFollowers;
+    private List<Integer> pointsOfFollowers;
 
     public CarcassonneGameModel() {
         landTileLoader = new LandTileLoader();
@@ -223,7 +223,6 @@ public class CarcassonneGameModel {
             chosenLandTile.setPositionOnTheTable(p.x, p.y);
             checkNeighboringLandTileReservations(p);
             initFollowerPointsOnTheLandTile();
-            chosenLandTile = null;
             return true;
         }
         return false;
@@ -246,12 +245,18 @@ public class CarcassonneGameModel {
                     if(other.getReserved(otherStarterPlace-i) && !actual.getReserved(actualStarterPlace+i)) {
                         actual.setReserved(actualStarterPlace+i);
                         hasChanged = true;
+                    } else if(!other.getReserved(otherStarterPlace-i) && actual.getReserved(actualStarterPlace+i)) {
+                        other.setReserved(otherStarterPlace-i);
+                        hasChanged = true;
                     }
                 }
             } else {
                 for(int i=0; i<3; i++) {
                     if(other.getReserved(otherStarterPlace+i) && !actual.getReserved(actualStarterPlace-i)) {
                         actual.setReserved(actualStarterPlace-i);
+                        hasChanged = true;
+                    } else if(!other.getReserved(otherStarterPlace+i) && actual.getReserved(actualStarterPlace-i)) {
+                        other.setReserved(otherStarterPlace+i);
                         hasChanged = true;
                     }
                 }
@@ -263,22 +268,29 @@ public class CarcassonneGameModel {
     }
     
     private void initFollowerPointsOnTheLandTile() {
-        pointsOfFollowers = new int[chosenLandTile.getContinuousParts().length];
+        pointsOfFollowers = new ArrayList<>();
         for(int i=0; i<chosenLandTile.getContinuousParts().length; i++) {
             if(chosenLandTile.contains(i, 12) && !chosenLandTile.getReserved(12)) {
-                pointsOfFollowers[i] = 12;
+                pointsOfFollowers.add(12);
             } else if(chosenLandTile.contains(i, 1) && !chosenLandTile.getReserved(1)) {
-                pointsOfFollowers[i] = 1;
+                pointsOfFollowers.add(1);
             } else if(chosenLandTile.contains(i, 4) && !chosenLandTile.getReserved(4)) {
-                pointsOfFollowers[i] = 4;
+                pointsOfFollowers.add(4);
             } else if(chosenLandTile.contains(i, 7) && !chosenLandTile.getReserved(7)) {
-                pointsOfFollowers[i] = 7;
+                pointsOfFollowers.add(7);
             } else if(chosenLandTile.contains(i, 10) && !chosenLandTile.getReserved(10)) {
-                pointsOfFollowers[i] = 10;
+                pointsOfFollowers.add(10);
             } else if(!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0])){
-                pointsOfFollowers[i] = chosenLandTile.getContinuousParts()[i][0];
+                pointsOfFollowers.add(chosenLandTile.getContinuousParts()[i][0]);
             }
         }
+    }
+    
+    public void locateFollower(int place) {
+        chosenLandTile.setReserved(place);
+        System.out.println(chosenLandTile.getReserved(place));
+        checkNeighboringLandTileReservations(chosenLandTile.getPositionOnTheTable());
+        chosenLandTile = null;
     }
 
     private void initShuffledIdArray() {
@@ -299,7 +311,7 @@ public class CarcassonneGameModel {
         return landTileCanBeLocated;
     }
 
-    public int[] getPointsOfFollowers() {
+    public List<Integer> getPointsOfFollowers() {
         return pointsOfFollowers;
     }
 }

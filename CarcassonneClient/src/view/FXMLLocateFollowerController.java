@@ -4,6 +4,7 @@ import controller.CommunicationController;
 import java.awt.Point;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -20,8 +21,10 @@ import javafx.scene.shape.Circle;
 public class FXMLLocateFollowerController implements Initializable {
     
     private final Point[] FOLLOWERDEFAULTPOINTPOSITION = new Point[] {new Point(-90,-70), new Point(-90, 0), new Point(-90, 70), new Point(-70,90), new Point(0, 90), new Point(70,90), new Point(90, 70), new Point(90, 0), new Point(90, -70), new Point(70, -90), new Point(0, -90), new Point(-70, -90), new Point(0, 0)};;
+    private List<Integer> positionsFromServer;
     private Point[] followerPositions;
     private Circle[] circle;
+    private int actualReservedPlace;
     private double degree;
     private Image image;
     @FXML StackPane stackPane;
@@ -33,8 +36,10 @@ public class FXMLLocateFollowerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        actualReservedPlace = -1;
         try {
-            initActualFollowerPositions(delegate.getFollowerPoints());
+            positionsFromServer = delegate.getFollowerPoints();
+            initActualFollowerPositions(positionsFromServer);
         } catch (RemoteException ex) {
             System.err.println("Hiba az alattvalók lehetséges elhelyezésének betöltésekor.");
         }
@@ -48,10 +53,10 @@ public class FXMLLocateFollowerController implements Initializable {
         skipButton.setOnMouseClicked(skipAction);
     }
     
-    private void initActualFollowerPositions(int[] positions) {
-        followerPositions = new Point[positions.length];
-        for(int i=0; i<positions.length; i++) {
-            followerPositions[i] = FOLLOWERDEFAULTPOINTPOSITION[positions[i]];
+    private void initActualFollowerPositions(List<Integer> positions) {
+        followerPositions = new Point[positions.size()];
+        for(int i=0; i<positions.size(); i++) {
+            followerPositions[i] = FOLLOWERDEFAULTPOINTPOSITION[positions.get(i)];
         }
     }
     
@@ -80,8 +85,7 @@ public class FXMLLocateFollowerController implements Initializable {
                 if(circle[i] == t.getSource()) {
                     circle[i].setFill(Color.LIGHTGREEN);
                     circle[i].setDisable(true);
-                   /* actualReservedPlaces = tempL.get(i);
-                    actualPositionOfCircle = tempPositionOfCircles[i];*/
+                    actualReservedPlace = positionsFromServer.get(i);
                 }
             }
             locateButton.setDisable(false);
@@ -114,7 +118,11 @@ public class FXMLLocateFollowerController implements Initializable {
 
         @Override
         public void handle(MouseEvent event) {
-            delegate.clickLocateFollowerAction();
+            try {
+                delegate.clickLocateFollowerAction(actualReservedPlace);
+            } catch (RemoteException ex) {
+                System.err.println("Hiba az alattvaló elhelyezésekor!");
+            }
         }
         
     };

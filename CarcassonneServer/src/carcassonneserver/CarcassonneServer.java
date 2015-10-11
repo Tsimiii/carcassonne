@@ -124,8 +124,13 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
     
     @Override
-    public int[] getFollowerPointsOfActualLandTile() throws RemoteException {
+    public List<Integer> getFollowerPointsOfActualLandTile() throws RemoteException {
         return carcassonneGameModel.getPointsOfFollowers();
+    }
+    
+    @Override
+    public void locateFollower(int where) throws RemoteException {
+        carcassonneGameModel.locateFollower(where);
     }
 
     public static void main(String[] args) {

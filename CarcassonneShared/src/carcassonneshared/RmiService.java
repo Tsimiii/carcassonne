@@ -3,6 +3,7 @@ package carcassonneshared;
 import java.awt.Point;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 public interface RmiService extends Remote{
     
@@ -16,6 +17,8 @@ public interface RmiService extends Remote{
     
     boolean locateLandTileOnTheTable(Point where) throws RemoteException;
     
-    int[] getFollowerPointsOfActualLandTile() throws RemoteException;
+    List<Integer> getFollowerPointsOfActualLandTile() throws RemoteException;
+    
+    void locateFollower(int where) throws RemoteException;
     
 }
