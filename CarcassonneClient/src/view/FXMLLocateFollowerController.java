@@ -17,21 +17,28 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class FXMLLocateFollowerController implements Initializable {
-    
-    private final Point[] FOLLOWERDEFAULTPOINTPOSITION = new Point[] {new Point(-90,-70), new Point(-90, 0), new Point(-90, 70), new Point(-70,90), new Point(0, 90), new Point(70,90), new Point(90, 70), new Point(90, 0), new Point(90, -70), new Point(70, -90), new Point(0, -90), new Point(-70, -90), new Point(0, 0)};;
+
+    private final Point[] FOLLOWERDEFAULTPOINTPOSITION = new Point[]{new Point(-90, -70), new Point(-90, 0), new Point(-90, 70), new Point(-70, 90), new Point(0, 90), new Point(70, 90), new Point(90, 70), new Point(90, 0), new Point(90, -70), new Point(70, -90), new Point(0, -90), new Point(-70, -90), new Point(0, 0)};
     private List<Integer> positionsFromServer;
     private Point[] followerPositions;
     private Circle[] circle;
     private int actualReservedPlace;
     private double degree;
     private Image image;
-    @FXML StackPane stackPane;
-    @FXML protected ImageView imageView;
-    @FXML protected Button locateButton;
-    @FXML protected Button skipButton;
-    
+    private Stage stage;
+    @FXML
+    StackPane stackPane;
+    @FXML
+    protected ImageView imageView;
+    @FXML
+    protected Button locateButton;
+    @FXML
+    protected Button skipButton;
+
     public CommunicationController delegate;
 
     @Override
@@ -43,26 +50,26 @@ public class FXMLLocateFollowerController implements Initializable {
         } catch (RemoteException ex) {
             System.err.println("Hiba az alattvalók lehetséges elhelyezésének betöltésekor.");
         }
-        
+
         imageView.setRotate(degree);
         imageView.setImage(image);
-        
+
         initFollowerPoints();
-        
+
         locateButton.setOnMouseClicked(locateAction);
         skipButton.setOnMouseClicked(skipAction);
     }
-    
+
     private void initActualFollowerPositions(List<Integer> positions) {
         followerPositions = new Point[positions.size()];
-        for(int i=0; i<positions.size(); i++) {
+        for (int i = 0; i < positions.size(); i++) {
             followerPositions[i] = FOLLOWERDEFAULTPOINTPOSITION[positions.get(i)];
         }
     }
-    
+
     private void initFollowerPoints() {
         circle = new Circle[followerPositions.length];
-        for(int i=0; i<followerPositions.length; i++) {
+        for (int i = 0; i < followerPositions.length; i++) {
             circle[i] = new Circle(9);
             circle[i].setTranslateX(followerPositions[i].x);
             circle[i].setTranslateY(followerPositions[i].y);
@@ -73,16 +80,16 @@ public class FXMLLocateFollowerController implements Initializable {
             stackPane.getChildren().add(circle[i]);
         }
     }
-    
-        private final EventHandler<MouseEvent> circleClickAction = new EventHandler<MouseEvent>() {
+
+    private final EventHandler<MouseEvent> circleClickAction = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
-            for(int i=0; i<circle.length; i++) {
+            for (int i = 0; i < circle.length; i++) {
                 circle[i].setFill(Color.SLATEGREY);
                 circle[i].setDisable(false);
-            }   
-            for(int i=0; i<circle.length; i++) {
-                if(circle[i] == t.getSource()) {
+            }
+            for (int i = 0; i < circle.length; i++) {
+                if (circle[i] == t.getSource()) {
                     circle[i].setFill(Color.LIGHTGREEN);
                     circle[i].setDisable(true);
                     actualReservedPlace = positionsFromServer.get(i);
@@ -91,29 +98,29 @@ public class FXMLLocateFollowerController implements Initializable {
             locateButton.setDisable(false);
         }
     };
-    
-        private final EventHandler<MouseEvent> circleEnterAction = new EventHandler<MouseEvent>() {
+
+    private final EventHandler<MouseEvent> circleEnterAction = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
-            for(int i=0; i<circle.length; i++) {
-                if(circle[i] == t.getSource()) {
+            for (int i = 0; i < circle.length; i++) {
+                if (circle[i] == t.getSource()) {
                     circle[i].setEffect(new Glow());
                 }
             }
         }
     };
-    
+
     private final EventHandler<MouseEvent> circleExitAction = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
-            for(int i=0; i<circle.length; i++) {
-                if(circle[i] == t.getSource()) {
+            for (int i = 0; i < circle.length; i++) {
+                if (circle[i] == t.getSource()) {
                     circle[i].setEffect(null);
                 }
             }
         }
     };
-    
+
     private final EventHandler<MouseEvent> locateAction = new EventHandler<MouseEvent>() {
 
         @Override
@@ -124,21 +131,33 @@ public class FXMLLocateFollowerController implements Initializable {
                 System.err.println("Hiba az alattvaló elhelyezésekor!");
             }
         }
-        
+
     };
-    
+
     private final EventHandler<MouseEvent> skipAction = new EventHandler<MouseEvent>() {
 
         @Override
         public void handle(MouseEvent event) {
             delegate.clickSkipAction();
         }
-        
+
     };
     
-    public FXMLLocateFollowerController(double degree, Image image) {
+    private final EventHandler<WindowEvent> closeWindowAction = new EventHandler<WindowEvent>() {
+
+        @Override
+        public void handle(WindowEvent event) {
+                delegate.clickSkipAction();
+        }
+
+    };
+  
+    public FXMLLocateFollowerController(double degree, Image image, Stage stage) {
         this.image = image;
         this.degree = degree;
+        this.stage = stage;
+
+        stage.setOnCloseRequest(closeWindowAction);
     }
-    
+
 }

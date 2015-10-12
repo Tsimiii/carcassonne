@@ -231,10 +231,12 @@ public class CarcassonneGameModel {
     private void checkNeighboringLandTileReservations(Point landTilePos) { //még nincs tesztelve!!!
         LandTile actualLandTile = cells[landTilePos.x][landTilePos.y].getLandTile();
 
-        setReservedPlaces(actualLandTile, cells[landTilePos.x][landTilePos.y-1].getLandTile(), 0, 8);
-        setReservedPlaces(actualLandTile, cells[landTilePos.x+1][landTilePos.y].getLandTile(), 3, 11);
-        setReservedPlaces(actualLandTile, cells[landTilePos.x][landTilePos.y+1].getLandTile(), 8, 0);
-        setReservedPlaces(actualLandTile, cells[landTilePos.x-1][landTilePos.y].getLandTile(), 11, 3);
+        if(actualLandTile != null) {
+            setReservedPlaces(actualLandTile, cells[landTilePos.x][landTilePos.y-1].getLandTile(), 0, 8);
+            setReservedPlaces(actualLandTile, cells[landTilePos.x+1][landTilePos.y].getLandTile(), 3, 11);
+            setReservedPlaces(actualLandTile, cells[landTilePos.x][landTilePos.y+1].getLandTile(), 8, 0);
+            setReservedPlaces(actualLandTile, cells[landTilePos.x-1][landTilePos.y].getLandTile(), 11, 3);
+        }
     }
     
     private void setReservedPlaces(LandTile actual, LandTile other, int actualStarterPlace, int otherStarterPlace) {
@@ -263,7 +265,12 @@ public class CarcassonneGameModel {
             }
         }
         if(hasChanged) {
-            checkNeighboringLandTileReservations(other.getPositionOnTheTable());
+            int x = actual.getPositionOnTheTable().x;
+            int y = actual.getPositionOnTheTable().y;
+            checkNeighboringLandTileReservations(new Point(x,y-1));
+            checkNeighboringLandTileReservations(new Point(x+1,y));
+            checkNeighboringLandTileReservations(new Point(x,y+1));
+            checkNeighboringLandTileReservations(new Point(x-1,y));
         }
     }
     
@@ -288,8 +295,10 @@ public class CarcassonneGameModel {
     
     public void locateFollower(int place) {
         chosenLandTile.setReserved(place);
-        System.out.println(chosenLandTile.getReserved(place));
         checkNeighboringLandTileReservations(chosenLandTile.getPositionOnTheTable());
+    }
+    
+    public void countPoints() {
         chosenLandTile = null;
     }
 

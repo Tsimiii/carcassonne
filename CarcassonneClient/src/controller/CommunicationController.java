@@ -10,6 +10,8 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -72,6 +74,10 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             gameController.illegalPlacesOnTableUpdate((List<Point>)updateMsg);
         } else if(updateMsg instanceof Object[] && ((Object[])updateMsg)[0].equals("locateLandTile")) {
             gameController.locateLandTileUpdate((Point)((Object[])updateMsg)[1]);
+        } else if(updateMsg instanceof Object[] && ((Object[])updateMsg)[0].equals("locateFollower")) {
+            gameController.locateFollowerUpdate((int)((Object[])updateMsg)[1]);
+        } else if(updateMsg instanceof Object[] && ((Object[])updateMsg)[0].equals("countPoint")) {
+            gameController.countPointUpdate();
         }
     }
 
@@ -106,19 +112,20 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         this.degree = degree;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/fxml_carcassonne_locate_follower.fxml"));
         try {
-            locateFollowerController = new FXMLLocateFollowerController(degree,img);
+            stage = new Stage();
+            stage.setTitle("Alattvaló elhelyezése");
+            
+            locateFollowerController = new FXMLLocateFollowerController(degree,img,stage);
             loader.setController(locateFollowerController);
             locateFollowerController.delegate = this;
             
             Scene scene = new Scene(loader.load(), 500, 500);
-            stage = new Stage();
-            stage.setTitle("Alattvaló elhelyezése");
             stage.setScene(scene);
             stage.show();
             
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
-        }      
+        }
     }
     
     public void chooseFaceDownLandTile(Point p) throws RemoteException {
@@ -153,11 +160,21 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     
     public void clickSkipAction() {
         stage.close();
+        try {
+            countPoints();
+        } catch (RemoteException ex) {
+            Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void clickLocateFollowerAction(int reservedPlace) throws RemoteException {
-        remoteService.locateFollower(reservedPlace);
         stage.close();
+        remoteService.locateFollower(reservedPlace);
+        //countPoints();
+    }
+    
+    public void countPoints() throws RemoteException {
+        remoteService.countPoints();
     }
 
     public Image getImg() {
@@ -167,5 +184,5 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     public double getDegree() {
         return degree;
     }
-
+    
 }

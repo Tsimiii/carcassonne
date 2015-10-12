@@ -21,4 +21,5 @@ public interface RmiService extends Remote{
     
     void locateFollower(int where) throws RemoteException;
     
+    void countPoints() throws RemoteException;
 }

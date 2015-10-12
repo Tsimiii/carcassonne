@@ -7,12 +7,12 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -21,22 +21,28 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import view.imageloader.LandTileImageLoader;
 
 public class FXMLGameController extends Group implements Initializable {
+    
+    private final Point[] FOLLOWERDEFAULTPOINTPOSITION = new Point[] {new Point(-50,-40), new Point(-50, 0), new Point(-50, 40), new Point(-40,50), new Point(0, 50), new Point(40,50), new Point(50, 40), new Point(50, 0), new Point(50, -40), new Point(40, -50), new Point(0, -50), new Point(-40, -50), new Point(0, 0)};
 
     @FXML protected GridPane centerGridPane;
     @FXML protected GridPane rightGridPane;
     @FXML protected ImageView imageView;
     @FXML protected Button leftRotateButton;
     @FXML protected Button rightRotateButton;
+    private StackPane[][] stackPane;
     private Rectangle[][] centerRectangles;
     private Button[][] rightButtons = new Button[15][5];
     private Image[] landTiles = new Image[71];
+    private Point actualLandTileTablePosition;
     private double degree;
     private List<Point> forbiddenPlacesOnTheTable = new ArrayList<>();
     
@@ -44,6 +50,7 @@ public class FXMLGameController extends Group implements Initializable {
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        actualLandTileTablePosition = new Point(-1,-1);
         landTiles = LandTileImageLoader.getInstance().getLandTileImages();
         
         createRectanglesOnTheTable();
@@ -53,6 +60,7 @@ public class FXMLGameController extends Group implements Initializable {
     }
     
     private void createRectanglesOnTheTable() {
+        stackPane = new StackPane[143][143];
         centerRectangles = new Rectangle[143][143];
         for(int i=0; i<143; i++) {
            for(int j=0; j<143; j++) {           
@@ -75,7 +83,9 @@ public class FXMLGameController extends Group implements Initializable {
                rectangle.setOnMouseClicked(rectangleClickAction);
                rectangle.setOnMouseEntered(ractangleEnterAction);       
                rectangle.setOnMouseExited(rectangleExitAction);
-               centerGridPane.add(centerRectangles[i][j], j, i);
+               stackPane[i][j] = new StackPane();
+               stackPane[i][j].getChildren().add(centerRectangles[i][j]);
+               centerGridPane.add(stackPane[i][j], j, i);
            }
         }
     }
@@ -142,9 +152,6 @@ public class FXMLGameController extends Group implements Initializable {
                             boolean successLocate = delegate.locateLandTileOnTheTable(new Point(i,j));
                             if(successLocate) {
                                 delegate.openLocateFollowerWindow(imageView.getImage(), degree);
-                                imageView.setImage(null);
-                                imageView.setRotate(360);
-                                degree = 0;
                             }
                         } catch (RemoteException ex) {
                             System.out.println("Hiba a kártya elhelyezése során.");
@@ -154,6 +161,20 @@ public class FXMLGameController extends Group implements Initializable {
             }
         }
     };
+    
+    public void locateFollowerUpdate(int space) throws RemoteException {
+        Circle circle = new Circle(8);
+        circle.setTranslateX(FOLLOWERDEFAULTPOINTPOSITION[space].x);
+        circle.setTranslateY(FOLLOWERDEFAULTPOINTPOSITION[space].y);
+        circle.setFill(Color.SLATEGREY);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                stackPane[actualLandTileTablePosition.x][actualLandTileTablePosition.y].getChildren().add(circle);
+            }
+        });
+        delegate.countPoints();
+    }
     
     private final EventHandler<ActionEvent> chooseAction = new EventHandler<ActionEvent>() {
         @Override
@@ -208,6 +229,7 @@ public class FXMLGameController extends Group implements Initializable {
     }
     
     public void locateLandTileUpdate(Point p) {
+        actualLandTileTablePosition = p;
         removePreviousIllegalPlacesOnTable();
         centerRectangles[p.x][p.y].setFill(new ImagePattern(imageView.getImage()));
         centerRectangles[p.x][p.y].setDisable(true);
@@ -244,6 +266,12 @@ public class FXMLGameController extends Group implements Initializable {
         centerRectangles[i][j].setFill(Color.GREEN);
         centerRectangles[i][j].setWidth(120);
         centerRectangles[i][j].setHeight(120);
+    }
+    
+    public void countPointUpdate() {
+        imageView.setImage(null);
+        imageView.setRotate(360);
+        degree = 0;
     }
         
     private final EventHandler<MouseEvent> ractangleEnterAction = (MouseEvent t) -> {

@@ -21,7 +21,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     private WrappedObserver wrappedObserver;
 
     private static boolean timesUp = false;
-    private final static int PLAYERNUMBER = 1;
+    private final static int PLAYERNUMBER = 2;
     private static List<RemoteObserver> player = new ArrayList<RemoteObserver>();
 
     public CarcassonneServer() {
@@ -131,6 +131,15 @@ public class CarcassonneServer extends Observable implements RmiService {
     @Override
     public void locateFollower(int where) throws RemoteException {
         carcassonneGameModel.locateFollower(where);
+        setChanged();
+        notifyObservers(new Object[] {"locateFollower", where});
+    }
+  
+    @Override
+    public void countPoints() throws RemoteException {
+        carcassonneGameModel.countPoints();
+        setChanged();
+        notifyObservers(new Object[] {"countPoint"});
     }
 
     public static void main(String[] args) {
