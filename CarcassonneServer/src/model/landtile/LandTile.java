@@ -6,22 +6,21 @@ public class LandTile {
     
     private int id;
     private int[] components;
-    private int[][] continuousParts;
-    private boolean reserved[];
+    private LandTilePart[] continuousParts;
     private Point positionOnTheTable;
 
     public LandTile(int id, int[] components, int[][] continuousParts) {
         this.id = id;
         this.components = components;
-        this.continuousParts = continuousParts;
-        this.reserved = new boolean[13];
-        initReserved();
+        this.continuousParts = new LandTilePart[continuousParts.length];
+                
+        initContinuousParts(continuousParts);
         positionOnTheTable = new Point(-1,-1);
     }
     
-    private void initReserved() {
-        for(boolean r : reserved) {
-            r = false;
+    private void initContinuousParts(int[][] parts) {
+        for(int i=0; i<parts.length; i++) {
+            this.continuousParts[i] = new LandTilePart(parts[i]);
         }
     }
 
@@ -30,7 +29,11 @@ public class LandTile {
     }
 
     public int[][] getContinuousParts() {
-        return continuousParts;
+        int[][] temp = new int[continuousParts.length][];
+        for(int i=0; i<continuousParts.length; i++) {
+            temp[i] = continuousParts[i].getItems();
+        }
+        return temp;
     }
 
     public int getId() {
@@ -38,7 +41,7 @@ public class LandTile {
     }
 
     public void setContinuousParts(int value, int ind1, int ind2) {
-        continuousParts[ind1][ind2] = value;
+        continuousParts[ind1].setItem(ind2, value);
     }
 
     public Point getPositionOnTheTable() {
@@ -54,31 +57,23 @@ public class LandTile {
     }
     
     public boolean contains(int ind, int value) {
-        for(int i=0; i<continuousParts[ind].length; i++) {
-            if(continuousParts[ind][i] == value) {
-                return true;
+        return continuousParts[ind].contains(value);
+    }
+
+    public boolean getReserved(int val) {
+        for(LandTilePart ltp : continuousParts) {
+            if(ltp.contains(val)) {
+                return ltp.isReserved();
             }
         }
         return false;
     }
 
-    public boolean getReserved(int ind) {
-        return reserved[ind];
-    }
-
-    public void setReserved(int ind) {
-        this.reserved[ind] = true;
-        for(int i=0; i<continuousParts.length; i++) {
-            if(contains(i, ind)) {
-                setReservedThisContinuousPart(i);
-                break;
+    public void setReserved(int val) {
+        for(LandTilePart ltp : continuousParts) {
+            if(ltp.contains(val)) {
+                ltp.setReserved(true);
             }
-        }
-    }
-    
-    private void setReservedThisContinuousPart(int ind) {
-        for(int val : continuousParts[ind]) {
-            reserved[val] = true;
         }
     }
 }
