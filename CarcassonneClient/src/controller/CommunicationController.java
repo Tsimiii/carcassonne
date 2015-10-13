@@ -77,7 +77,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         } else if(updateMsg instanceof Object[] && ((Object[])updateMsg)[0].equals("locateFollower")) {
             gameController.locateFollowerUpdate((int)((Object[])updateMsg)[1]);
         } else if(updateMsg instanceof Object[] && ((Object[])updateMsg)[0].equals("countPoint")) {
-            gameController.countPointUpdate();
+            gameController.countPointUpdate((int)((Object[])updateMsg)[1]);
         }
     }
 
@@ -170,7 +170,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     public void clickLocateFollowerAction(int reservedPlace) throws RemoteException {
         stage.close();
         remoteService.locateFollower(reservedPlace);
-        //countPoints();
+        countPoints();
     }
     
     public void countPoints() throws RemoteException {

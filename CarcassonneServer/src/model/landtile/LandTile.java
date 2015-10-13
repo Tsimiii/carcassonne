@@ -9,7 +9,6 @@ public class LandTile {
     private int[][] continuousParts;
     private boolean reserved[];
     private Point positionOnTheTable;
-    private Point[] followerPoint;
 
     public LandTile(int id, int[] components, int[][] continuousParts) {
         this.id = id;
@@ -18,7 +17,6 @@ public class LandTile {
         this.reserved = new boolean[13];
         initReserved();
         positionOnTheTable = new Point(-1,-1);
-        followerPoint = new Point[continuousParts.length];
     }
     
     private void initReserved() {

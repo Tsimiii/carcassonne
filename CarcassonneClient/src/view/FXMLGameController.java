@@ -173,7 +173,6 @@ public class FXMLGameController extends Group implements Initializable {
                 stackPane[actualLandTileTablePosition.x][actualLandTileTablePosition.y].getChildren().add(circle);
             }
         });
-        delegate.countPoints();
     }
     
     private final EventHandler<ActionEvent> chooseAction = new EventHandler<ActionEvent>() {
@@ -268,7 +267,8 @@ public class FXMLGameController extends Group implements Initializable {
         centerRectangles[i][j].setHeight(120);
     }
     
-    public void countPointUpdate() {
+    public void countPointUpdate(int point) {
+        System.out.println("Pont: " + point);
         imageView.setImage(null);
         imageView.setRotate(360);
         degree = 0;

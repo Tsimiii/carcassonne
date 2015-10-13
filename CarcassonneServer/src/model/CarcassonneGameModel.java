@@ -298,8 +298,38 @@ public class CarcassonneGameModel {
         checkNeighboringLandTileReservations(chosenLandTile.getPositionOnTheTable());
     }
     
-    public void countPoints() {
+    public int countPoints() {
+        int point = 0;
+        point += checkWhetherThereIsACloister();
         chosenLandTile = null;
+        return point;
+    }
+    
+    private int checkWhetherThereIsACloister() {
+        int point = 0;
+        int x = chosenLandTile.getPositionOnTheTable().x;
+        int y = chosenLandTile.getPositionOnTheTable().y;
+        Point[] checkingLandTiles = new Point[] {new Point(x, y), new Point(x-1, y-1), new Point(x, y-1), new Point(x+1, y-1), new Point(x+1, y), new Point(x+1,y+1),
+                                                    new Point(x,y+1), new Point(x-1, y+1), new Point(x-1, y)};
+        for(Point p : checkingLandTiles) {
+            if(cells[p.x][p.y].getLandTile() != null && cells[p.x][p.y].getLandTile().getComponents()[12] == CLOISTER && cells[p.x][p.y].getLandTile().getReserved(12)) {
+                point += countCloisterPoint(p);
+            }
+        }
+        return point;
+    }
+    
+    private int countCloisterPoint(Point p) {
+        int x = p.x;
+        int y = p.y;
+        Point[] neighboringLandTiles = new Point[] {new Point(x-1, y-1), new Point(x, y-1), new Point(x+1, y-1), new Point(x+1, y), new Point(x+1,y+1),
+                                                    new Point(x,y+1), new Point(x-1, y+1), new Point(x-1, y)};
+        for(Point point : neighboringLandTiles) {
+            if(cells[point.x][point.y].getLandTile() == null) {
+                return 0;
+            }
+        }
+        return 9;
     }
 
     private void initShuffledIdArray() {

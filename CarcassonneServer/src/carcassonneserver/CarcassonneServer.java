@@ -137,9 +137,9 @@ public class CarcassonneServer extends Observable implements RmiService {
   
     @Override
     public void countPoints() throws RemoteException {
-        carcassonneGameModel.countPoints();
+        int point = carcassonneGameModel.countPoints();
         setChanged();
-        notifyObservers(new Object[] {"countPoint"});
+        notifyObservers(new Object[] {"countPoint", point});
     }
 
     public static void main(String[] args) {
