@@ -22,7 +22,7 @@ public class CarcassonneServer extends Observable implements RmiService {
 
     private static boolean timesUp = false;
     private final static int PLAYERNUMBER = 2;
-    private static List<RemoteObserver> player = new ArrayList<RemoteObserver>();
+    private static List<WrappedObserver> player = new ArrayList<>();
 
     public CarcassonneServer() {
         thread.start();
@@ -33,7 +33,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         public void run() {
             while (true) {
                 if (countObservers() == PLAYERNUMBER) {
-                    carcassonneGameModel = new CarcassonneGameModel();
+                    carcassonneGameModel = new CarcassonneGameModel(PLAYERNUMBER);
                     setChanged();
                     notifyObservers(carcassonneGameModel.getShuffledIdArray());
                     setChanged();
@@ -67,8 +67,8 @@ public class CarcassonneServer extends Observable implements RmiService {
 
     @Override
     public void addObserver(RemoteObserver o) throws RemoteException {
-        player.add(o);
         wrappedObserver = new WrappedObserver(o);
+        player.add(wrappedObserver);    
         addObserver(wrappedObserver);
         System.out.println("Added observer:" + wrappedObserver);
     }

@@ -76,4 +76,16 @@ public class LandTile {
             }
         }
     }
+    
+    public int getType(int ind) {
+        return components[ind];
+    }
+    
+    public void setDone(int ind, boolean done) {
+        continuousParts[ind].setCheckedDuringPointCount(done);
+    }
+    
+    public boolean getDone(int ind) {
+        return continuousParts[ind].isCheckedDuringPointCount();
+    }
 }

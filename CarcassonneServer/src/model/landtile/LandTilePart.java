@@ -1,9 +1,9 @@
 package model.landtile;
 
 public class LandTilePart {
-    int[] items;
-    boolean reserved;
-    boolean checkedDuringPointCount;
+    private int[] items;
+    private boolean reserved;
+    private boolean checkedDuringPointCount;
 
     public LandTilePart(int[] items) {
         this.items = new int[items.length];
