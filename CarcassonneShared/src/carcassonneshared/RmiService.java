@@ -9,6 +9,8 @@ public interface RmiService extends Remote{
     
     void addObserver(RemoteObserver o) throws RemoteException;
     
+    void whosTurnIsIt() throws RemoteException;
+    
     String chooseFaceDownLandTile(Point p) throws RemoteException;
     
     void rotateLeftLandTile() throws RemoteException;

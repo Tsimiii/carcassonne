@@ -78,6 +78,10 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             gameController.locateFollowerUpdate((int)((Object[])updateMsg)[1]);
         } else if(updateMsg instanceof Object[] && ((Object[])updateMsg)[0].equals("countPoint")) {
             gameController.countPointUpdate((int)((Object[])updateMsg)[1]);
+        } else if(updateMsg.equals("YourTurn")) {
+            gameController.enableEverythingUpdate();
+        } else if(updateMsg.equals("rotateButtonEnabled")) {
+            gameController.enableRotateButtons();
         }
     }
 
@@ -102,6 +106,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             scene.setRoot(loader.load());
             gameController = loader.<FXMLGameController>getController();
             gameController.delegate = this;
+            remoteService.whosTurnIsIt();
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
         }

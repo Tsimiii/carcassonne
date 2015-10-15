@@ -22,7 +22,7 @@ public class CarcassonneServer extends Observable implements RmiService {
 
     private static boolean timesUp = false;
     private final static int PLAYERNUMBER = 2;
-    private static List<WrappedObserver> player = new ArrayList<>();
+    private static List<WrappedObserver> playerObservers = new ArrayList<>();
 
     public CarcassonneServer() {
         thread.start();
@@ -68,9 +68,15 @@ public class CarcassonneServer extends Observable implements RmiService {
     @Override
     public void addObserver(RemoteObserver o) throws RemoteException {
         wrappedObserver = new WrappedObserver(o);
-        player.add(wrappedObserver);    
+        playerObservers.add(wrappedObserver);    
         addObserver(wrappedObserver);
         System.out.println("Added observer:" + wrappedObserver);
+    }
+    
+    @Override
+    public void whosTurnIsIt() {
+        setChanged();
+        playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
     }
 
     @Override
@@ -81,6 +87,8 @@ public class CarcassonneServer extends Observable implements RmiService {
             setChanged();
             notifyObservers(p);
             setChanged();
+            setChanged();
+            playerObservers.get(carcassonneGameModel.getTurn()).update(this, "rotateButtonEnabled");
             notifyObservers(carcassonneGameModel.getForbiddenPlacesOnTheTable());
             if(!carcassonneGameModel.isLandTileCanBeLocated()) {
                 return "cantBeLocated";
@@ -140,6 +148,8 @@ public class CarcassonneServer extends Observable implements RmiService {
         int point = carcassonneGameModel.countPoints();
         setChanged();
         notifyObservers(new Object[] {"countPoint", point});
+        setChanged();
+        playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
     }
 
     public static void main(String[] args) {

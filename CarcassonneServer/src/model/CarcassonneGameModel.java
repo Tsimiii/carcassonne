@@ -29,6 +29,7 @@ public class CarcassonneGameModel {
     private List<Point> forbiddenPlacesOnTheTable;
     private boolean landTileCanBeLocated;
     private List<Integer> pointsOfFollowers;
+    private int turn;
 
     public CarcassonneGameModel(int playerNumber) {
         landTileLoader = new LandTileLoader();
@@ -41,6 +42,7 @@ public class CarcassonneGameModel {
         initCells();
         players = new Player[playerNumber];
         initPlayers(playerNumber);
+        turn = 0;
         shuffleLandTileArray();
     }
 
@@ -313,6 +315,7 @@ public class CarcassonneGameModel {
         point += countRoadAndCityPoints();
         point += checkWhetherThereIsACloister();
         chosenLandTile = null;
+        turn = (turn + 1) % players.length;
         return point;
     }
 
@@ -483,5 +486,9 @@ public class CarcassonneGameModel {
 
     public List<Integer> getPointsOfFollowers() {
         return pointsOfFollowers;
+    }
+
+    public int getTurn() {
+        return turn;
     }
 }

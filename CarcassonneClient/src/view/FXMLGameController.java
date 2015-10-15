@@ -24,6 +24,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
@@ -45,6 +46,7 @@ public class FXMLGameController extends Group implements Initializable {
     private Point actualLandTileTablePosition;
     private double degree;
     private List<Point> forbiddenPlacesOnTheTable = new ArrayList<>();
+     private List<Point> drawnLandTiles = new ArrayList<>();
     
     public CommunicationController delegate;
     
@@ -55,6 +57,8 @@ public class FXMLGameController extends Group implements Initializable {
         
         createRectanglesOnTheTable();
         createRectanglesOnTheRightSide();
+        
+        disableOrEnableEverything(true);
         
         degree = 0;
     }
@@ -107,12 +111,42 @@ public class FXMLGameController extends Group implements Initializable {
         }
     }
     
+    private void disableOrEnableEverything(boolean boolParam) {
+        for(int i=0; i<centerRectangles.length; i++) {
+            for(int j=0; j<centerRectangles[i].length; j++) {
+                if((!boolParam && centerRectangles[i][j].getFill().equals((Paint)Color.GREEN)) || boolParam) {
+                    centerRectangles[i][j].setDisable(boolParam);
+                }
+            }
+        }
+        for(int i=0; i<rightButtons.length-1; i++) {
+            for(int j=0; j<rightButtons[i].length; j++) {
+                if(!drawnLandTiles.contains(new Point(i,j))) {
+                    rightButtons[i][j].setDisable(boolParam);
+                }
+            }
+        }
+        for(int j=0; j<1; j++) {
+            if(!drawnLandTiles.contains(new Point(rightButtons.length-1,j))) {
+                rightButtons[rightButtons.length-1][j].setDisable(boolParam);
+            }
+        }
+        if(boolParam) {
+            rightRotateButton.setDisable(boolParam);
+            leftRotateButton.setDisable(boolParam);
+        }
+    }
+    
     @FXML private void clickLeftAction(ActionEvent event) throws RemoteException {
         delegate.clickRotateLeft();
     }
     
     @FXML private void clickRightAction(ActionEvent event) throws RemoteException {
         delegate.clickRotateRight();
+    }
+    
+    public void enableEverythingUpdate() {
+        disableOrEnableEverything(false);
     }
     
     public void rotateLeftUpdate() {
@@ -197,7 +231,11 @@ public class FXMLGameController extends Group implements Initializable {
     
     public void chooseLandTileUpdate(Point p) {
         rightButtons[p.x][p.y].setDisable(true);
+        drawnLandTiles.add(p);
         imageView.setImage(landTiles[p.x*5+p.y]);
+    }
+    
+    public void enableRotateButtons() {
         leftRotateButton.setDisable(false);
         rightRotateButton.setDisable(false);
     }
@@ -246,21 +284,21 @@ public class FXMLGameController extends Group implements Initializable {
     
     private void expansionOfTheTable(int i, int j) {
         if(i > 0 && !centerRectangles[i-1][j].isVisible()) {
-            setFieldEnabledOnTheTable(i-1, j);
+            setFieldVisibledOnTheTable(i-1, j);
         }
         if(i < 142 && !centerRectangles[i+1][j].isVisible()) {
-            setFieldEnabledOnTheTable(i+1, j);
+            setFieldVisibledOnTheTable(i+1, j);
         }
         if(j > 0 && !centerRectangles[i][j-1].isVisible()) {
-            setFieldEnabledOnTheTable(i, j-1);
+            setFieldVisibledOnTheTable(i, j-1);
         }
         if(j < 142 && !centerRectangles[i][j+1].isVisible()) {
-            setFieldEnabledOnTheTable(i, j+1);
+            setFieldVisibledOnTheTable(i, j+1);
         }
     }
     
-    private void setFieldEnabledOnTheTable(int i, int j) {
-        centerRectangles[i][j].setDisable(false);
+    private void setFieldVisibledOnTheTable(int i, int j) {
+        //centerRectangles[i][j].setDisable(false);
         centerRectangles[i][j].setVisible(true);
         centerRectangles[i][j].setFill(Color.GREEN);
         centerRectangles[i][j].setWidth(120);
@@ -272,6 +310,7 @@ public class FXMLGameController extends Group implements Initializable {
         imageView.setImage(null);
         imageView.setRotate(360);
         degree = 0;
+        disableOrEnableEverything(true);
     }
         
     private final EventHandler<MouseEvent> ractangleEnterAction = (MouseEvent t) -> {
