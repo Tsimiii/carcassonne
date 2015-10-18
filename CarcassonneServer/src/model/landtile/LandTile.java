@@ -1,6 +1,8 @@
 package model.landtile;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LandTile {
     
@@ -60,19 +62,37 @@ public class LandTile {
         return continuousParts[ind].contains(value);
     }
 
-    public boolean getReserved(int val) {
+    public List<Integer> getReserved(int val) {
         for(LandTilePart ltp : continuousParts) {
             if(ltp.contains(val)) {
-                return ltp.isReserved();
+                return ltp.getReserved();
             }
         }
-        return false;
+        return new ArrayList<Integer>();
+    }
+    
+    public List<List<Integer>> getReserved() {
+        List<List<Integer>> asd = new ArrayList<>();
+        for(LandTilePart ltp : continuousParts) {
+                asd.add(ltp.getReserved());
+        }
+        return asd;
     }
 
-    public void setReserved(int val) {
+    public void setReserved(int val, int follower) {
         for(LandTilePart ltp : continuousParts) {
             if(ltp.contains(val)) {
-                ltp.setReserved(true);
+                ltp.setReserved(follower);
+            }
+        }
+    }
+    
+    public void setReserved(int val, List<Integer> followers) {
+        for(LandTilePart ltp : continuousParts) {
+            if(ltp.contains(val)) {
+                for(Integer f : followers) {
+                    ltp.setReserved(f);
+                }
             }
         }
     }

@@ -26,11 +26,12 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     private RmiService remoteService;
     private FXMLGameController gameController;
     private FXMLLocateFollowerController locateFollowerController;
-    
+
     private Stage stage;
     private Image img;
     private double degree;
-    
+    private String name;
+
     private LoadingScreen loadingScreen;
     public Scene scene;
 
@@ -49,69 +50,80 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
 
     @Override
     public void update(Object observable, Object updateMsg) throws RemoteException {
-        if(updateMsg instanceof int[]) {
-            int[] shuffledIdArray = (int[])updateMsg;
+        if (updateMsg instanceof int[]) {
+            int[] shuffledIdArray = (int[]) updateMsg;
             try {
                 LandTileImageLoader landTileImageLoader = LandTileImageLoader.getInstance();
                 landTileImageLoader.init(shuffledIdArray);
             } catch (IOException ex) {
                 System.err.println("A területkártyák képeinek betöltése sikertelen!");
             }
-        } else if (updateMsg.equals("startgame")) {
+        } else if (updateMsg instanceof Object[] && ((Object[])updateMsg)[0].equals("startgame")) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    startGame();
+                    startGame((int)(((Object[])updateMsg)[1]), (List<String>)(((Object[])updateMsg)[2]));
                 }
             });
-        } else if(updateMsg instanceof Point && ((Point)updateMsg).x > -1) {
-            gameController.chooseLandTileUpdate((Point)updateMsg);
-        } else if(updateMsg.equals("successRotateLeft")) {
+        } else if (updateMsg instanceof Point && ((Point) updateMsg).x > -1) {
+            gameController.chooseLandTileUpdate((Point) updateMsg);
+        } else if (updateMsg.equals("successRotateLeft")) {
             gameController.rotateLeftUpdate();
-        } else if(updateMsg.equals("successRotateRight")) {
+        } else if (updateMsg.equals("successRotateRight")) {
             gameController.rotateRightUpdate();
-        } else if(updateMsg instanceof List<?>) {
-            gameController.illegalPlacesOnTableUpdate((List<Point>)updateMsg);
-        } else if(updateMsg instanceof Object[] && ((Object[])updateMsg)[0].equals("locateLandTile")) {
-            gameController.locateLandTileUpdate((Point)((Object[])updateMsg)[1]);
-        } else if(updateMsg instanceof Object[] && ((Object[])updateMsg)[0].equals("locateFollower")) {
-            gameController.locateFollowerUpdate((int)((Object[])updateMsg)[1]);
-        } else if(updateMsg instanceof Object[] && ((Object[])updateMsg)[0].equals("countPoint")) {
-            gameController.countPointUpdate((int)((Object[])updateMsg)[1]);
-        } else if(updateMsg.equals("YourTurn")) {
-            gameController.enableEverythingUpdate();
-        } else if(updateMsg.equals("rotateButtonEnabled")) {
+        } else if (updateMsg instanceof List<?>) {
+            gameController.illegalPlacesOnTableUpdate((List<Point>) updateMsg);
+        } else if (updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("locateLandTile")) {
+            gameController.locateLandTileUpdate((Point) ((Object[]) updateMsg)[1]);
+        } else if (updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("locateFollower")) {
+            gameController.locateFollowerUpdate((int) ((Object[]) updateMsg)[1], (int) ((Object[]) updateMsg)[2]);
+        } else if (updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("countPoint")) {
+            gameController.countPointUpdate((int) ((Object[]) updateMsg)[1]);
+        } else if (updateMsg.equals("YourTurn")) {
+            System.out.println(updateMsg);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    gameController.enableEverythingUpdate();
+                }
+            });
+        } else if (updateMsg.equals("rotateButtonEnabled")) {
             gameController.enableRotateButtons();
         }
     }
 
     public void clickJoinGame(String name) {
         try {
+            this.name = name;
             remoteService = (RmiService) Naming.lookup("//localhost:8080/carcassonneServer");
-            remoteService.addObserver(this);
+            remoteService.addObserver(this, name);
             displayLoadingScreen();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
+
     public void displayLoadingScreen() {
         loadingScreen = new LoadingScreen();
         scene.setRoot(loadingScreen);
     }
 
-    private void startGame() {
+    private void startGame(int id, List<String> names) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/fxml_carcassonne_game.fxml"));
-            scene.setRoot(loader.load());
-            gameController = loader.<FXMLGameController>getController();
+            
+            gameController = new FXMLGameController(id, names);
+            loader.setController(gameController);
             gameController.delegate = this;
-            remoteService.whosTurnIsIt();
+            
+            scene.setRoot(loader.load());
+           /* gameController = loader.<FXMLGameController>getController();
+            gameController.delegate = this;*/
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
         }
     }
-    
+
     public void openLocateFollowerWindow(Image img, double degree) {
         this.img = img;
         this.degree = degree;
@@ -119,50 +131,50 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         try {
             stage = new Stage();
             stage.setTitle("Alattvaló elhelyezése");
-            
-            locateFollowerController = new FXMLLocateFollowerController(degree,img,stage);
+
+            locateFollowerController = new FXMLLocateFollowerController(degree, img, stage);
             loader.setController(locateFollowerController);
             locateFollowerController.delegate = this;
-            
+
             Scene scene = new Scene(loader.load(), 500, 500);
             stage.setScene(scene);
             stage.show();
-            
+
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
         }
     }
-    
+
     public void chooseFaceDownLandTile(Point p) throws RemoteException {
         String chooseInformation = remoteService.chooseFaceDownLandTile(p);
-        if(chooseInformation.equals("multipleChoose")) {
-            gameController.chooseLandTileWarningMessage();  
-        } else if(chooseInformation.equals("cantBeLocated")) {
+        if (chooseInformation.equals("multipleChoose")) {
+            gameController.chooseLandTileWarningMessage();
+        } else if (chooseInformation.equals("cantBeLocated")) {
             gameController.landTileCantBeLocatednformationMessage();
         }
     }
-    
+
     public void clickRotateLeft() throws RemoteException {
         remoteService.rotateLeftLandTile();
     }
-    
+
     public void clickRotateRight() throws RemoteException {
         remoteService.rotateRightLandTile();
     }
-    
+
     public boolean locateLandTileOnTheTable(Point p) throws RemoteException {
         boolean successLocate = remoteService.locateLandTileOnTheTable(p);
-        if(!successLocate) {
+        if (!successLocate) {
             gameController.locateLandTileWarningMessage();
         }
         return successLocate;
     }
-    
+
     public List<Integer> getFollowerPoints() throws RemoteException {
         List<Integer> followerPoints = remoteService.getFollowerPointsOfActualLandTile();
         return followerPoints;
     }
-    
+
     public void clickSkipAction() {
         stage.close();
         try {
@@ -171,13 +183,13 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void clickLocateFollowerAction(int reservedPlace) throws RemoteException {
         stage.close();
         remoteService.locateFollower(reservedPlace);
         countPoints();
     }
-    
+
     public void countPoints() throws RemoteException {
         remoteService.countPoints();
     }
@@ -189,5 +201,5 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     public double getDegree() {
         return degree;
     }
-    
+
 }

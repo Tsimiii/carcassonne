@@ -16,12 +16,14 @@ import javafx.scene.Group;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.effect.Bloom;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
@@ -39,6 +41,12 @@ public class FXMLGameController extends Group implements Initializable {
     @FXML protected ImageView imageView;
     @FXML protected Button leftRotateButton;
     @FXML protected Button rightRotateButton;
+    @FXML protected VBox rightVBox;
+    private int id;
+    private List<String> namesList;
+    private Label[] names = new Label[2];
+    private Label[] points = new Label[2];
+    private Label[] followers = new Label[2];
     private StackPane[][] stackPane;
     private Rectangle[][] centerRectangles;
     private Button[][] rightButtons = new Button[15][5];
@@ -46,9 +54,14 @@ public class FXMLGameController extends Group implements Initializable {
     private Point actualLandTileTablePosition;
     private double degree;
     private List<Point> forbiddenPlacesOnTheTable = new ArrayList<>();
-     private List<Point> drawnLandTiles = new ArrayList<>();
+    private List<Point> drawnLandTiles = new ArrayList<>();
     
     public CommunicationController delegate;
+
+    public FXMLGameController(int id, List<String> names) {
+        this.id = id;
+        this.namesList = names;
+    }
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -57,6 +70,10 @@ public class FXMLGameController extends Group implements Initializable {
         
         createRectanglesOnTheTable();
         createRectanglesOnTheRightSide();
+        createLeftSideOfTheScreen();
+        
+        leftRotateButton.setOnMouseClicked(leftRotateButtonClickAction);
+        rightRotateButton.setOnMouseClicked(rightRotateButtonClickAction);
         
         disableOrEnableEverything(true);
         
@@ -111,6 +128,23 @@ public class FXMLGameController extends Group implements Initializable {
         }
     }
     
+    private void createLeftSideOfTheScreen() {
+        for(int i=0; i<namesList.size(); i++) {
+            GridPane gridPane = new GridPane();
+            gridPane.setVgap(15);
+            names[i] = new Label();
+            names[i].setText(namesList.get(i) + ": ");
+            points[i] = new Label("0 pont");    
+            followers[i] = new Label("7 alattvaló");
+            followers[i].setTextFill(getColorOfNumber(i));
+
+           gridPane.add(names[i], 0, 0);
+           gridPane.add(points[i], 1, 0);
+           gridPane.add(followers[i], 0, 1);
+           rightVBox.getChildren().add(gridPane);
+        }
+    }
+    
     private void disableOrEnableEverything(boolean boolParam) {
         for(int i=0; i<centerRectangles.length; i++) {
             for(int j=0; j<centerRectangles[i].length; j++) {
@@ -137,13 +171,27 @@ public class FXMLGameController extends Group implements Initializable {
         }
     }
     
-    @FXML private void clickLeftAction(ActionEvent event) throws RemoteException {
-        delegate.clickRotateLeft();
-    }
+    private final EventHandler<MouseEvent> leftRotateButtonClickAction = new EventHandler<MouseEvent>() { 
+        @Override
+        public void handle(MouseEvent event) {
+            try {
+                delegate.clickRotateLeft();
+            } catch (RemoteException ex) {
+                System.err.println("Hiba a kártyalap balra forgatásakor.");
+            }
+        }
+    };
     
-    @FXML private void clickRightAction(ActionEvent event) throws RemoteException {
-        delegate.clickRotateRight();
-    }
+    private final EventHandler<MouseEvent> rightRotateButtonClickAction = new EventHandler<MouseEvent>() { 
+        @Override
+        public void handle(MouseEvent event) {
+            try {
+                delegate.clickRotateRight();
+            } catch (RemoteException ex) {
+                System.err.println("Hiba a kártyalap jobbra forgatásakor.");
+            }
+        }
+    };
     
     public void enableEverythingUpdate() {
         disableOrEnableEverything(false);
@@ -196,17 +244,29 @@ public class FXMLGameController extends Group implements Initializable {
         }
     };
     
-    public void locateFollowerUpdate(int space) throws RemoteException {
+    public void locateFollowerUpdate(int space, int colorNum) throws RemoteException {
         Circle circle = new Circle(8);
         circle.setTranslateX(FOLLOWERDEFAULTPOINTPOSITION[space].x);
         circle.setTranslateY(FOLLOWERDEFAULTPOINTPOSITION[space].y);
-        circle.setFill(Color.SLATEGREY);
+        circle.setFill(getColorOfNumber(colorNum));
+        circle.setStroke(Color.BLACK);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 stackPane[actualLandTileTablePosition.x][actualLandTileTablePosition.y].getChildren().add(circle);
             }
         });
+    }
+    
+    private Color getColorOfNumber(int num) {
+        switch(num) {
+            case 0 : return Color.BLUE;
+            case 1 : return Color.RED;
+            case 2 : return Color.YELLOW;
+            case 3 : return Color.GREEN;
+            case 4 : return Color.BLACK;
+            default : System.err.println("Ilyen id nem létezik!"); return null;
+        }
     }
     
     private final EventHandler<ActionEvent> chooseAction = new EventHandler<ActionEvent>() {
@@ -306,7 +366,7 @@ public class FXMLGameController extends Group implements Initializable {
     }
     
     public void countPointUpdate(int point) {
-        System.out.println("Pont: " + point);
+        System.out.println("A játékos pontja: " + point);
         imageView.setImage(null);
         imageView.setRotate(360);
         degree = 0;

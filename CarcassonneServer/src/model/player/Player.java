@@ -1,12 +1,24 @@
 package model.player;
 
-public class Player {
-    int point;
-    boolean turn;
+import model.follower.Follower;
 
-    public Player() {
+public class Player {
+    private int point;
+    private int color;
+    private boolean turn;
+    private Follower[] follower = new Follower[7];
+
+    public Player(int color) {
         this.point = 0;
         this.turn = false;
+        this.color = color;
+        initFollowers(color);
+    }
+    
+    private void initFollowers(int color) {
+        for(int i=0; i<follower.length; i++) {
+            follower[i] = new Follower(color);
+        }
     }
 
     public int getPoint() {
@@ -23,5 +35,9 @@ public class Player {
 
     public void setTurn(boolean turn) {
         this.turn = turn;
+    }
+
+    public int getColor() {
+        return color;
     }
 }

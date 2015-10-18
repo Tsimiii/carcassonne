@@ -2,6 +2,7 @@ package carcassonneserver;
 
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.awt.Point;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -23,9 +24,12 @@ public class CarcassonneServer extends Observable implements RmiService {
     private static boolean timesUp = false;
     private final static int PLAYERNUMBER = 2;
     private static List<WrappedObserver> playerObservers = new ArrayList<>();
+    private List<String> names = new ArrayList<>();
+    private CarcassonneServer carser = this;
 
     public CarcassonneServer() {
         thread.start();
+        
     }
 
     Thread thread = new Thread() {
@@ -37,7 +41,11 @@ public class CarcassonneServer extends Observable implements RmiService {
                     setChanged();
                     notifyObservers(carcassonneGameModel.getShuffledIdArray());
                     setChanged();
-                    notifyObservers("startgame");
+                    for(int i=0; i<playerObservers.size(); i++) {
+                        playerObservers.get(i).update(carser, new Object[] {"startgame", i, names});
+                    }
+                    setChanged();
+                    playerObservers.get(0).update(carser, "YourTurn");
                     break;
                 }
             }
@@ -66,7 +74,8 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
 
     @Override
-    public void addObserver(RemoteObserver o) throws RemoteException {
+    public void addObserver(RemoteObserver o, String name) throws RemoteException {
+        names.add(name);
         wrappedObserver = new WrappedObserver(o);
         playerObservers.add(wrappedObserver);    
         addObserver(wrappedObserver);
@@ -140,14 +149,17 @@ public class CarcassonneServer extends Observable implements RmiService {
     public void locateFollower(int where) throws RemoteException {
         carcassonneGameModel.locateFollower(where);
         setChanged();
-        notifyObservers(new Object[] {"locateFollower", where});
+        notifyObservers(new Object[] {"locateFollower", where, carcassonneGameModel.getTurn()});
     }
   
     @Override
     public void countPoints() throws RemoteException {
-        int point = carcassonneGameModel.countPoints();
+        int[] point = carcassonneGameModel.countPoints();
         setChanged();
-        notifyObservers(new Object[] {"countPoint", point});
+        for(int i=0; i<playerObservers.size(); i++) {
+            playerObservers.get(i).update(this, new Object[] {"countPoint", point[i]});
+        }
+        //notifyObservers(new Object[] {"countPoint", point});
         setChanged();
         playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
     }

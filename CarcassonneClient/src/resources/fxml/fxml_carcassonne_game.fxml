@@ -8,7 +8,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="borderPane" fx:controller="view.FXMLGameController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="borderPane">
     <center>
         <ScrollPane fx:id="scrollPane" prefWidth="680" prefHeight="680" >
             
@@ -28,11 +28,15 @@
                 </ImageView>
                 <HBox spacing="100" >
                     <children>
-                        <Button fx:id="leftRotateButton" text="bal" onAction="#clickLeftAction" disable="true" ></Button>
-                        <Button fx:id="rightRotateButton" text="jobb" onAction="#clickRightAction" disable="true"></Button>
+                        <Button fx:id="leftRotateButton" text="bal" disable="true" ></Button>
+                        <Button fx:id="rightRotateButton" text="jobb" disable="true"></Button>
                     </children>
                 </HBox>
             </children>
         </VBox>
     </right>
+    <left>
+        <VBox fx:id="rightVBox" spacing="50">
+        </VBox>
+    </left>
 </BorderPane>

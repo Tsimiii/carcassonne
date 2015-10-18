@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RmiService extends Remote{
     
-    void addObserver(RemoteObserver o) throws RemoteException;
+    void addObserver(RemoteObserver o, String name) throws RemoteException;
     
     void whosTurnIsIt() throws RemoteException;
     

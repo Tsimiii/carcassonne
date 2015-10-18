@@ -1,14 +1,17 @@
 package model.landtile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LandTilePart {
     private int[] items;
-    private boolean reserved;
+    private List<Integer> reserved;
     private boolean checkedDuringPointCount;
 
     public LandTilePart(int[] items) {
         this.items = new int[items.length];
         this.items = items;
-        this.reserved = false;
+        this.reserved = new ArrayList<>();
         this.checkedDuringPointCount = false;
     }
     
@@ -33,12 +36,12 @@ public class LandTilePart {
         this.items[ind] = val;
     }
 
-    public boolean isReserved() {
+    public List<Integer> getReserved() {
         return reserved;
     }
 
-    public void setReserved(boolean reserved) {
-        this.reserved = reserved;
+    public void setReserved(int follower) {
+       reserved.add(follower);
     }
 
     public boolean isCheckedDuringPointCount() {
