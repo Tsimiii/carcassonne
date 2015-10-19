@@ -78,7 +78,12 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         } else if (updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("locateFollower")) {
             gameController.locateFollowerUpdate((int) ((Object[]) updateMsg)[1], (int) ((Object[]) updateMsg)[2]);
         } else if (updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("countPoint")) {
-            gameController.countPointUpdate((int) ((Object[]) updateMsg)[1]);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    gameController.countPointUpdate((int[]) ((Object[]) updateMsg)[1]);
+                }
+            });
         } else if (updateMsg.equals("YourTurn")) {
             System.out.println(updateMsg);
             Platform.runLater(new Runnable() {

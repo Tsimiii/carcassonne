@@ -37,6 +37,15 @@ public class LandTile {
         }
         return temp;
     }
+    
+    public int[] getContinuousPart(int num) {
+        for(int i=0; i<continuousParts.length; i++) {
+            if(continuousParts[i].contains(num)) {
+                return continuousParts[i].getItems();
+            }
+        }
+        return null;
+    }
 
     public int getId() {
         return id;

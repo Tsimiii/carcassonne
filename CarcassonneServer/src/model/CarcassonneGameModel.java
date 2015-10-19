@@ -233,8 +233,10 @@ public class CarcassonneGameModel {
             cells[p.x][p.y].setLandTile(chosenLandTile);
             locatedLandTiles.add(chosenLandTile);
             chosenLandTile.setPositionOnTheTable(p.x, p.y);
+            bla.clear();
             checkNeighboringLandTileReservations(p);
-            System.out.println(chosenLandTile.getReserved());
+            
+            System.out.println("bla: " + bla);
             initFollowerPointsOnTheLandTile();
             return true;
         }
@@ -251,6 +253,8 @@ public class CarcassonneGameModel {
             setReservedPlaces(actualLandTile, cells[landTilePos.x - 1][landTilePos.y].getLandTile(), 11, 3);
         }
     }
+    
+    List<LandTile> bla = new ArrayList<>();
 
     private void setReservedPlaces(LandTile actual, LandTile other, int actualStarterPlace, int otherStarterPlace) {
         boolean hasChanged = false;
@@ -306,10 +310,15 @@ public class CarcassonneGameModel {
         }
     }
 
-    public void locateFollower(int place) {
-        chosenLandTile.setReserved(place, players[turn].getColor());
-        checkNeighboringLandTileReservations(chosenLandTile.getPositionOnTheTable());
-        System.out.println(chosenLandTile.getReserved());
+    public boolean locateFollower(int place) {
+        if(players[turn].getFreeFollowerNumber() > 0) {
+            chosenLandTile.setReserved(place, players[turn].getColor());
+            players[turn].setFollowerLocation(chosenLandTile.getPositionOnTheTable());
+            checkNeighboringLandTileReservations(chosenLandTile.getPositionOnTheTable());
+            System.out.println(chosenLandTile.getReserved());
+            return true;
+        }
+        return false;
     }
 
     public int[] countPoints() {
@@ -317,9 +326,15 @@ public class CarcassonneGameModel {
         int[] roadAndCityPoint = countRoadAndCityPoints();
         int[] cloisterPoint = checkWhetherThereIsACloister();
         for (int i = 0; i < point.length; i++) {
-            point[i] += roadAndCityPoint[i];
-            point[i] += cloisterPoint[i];
-            //System.out.println(i + ". játékos most kapott pontja: " + point[i]);
+            if(roadAndCityPoint[i] > 0) {
+                players[i].addPoint(roadAndCityPoint[i]);
+            }
+            if(cloisterPoint[i] > 0) {
+                players[i].addPoint(cloisterPoint[i]);
+            }
+        }
+        for(int i=0; i<players.length; i++) {
+            point[i] = players[i].getPoint();
         }
         chosenLandTile = null;
         turn = (turn + 1) % players.length;

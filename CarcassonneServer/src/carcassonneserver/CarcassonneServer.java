@@ -147,19 +147,18 @@ public class CarcassonneServer extends Observable implements RmiService {
     
     @Override
     public void locateFollower(int where) throws RemoteException {
-        carcassonneGameModel.locateFollower(where);
-        setChanged();
-        notifyObservers(new Object[] {"locateFollower", where, carcassonneGameModel.getTurn()});
+        boolean success = carcassonneGameModel.locateFollower(where);
+        if(success) {
+            setChanged();
+            notifyObservers(new Object[] {"locateFollower", where, carcassonneGameModel.getTurn()});
+        }
     }
   
     @Override
     public void countPoints() throws RemoteException {
         int[] point = carcassonneGameModel.countPoints();
         setChanged();
-        for(int i=0; i<playerObservers.size(); i++) {
-            playerObservers.get(i).update(this, new Object[] {"countPoint", point[i]});
-        }
-        //notifyObservers(new Object[] {"countPoint", point});
+        notifyObservers(new Object[] {"countPoint", point});
         setChanged();
         playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
     }

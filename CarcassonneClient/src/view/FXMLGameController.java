@@ -365,8 +365,11 @@ public class FXMLGameController extends Group implements Initializable {
         centerRectangles[i][j].setHeight(120);
     }
     
-    public void countPointUpdate(int point) {
+    public void countPointUpdate(int[] point) {
         System.out.println("A játékos pontja: " + point);
+        for(int i=0; i<points.length; i++) {
+            points[i].setText(point[i] + " pont");
+        }
         imageView.setImage(null);
         imageView.setRotate(360);
         degree = 0;

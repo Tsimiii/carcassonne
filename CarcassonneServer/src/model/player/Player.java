@@ -1,12 +1,13 @@
 package model.player;
 
+import java.awt.Point;
 import model.follower.Follower;
 
 public class Player {
     private int point;
     private int color;
     private boolean turn;
-    private Follower[] follower = new Follower[7];
+    private Follower[] followers = new Follower[7];
 
     public Player(int color) {
         this.point = 0;
@@ -16,8 +17,8 @@ public class Player {
     }
     
     private void initFollowers(int color) {
-        for(int i=0; i<follower.length; i++) {
-            follower[i] = new Follower(color);
+        for(int i=0; i<followers.length; i++) {
+            followers[i] = new Follower(color);
         }
     }
 
@@ -25,8 +26,8 @@ public class Player {
         return point;
     }
 
-    public void setPoint(int point) {
-        this.point = point;
+    public void addPoint(int point) {
+        this.point += point;
     }
 
     public boolean isTurn() {
@@ -39,5 +40,23 @@ public class Player {
 
     public int getColor() {
         return color;
+    }
+    
+    public void setFollowerLocation(Point p) {
+        for(Follower f : followers) {
+            if(f.getLocation().equals(new Point(-1,-1))) {
+                f.setLocation(p);
+                break;
+            }
+        }
+    }
+    
+    public int getFreeFollowerNumber() {
+        for(int i=0; i<followers.length; i++) {
+            if(followers[i].getLocation().equals(new Point(-1,-1))) {
+                return 7-i;
+            }
+        }
+        return 0;
     }
 }
