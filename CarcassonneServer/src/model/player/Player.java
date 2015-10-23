@@ -51,12 +51,31 @@ public class Player {
         }
     }
     
-    public int getFreeFollowerNumber() {
-        for(int i=0; i<followers.length; i++) {
-            if(followers[i].getLocation().equals(new Point(-1,-1))) {
-                return 7-i;
+    public Follower getFollowerByLocation(Point p) {
+        for(Follower f : followers) {
+            if(f.getLocation().equals(p)) {
+                return f;
             }
         }
-        return 0;
+        return null;
+    }
+    
+    public int getFreeFollowerNumber() {
+        int count = 0;
+        for(int i=0; i<followers.length; i++) {
+            if(followers[i].getLocation().equals(new Point(-1,-1))) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public void setFollowerFree(Point p) {
+        for(int i=0; i<followers.length; i++) {
+            if(followers[i].getLocation().equals(p)) {
+                followers[i].setLocation(new Point(-1,-1));
+                break;
+            }
+        }
     }
 }

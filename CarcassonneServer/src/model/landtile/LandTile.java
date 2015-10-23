@@ -3,6 +3,7 @@ package model.landtile;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import model.follower.Follower;
 
 public class LandTile {
     
@@ -70,25 +71,34 @@ public class LandTile {
     public boolean contains(int ind, int value) {
         return continuousParts[ind].contains(value);
     }
+    
+    public boolean containsReservation(int ind, Follower f) {
+        for(Follower fol : getReserved(ind)) {
+            if(fol.equals(f)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    public List<Integer> getReserved(int val) {
+    public List<Follower> getReserved(int val) {
         for(LandTilePart ltp : continuousParts) {
             if(ltp.contains(val)) {
                 return ltp.getReserved();
             }
         }
-        return new ArrayList<Integer>();
+        return new ArrayList<Follower>();
     }
     
-    public List<List<Integer>> getReserved() {
-        List<List<Integer>> asd = new ArrayList<>();
+    public List<List<Follower>> getReserved() {
+        List<List<Follower>> asd = new ArrayList<>();
         for(LandTilePart ltp : continuousParts) {
                 asd.add(ltp.getReserved());
         }
         return asd;
     }
 
-    public void setReserved(int val, int follower) {
+    public void setReserved(int val, Follower follower) {
         for(LandTilePart ltp : continuousParts) {
             if(ltp.contains(val)) {
                 ltp.setReserved(follower);
@@ -96,12 +106,20 @@ public class LandTile {
         }
     }
     
-    public void setReserved(int val, List<Integer> followers) {
+    public void setReserved(int val, List<Follower> followers) {
         for(LandTilePart ltp : continuousParts) {
             if(ltp.contains(val)) {
-                for(Integer f : followers) {
+                for(Follower f : followers) {
                     ltp.setReserved(f);
                 }
+            }
+        }
+    }
+    
+    public void clearReserved(int val) {
+        for(LandTilePart ltp : continuousParts) {
+            if(ltp.contains(val)) {
+                ltp.clearReserved();
             }
         }
     }

@@ -2,10 +2,11 @@ package model.landtile;
 
 import java.util.ArrayList;
 import java.util.List;
+import model.follower.Follower;
 
 public class LandTilePart {
     private int[] items;
-    private List<Integer> reserved;
+    private List<Follower> reserved;
     private boolean checkedDuringPointCount;
 
     public LandTilePart(int[] items) {
@@ -36,12 +37,16 @@ public class LandTilePart {
         this.items[ind] = val;
     }
 
-    public List<Integer> getReserved() {
+    public List<Follower> getReserved() {
         return reserved;
     }
 
-    public void setReserved(int follower) {
+    public void setReserved(Follower follower) {
        reserved.add(follower);
+    }
+    
+    public void clearReserved() {
+        reserved.clear();
     }
 
     public boolean isCheckedDuringPointCount() {

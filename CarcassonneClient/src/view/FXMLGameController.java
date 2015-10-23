@@ -375,6 +375,12 @@ public class FXMLGameController extends Group implements Initializable {
         degree = 0;
         disableOrEnableEverything(true);
     }
+    
+    public void followerNumberUpdate(int[] followerNumbers) {
+        for(int i=0; i<followerNumbers.length; i++) {
+            followers[i].setText(followerNumbers[i] + " alattvaló");
+        }
+    }
         
     private final EventHandler<MouseEvent> ractangleEnterAction = (MouseEvent t) -> {
         for(int i=0; i<143; i++) {
