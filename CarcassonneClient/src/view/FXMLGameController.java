@@ -5,7 +5,9 @@ import java.awt.Point;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -55,6 +57,7 @@ public class FXMLGameController extends Group implements Initializable {
     private double degree;
     private List<Point> forbiddenPlacesOnTheTable = new ArrayList<>();
     private List<Point> drawnLandTiles = new ArrayList<>();
+    private Map<Point, Circle> circles = new HashMap<>();
     
     public CommunicationController delegate;
 
@@ -250,6 +253,7 @@ public class FXMLGameController extends Group implements Initializable {
         circle.setTranslateY(FOLLOWERDEFAULTPOINTPOSITION[space].y);
         circle.setFill(getColorOfNumber(colorNum));
         circle.setStroke(Color.BLACK);
+        circles.put(actualLandTileTablePosition, circle);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -358,7 +362,6 @@ public class FXMLGameController extends Group implements Initializable {
     }
     
     private void setFieldVisibledOnTheTable(int i, int j) {
-        //centerRectangles[i][j].setDisable(false);
         centerRectangles[i][j].setVisible(true);
         centerRectangles[i][j].setFill(Color.GREEN);
         centerRectangles[i][j].setWidth(120);
@@ -376,9 +379,22 @@ public class FXMLGameController extends Group implements Initializable {
         disableOrEnableEverything(true);
     }
     
-    public void followerNumberUpdate(int[] followerNumbers) {
+    public void followerNumberUpdate(int[] followerNumbers, List<Point> freeCircles) {
         for(int i=0; i<followerNumbers.length; i++) {
             followers[i].setText(followerNumbers[i] + " alattvaló");
+        }
+        for(Point p : freeCircles) {
+            if(circles.get(p).getFill().equals(Color.BLUE)) {
+                circles.get(p).setFill(Color.LIGHTBLUE);
+            } else if(circles.get(p).getFill().equals(Color.RED)) {
+                circles.get(p).setFill(Color.PINK);
+            } else if(circles.get(p).getFill().equals(Color.GREEN)) {
+                circles.get(p).setFill(Color.LIGHTGREEN);
+            } else if(circles.get(p).getFill().equals(Color.YELLOW)) {
+                circles.get(p).setFill(Color.LIGHTYELLOW);
+            } else if(circles.get(p).getFill().equals(Color.BLACK)) {
+                circles.get(p).setFill(Color.LIGHTGRAY);
+            }
         }
     }
         

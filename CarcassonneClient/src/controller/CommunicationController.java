@@ -88,7 +88,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
              Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    gameController.followerNumberUpdate((int[]) ((Object[]) updateMsg)[1]);
+                    gameController.followerNumberUpdate((int[]) ((Object[]) updateMsg)[1], (List<Point>) ((Object[]) updateMsg)[2]);
                 }
             });
         }else if (updateMsg.equals("YourTurn")) {

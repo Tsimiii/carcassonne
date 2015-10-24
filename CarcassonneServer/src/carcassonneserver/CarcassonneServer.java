@@ -160,7 +160,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         setChanged();
         notifyObservers(new Object[] {"countPoint", point});
         setChanged();
-        notifyObservers(new Object[] {"getFollowerNumber", carcassonneGameModel.getFreeFollowerNumOfPLayers()});
+        notifyObservers(new Object[] {"getFollowerNumber", carcassonneGameModel.getFreeFollowerNumOfPLayers(), carcassonneGameModel.getFreeFollowersAgainPastLocation()});
         setChanged();
         playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
     }

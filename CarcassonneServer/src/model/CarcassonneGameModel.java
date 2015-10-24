@@ -32,6 +32,7 @@ public class CarcassonneGameModel {
     private List<Point> forbiddenPlacesOnTheTable;
     private boolean landTileCanBeLocated;
     private List<Integer> pointsOfFollowers;
+    private List<Point> freeFollowersAgainPastLocation = new ArrayList<>();
     private int turn;
 
     public CarcassonneGameModel(int playerNumber) {
@@ -409,6 +410,7 @@ public class CarcassonneGameModel {
     private int[] countRoadAndCityPoints() {
         int[] points = new int[players.length];
         done.clear();
+        freeFollowersAgainPastLocation.clear();
         for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
             if (!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty() && (chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == ROAD
                     || chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == CITY || chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == CITYWITHPENNANT)
@@ -420,6 +422,7 @@ public class CarcassonneGameModel {
                 }
                 if(point > 0) {
                     for(Follower f : chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0])) {
+                        freeFollowersAgainPastLocation.add(f.getLocation());
                         f.setLocation(new Point(-1,-1));
                     }
                 }
@@ -606,5 +609,9 @@ public class CarcassonneGameModel {
             followerNums[i] = players[i].getFreeFollowerNumber();
         }
         return followerNums;
+    }
+
+    public List<Point> getFreeFollowersAgainPastLocation() {
+        return freeFollowersAgainPastLocation;
     }
 }
