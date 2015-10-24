@@ -386,6 +386,7 @@ public class CarcassonneGameModel {
     }
 
         public int[] countPoints() {
+        freeFollowersAgainPastLocation.clear();
         int[] point = new int[players.length];
         int[] roadAndCityPoint = countRoadAndCityPoints();
         int[] cloisterPoint = checkWhetherThereIsACloister();
@@ -410,7 +411,6 @@ public class CarcassonneGameModel {
     private int[] countRoadAndCityPoints() {
         int[] points = new int[players.length];
         done.clear();
-        freeFollowersAgainPastLocation.clear();
         for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
             if (!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty() && (chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == ROAD
                     || chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == CITY || chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == CITYWITHPENNANT)
@@ -573,6 +573,7 @@ public class CarcassonneGameModel {
                 return 0;
             }
         }
+        freeFollowersAgainPastLocation.add(p);
         players[turn].setFollowerFree(p);
         return 9;
     }
@@ -613,5 +614,12 @@ public class CarcassonneGameModel {
 
     public List<Point> getFreeFollowersAgainPastLocation() {
         return freeFollowersAgainPastLocation;
+    }
+    
+    public boolean playerHasFreeFollower() {
+        if(players[turn].getFreeFollowerNumber() == 0) {
+            return false;
+        }
+        return true;
     }
 }

@@ -234,9 +234,11 @@ public class FXMLGameController extends Group implements Initializable {
                 for(int j=0; j<143; j++) {
                     if(centerRectangles[i][j] == t.getSource()) {
                         try {
-                            boolean successLocate = delegate.locateLandTileOnTheTable(new Point(i,j));
-                            if(successLocate) {
+                            int successLocate = delegate.locateLandTileOnTheTable(new Point(i,j));
+                            if(successLocate == 2) {
                                 delegate.openLocateFollowerWindow(imageView.getImage(), degree);
+                            } else if(successLocate == 1) {
+                                delegate.countPoints();
                             }
                         } catch (RemoteException ex) {
                             System.out.println("Hiba a kártya elhelyezése során.");

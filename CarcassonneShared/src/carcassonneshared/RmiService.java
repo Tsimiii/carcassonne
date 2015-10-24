@@ -17,7 +17,7 @@ public interface RmiService extends Remote{
     
     void rotateRightLandTile() throws RemoteException;
     
-    boolean locateLandTileOnTheTable(Point where) throws RemoteException;
+    int locateLandTileOnTheTable(Point where) throws RemoteException;
     
     List<Integer> getFollowerPointsOfActualLandTile() throws RemoteException;
     

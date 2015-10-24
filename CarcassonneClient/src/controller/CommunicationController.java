@@ -174,9 +174,9 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         remoteService.rotateRightLandTile();
     }
 
-    public boolean locateLandTileOnTheTable(Point p) throws RemoteException {
-        boolean successLocate = remoteService.locateLandTileOnTheTable(p);
-        if (!successLocate) {
+    public int locateLandTileOnTheTable(Point p) throws RemoteException {
+        int successLocate = remoteService.locateLandTileOnTheTable(p);
+        if (successLocate == 0) {
             gameController.locateLandTileWarningMessage();
         }
         return successLocate;
