@@ -33,6 +33,8 @@ public class CarcassonneGameModel {
     private boolean landTileCanBeLocated;
     private List<Integer> pointsOfFollowers;
     private List<Point> freeFollowersAgainPastLocation = new ArrayList<>();
+    private List<List<Point>> citiesOnTheEdge = new ArrayList<>();
+    private boolean endOfGame = false;
     private int turn;
 
     public CarcassonneGameModel(int playerNumber) {
@@ -376,7 +378,7 @@ public class CarcassonneGameModel {
 
     public boolean locateFollower(int place) {
         if(players[turn].getFreeFollowerNumber() > 0) {
-            players[turn].setFollowerLocation(chosenLandTile.getPositionOnTheTable());
+            players[turn].setFollowerLocationAndContPartInd(chosenLandTile.getPositionOnTheTable(), place);
             chosenLandTile.setReserved(place, players[turn].getFollowerByLocation(chosenLandTile.getPositionOnTheTable()));
             checkNeighboringLandTileReservations(chosenLandTile.getPositionOnTheTable());
             //bliblablo(chosenLandTile.getPositionOnTheTable());
@@ -401,8 +403,12 @@ public class CarcassonneGameModel {
         for(int i=0; i<players.length; i++) {
             point[i] = players[i].getPoint();
         }
+        countFieldPoints();
         chosenLandTile = null;
         turn = (turn + 1) % players.length;
+        if(isGameEnded()) {
+            countPointEndOfTheGame();
+        }
         return point;
     }
 
@@ -412,42 +418,87 @@ public class CarcassonneGameModel {
         int[] points = new int[players.length];
         done.clear();
         for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
-            if (!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty() && (chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == ROAD
+            if (((!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty() && chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == ROAD)
                     || chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == CITY || chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == CITYWITHPENNANT)
                     && !done.contains(new Point(chosenLandTile.getId(), i))) {
                 int point = roadAndCityPointsRecursive(chosenLandTile, chosenLandTile.getContinuousParts()[i][0]);
+                if(!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty()) {
                 List<Integer> freq = mivan(i);
-                for (Integer f : freq) {
-                    points[f] += point;
-                }
-                if(point > 0) {
-                    for(Follower f : chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0])) {
-                        freeFollowersAgainPastLocation.add(f.getLocation());
-                        f.setLocation(new Point(-1,-1));
+                    for (Integer f : freq) {
+                        points[f] += point;
                     }
                 }
-
+                if(point > 0) {
+                    addDoneCityPartsToList();
+                    if(!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty()) {
+                        for(Follower f : chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0])) {
+                            freeFollowersAgainPastLocation.add(f.getLocation());
+                            f.setLocation(new Point(-1,-1));
+                            f.setContPartInd(-1);
+                        }
+                    }
+                }
+                tempListForCityEdges.clear();
+                valueOfContinuousPartToBeSetDone.clear();
             }
         }
+        System.out.println(tempListForCityEdges.size());
+        System.out.println("JKNDKJDN: " + citiesOnTheEdge.toString());
         return points;
+    }
+    
+    private void addDoneCityPartsToList() {
+        for(int i=0; i<valueOfContinuousPartToBeSetDone.size(); i++) {
+            Point p = tempListForCityEdges.get(i);
+            cells[p.x][p.y].getLandTile().setDone(valueOfContinuousPartToBeSetDone.get(i));
+            System.out.println(p.x + ", " + p.y + "helyen a " + valueOfContinuousPartToBeSetDone.get(i) + " érték done.");
+        }
+        List<Point> landTilePoints = new ArrayList<>();
+        for(Point p : tempListForCityEdges) {
+            if(!landTilePoints.contains(p)) {
+                landTilePoints.add(p);
+            }
+        }
+        if(landTilePoints.size() > 0) {
+            citiesOnTheEdge.add(landTilePoints);
+        }
     }
     
     private List<Integer> mivan(int i) {
         List<Follower> followers = chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]);
-        System.out.println("heeeeeee: " + followers.size());
         List<Integer> colors = new ArrayList<>();
-        System.out.println("Ezeket a színeket teszi bele a listába:");
         for(Follower f : followers) {
             colors.add(f.getColor());
-            System.out.println(f.getColor());
         }
-        System.out.println("----------------");
         Map<Integer, Integer> frequent = new HashMap<>();
         for(int j=0; j<players.length; j++) {
             frequent.put(j, Collections.frequency(colors, j));
-            System.out.println("Melyik jatekos: " + j + ", hany darab: " + Collections.frequency(colors, j));
         }
-        System.out.println("-------------------\n--------------------------");
+        List<Integer> freq = new ArrayList<>();
+        int max = -1;
+        for (Map.Entry<Integer, Integer> entry : frequent.entrySet()) {
+            if(max == -1 || entry.getValue() == max) {
+                freq.add(entry.getKey());
+                max = entry.getValue();
+            } else if(entry.getValue() > max) {
+                freq.clear();
+                freq.add(entry.getKey());
+                max = entry.getValue();
+            }
+        }
+        return freq;
+    }
+    
+     private List<Integer> mivan(int i, LandTile lt) {
+        List<Follower> followers = lt.getReserved(i);
+        List<Integer> colors = new ArrayList<>();
+        for(Follower f : followers) {
+            colors.add(f.getColor());
+        }
+        Map<Integer, Integer> frequent = new HashMap<>();
+        for(int j=0; j<players.length; j++) {
+            frequent.put(j, Collections.frequency(colors, j));
+        }
         List<Integer> freq = new ArrayList<>();
         int max = -1;
         for (Map.Entry<Integer, Integer> entry : frequent.entrySet()) {
@@ -463,7 +514,7 @@ public class CarcassonneGameModel {
         return freq;
     }
 
-    private int roadAndCityPointsRecursive(LandTile actualLandTile, int val) {
+    /*private int roadAndCityPointsRecursive(LandTile actualLandTile, int val) {
         int point = 0;
         int temppoint = 0;
         int ind = getContinuousPartIndexFromValue(actualLandTile, val);
@@ -473,39 +524,135 @@ public class CarcassonneGameModel {
                     LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y - 1].getLandTile();
                     if (landTile == null) {
                         return -1;
+                    } else {
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                            done.add(new Point(actualLandTile.getId(), ind));
+                        }
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 7)))) {
+                            temppoint = roadAndCityPointsRecursive(landTile, 7);
+                        }
+                        if (temppoint < 0) {
+                            return -1;
+                        } else {
+                            point += temppoint;
+                            temppoint = 0;
+                        }
                     }
-                    if (!done.contains(new Point(actualLandTile.getId(), ind))) {
-                        done.add(new Point(actualLandTile.getId(), ind));
-                    }
-                    if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 7)))) {
-                        temppoint = roadAndCityPointsRecursive(landTile, 7);
-                    }
-                    if (temppoint < 0) {
-                        return -1;
-                    }
-                    point += temppoint;
-                    temppoint = 0;
                 } else if (c == 4) {
                     LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x + 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
                     if (landTile == null) {
-                        return -1;
+                       return -1;
+                    } else {
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                            done.add(new Point(actualLandTile.getId(), ind));
+                        }
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 10)))) {
+                            temppoint = roadAndCityPointsRecursive(landTile, 10);
+                        }
+                        if (temppoint< 0) {
+                            return -1;
+                        } else {
+                            point += temppoint;
+                            temppoint = 0;
+                        }
                     }
-                    if (!done.contains(new Point(actualLandTile.getId(), ind))) {
-                        done.add(new Point(actualLandTile.getId(), ind));
-                    }
-                    if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 10)))) {
-                        temppoint = roadAndCityPointsRecursive(landTile, 10);
-                    }
-                    if (temppoint< 0) {
-                        return -1;
-                    }
-                    point += temppoint;
-                    temppoint = 0;
                 } else if (c == 7) {
                     LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y + 1].getLandTile();
                     if (landTile == null) {
                         return -1;
+                    } else {
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                            done.add(new Point(actualLandTile.getId(), ind));
+                        }
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 1)))) {
+                            temppoint = roadAndCityPointsRecursive(landTile, 1);
+                        }
+                        if (temppoint < 0) {
+                            return -1;
+                        } else {
+                            point += temppoint;
+                            temppoint = 0;
+                        }
                     }
+                } else if (c == 10) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x - 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
+                    if (landTile == null) {
+                        return -1;
+                    } else {
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                            done.add(new Point(actualLandTile.getId(), ind));
+                        }
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 4)))) {
+                            temppoint = roadAndCityPointsRecursive(landTile, 4);
+                        }
+                        if (temppoint < 0) {
+                            return -1;
+                        } else {
+                            point += temppoint;
+                            temppoint = 0;
+                        }
+                    }
+                }
+            }
+        }
+        point += actualLandTile.getType(actualLandTile.getContinuousParts()[ind][0]);
+        return point;
+    }*/
+     
+     List<Point> tempListForCityEdges = new ArrayList<>();
+     List<Integer> valueOfContinuousPartToBeSetDone = new ArrayList<>();
+    
+    private int roadAndCityPointsRecursive(LandTile actualLandTile, int val) {
+        int point = 0;
+        int temppoint = 0;
+        int ind = getContinuousPartIndexFromValue(actualLandTile, val);
+        if((actualLandTile.getType(val) == CITY || actualLandTile.getType(val) == CITYWITHPENNANT)) {
+            tempListForCityEdges.add(actualLandTile.getPositionOnTheTable());
+            valueOfContinuousPartToBeSetDone.add(val);
+        }
+        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+            for (int c : actualLandTile.getContinuousParts()[ind]) {
+                if (c == 1) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y - 1].getLandTile();
+                    if (landTile == null) {
+                        if(!endOfGame) return -1;
+                    } else {
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                            done.add(new Point(actualLandTile.getId(), ind));
+                        }
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 7)))) {
+                            temppoint = roadAndCityPointsRecursive(landTile, 7);
+                        }
+                        if (temppoint < 0) {
+                            if(!endOfGame) return -1;
+                        } else {
+                            point += temppoint;
+                            temppoint = 0;
+                        }
+                    }
+                } else if (c == 4) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x + 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
+                    if (landTile == null) {
+                       if(!endOfGame) return -1;
+                    } else {
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                            done.add(new Point(actualLandTile.getId(), ind));
+                        }
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 10)))) {
+                            temppoint = roadAndCityPointsRecursive(landTile, 10);
+                        }
+                        if (temppoint< 0) {
+                            if(!endOfGame) return -1;
+                        } else {
+                            point += temppoint;
+                            temppoint = 0;
+                        }
+                    }
+                } else if (c == 7) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y + 1].getLandTile();
+                    if (landTile == null) {
+                       if(!endOfGame) return -1;
+                    } else {
                     if (!done.contains(new Point(actualLandTile.getId(), ind))) {
                         done.add(new Point(actualLandTile.getId(), ind));
                     }
@@ -513,30 +660,36 @@ public class CarcassonneGameModel {
                         temppoint = roadAndCityPointsRecursive(landTile, 1);
                     }
                     if (temppoint < 0) {
-                        return -1;
+                        if(!endOfGame) return -1;
+                    } else {
+                        point += temppoint;
+                        temppoint = 0;
                     }
-                    point += temppoint;
-                    temppoint = 0;
+                    }
                 } else if (c == 10) {
                     LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x - 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
                     if (landTile == null) {
-                        return -1;
+                       if(!endOfGame) return -1;
+                    } else {
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                            done.add(new Point(actualLandTile.getId(), ind));
+                        }
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 4)))) {
+                            temppoint = roadAndCityPointsRecursive(landTile, 4);
+                        }
+                        if (temppoint < 0) {
+                            if(!endOfGame) return -1;
+                        } else {
+                            point += temppoint;
+                            temppoint = 0;
+                        }
                     }
-                    if (!done.contains(new Point(actualLandTile.getId(), ind))) {
-                        done.add(new Point(actualLandTile.getId(), ind));
-                    }
-                    if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 4)))) {
-                        temppoint = roadAndCityPointsRecursive(landTile, 4);
-                    }
-                    if (temppoint < 0) {
-                        return -1;
-                    }
-                    point += temppoint;
-                    temppoint = 0;
                 }
             }
         }
-        point += actualLandTile.getType(actualLandTile.getContinuousParts()[ind][0]);
+        if(actualLandTile != null) {
+            point += actualLandTile.getType(actualLandTile.getContinuousParts()[ind][0]);
+        }
         return point;
     }
     
@@ -566,21 +719,129 @@ public class CarcassonneGameModel {
     private int countCloisterPoint(Point p) {
         int x = p.x;
         int y = p.y;
+        int count = 1;
         Point[] neighboringLandTiles = new Point[]{new Point(x - 1, y - 1), new Point(x, y - 1), new Point(x + 1, y - 1), new Point(x + 1, y), new Point(x + 1, y + 1),
             new Point(x, y + 1), new Point(x - 1, y + 1), new Point(x - 1, y)};
         for (Point point : neighboringLandTiles) {
             if (cells[point.x][point.y].getLandTile() == null) {
-                return 0;
+                if(!endOfGame) return 0;
+            } else {
+                count++;
             }
         }
-        freeFollowersAgainPastLocation.add(p);
+        if(!endOfGame) {
+            freeFollowersAgainPastLocation.add(p);
+        }
         players[turn].setFollowerFree(p);
-        return 9;
+        return count;
+    }
+    
+    public int[] countPointEndOfTheGame() { //MEZŐK MÉG NINCSENEK BENNE
+        int[] point = new int[players.length];
+        int pointPart;
+        for(int i=0; i<players.length; i++) {
+            for(Follower f : players[i].getLocatedFollowers()) {
+                LandTile lt = cells[f.getLocation().x][f.getLocation().y].getLandTile();
+                if(lt.getType(f.getContPartInd()) == ROAD) {
+                    pointPart = roadAndCityPointsRecursive(lt, f.getContPartInd());
+                    List<Integer> freq = mivan(f.getContPartInd(), lt);
+                    for (Integer fr : freq) {
+                        point[fr] += pointPart;
+                    }
+                    for(Follower fr : lt.getReserved(f.getContPartInd())) {
+                        fr.setLocation(new Point(-1,-1));
+                        fr.setContPartInd(-1);
+                    }
+                } else if(lt.getType(f.getContPartInd()) == CITY ||lt.getType(f.getContPartInd()) == CITYWITHPENNANT) {
+                    pointPart = roadAndCityPointsRecursive(lt, f.getContPartInd()) / 2;
+                    List<Integer> freq = mivan(f.getContPartInd(), lt);
+                    for (Integer fr : freq) {
+                        point[fr] += pointPart;
+                    }
+                    for(Follower fr : lt.getReserved(f.getContPartInd())) {
+                        fr.setLocation(new Point(-1,-1));
+                        fr.setContPartInd(-1);
+                    }
+                } else if(lt.getType(f.getContPartInd()) == CLOISTER) {
+                    point[i] += countCloisterPoint(f.getLocation());
+                }
+            }
+        }
+        int[] fieldPoints = countFieldPoints();
+        for(int i=0; i<point.length; i++) {
+            point[i] += fieldPoints[i];
+        }
+        System.out.println("VEGSO PONT: elso jatekos: " + point[0] + ", masodik jatekos: " + point[1]);
+        return point;
+    }
+    
+    private int[] countFieldPoints() { //valami még fos
+        int[] point = new int[players.length];
+        List<List<Follower>> fols = new ArrayList<>();
+        for(int j=0; j< citiesOnTheEdge.size(); j++) {
+            fols.add(new ArrayList<>());
+            for(Point p : citiesOnTheEdge.get(j)) {
+                for(int i= 0; i < cells[p.x][p.y].getLandTile().getContinuousParts().length; i++) {
+                    if(cells[p.x][p.y].getLandTile().getType(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]) == FIELD && !cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]).isEmpty() &&
+                           (fols.get(j).isEmpty() || !fols.get(j).contains(cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]).get(0))) && isFieldNeighborWithTheCity(p, cells[p.x][p.y].getLandTile().getContinuousParts()[i])) {
+                        if(fols.get(j).size() > 0) {
+                            System.out.println(fols + ", " + j + ", " + cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]));
+                        }
+                        List<Integer> freq = mivan(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0], cells[p.x][p.y].getLandTile());
+                        for (Integer f : freq) {
+                            point[f] += 3;
+                        }
+                        //fols.set(j, cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]));
+                        //System.out.println(p.x + ", " + p.y + " terulet-ertek: " + cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]);
+                        for(Follower f : cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0])) {
+                            if(!fols.get(j).contains(f)) {
+                                fols.get(j).add(f);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println("Mező pont első játékos: " + point[0] + ", második játékos: " + point[1]);
+        return point;
+    }
+    
+    private boolean isFieldNeighborWithTheCity(Point cityPoint, int[] array) {
+        LandTile lt = cells[cityPoint.x][cityPoint.y].getLandTile();
+        Integer[] fieldContPart = new Integer[array.length];
+        for (int i=0; i<array.length; i++) {
+            fieldContPart[i] = Integer.valueOf(array[i]);
+        }
+        for(int[] cp : lt.getContinuousParts()) {
+            if(lt.getType(cp[0]) == CITY || lt.getType(cp[0]) == CITYWITHPENNANT) {
+                for(int val : cp) {
+                    if(val == 0 && Arrays.asList(fieldContPart).contains(11)) {
+                        return true;   
+                    } else if(val == 11 && Arrays.asList(fieldContPart).contains(0)) {
+                        return true;
+                    } else if(val != 12 && Arrays.asList(fieldContPart).contains(val+1)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean isGameEnded() {
+        for(LandTile lt : landTiles) {
+            if(lt.getPositionOnTheTable().equals(new Point(-1,-1))) {
+                return false;
+            }
+        }
+        endOfGame = true;
+        return true;
     }
 
     private void initShuffledIdArray() {
         for (int i = 0; i < landTiles.length; i++) {
             shuffledIdArray[i] = landTiles[i].getId();
+            System.out.println(shuffledIdArray[i]);
         }
     }
 

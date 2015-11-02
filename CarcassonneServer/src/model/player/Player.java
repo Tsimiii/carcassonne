@@ -1,6 +1,8 @@
 package model.player;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 import model.follower.Follower;
 
 public class Player {
@@ -42,10 +44,11 @@ public class Player {
         return color;
     }
     
-    public void setFollowerLocation(Point p) {
+    public void setFollowerLocationAndContPartInd(Point p, int ind) {
         for(Follower f : followers) {
             if(f.getLocation().equals(new Point(-1,-1))) {
                 f.setLocation(p);
+                f.setContPartInd(ind);
                 break;
             }
         }
@@ -77,5 +80,15 @@ public class Player {
                 break;
             }
         }
+    }
+    
+    public List<Follower> getLocatedFollowers() {
+        List<Follower> locatedFollowers = new ArrayList<>();
+        for(Follower f : followers) {
+            if(!f.getLocation().equals(new Point(-1,-1))) {
+                locatedFollowers.add(f);
+            }
+        }
+        return locatedFollowers;
     }
 }

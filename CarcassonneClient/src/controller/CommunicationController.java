@@ -17,8 +17,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import view.FXMLLoadingScreenController;
 import view.FXMLLocateFollowerController;
-import view.LoadingScreen;
 import view.imageloader.LandTileImageLoader;
 
 public class CommunicationController extends UnicastRemoteObject implements RemoteObserver {
@@ -26,13 +26,13 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     private RmiService remoteService;
     private FXMLGameController gameController;
     private FXMLLocateFollowerController locateFollowerController;
+    private FXMLLoadingScreenController loadingScreenController;
 
     private Stage stage;
     private Image img;
     private double degree;
     private String name;
 
-    private LoadingScreen loadingScreen;
     public Scene scene;
 
     public CommunicationController(Scene scene) throws RemoteException, IOException {
@@ -50,7 +50,15 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
 
     @Override
     public void update(Object observable, Object updateMsg) throws RemoteException {
-        if (updateMsg instanceof int[]) {
+        if(updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("timer")) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    loadingScreenController.setTimer(((Object[])updateMsg)[1].toString());
+                }
+            });
+        }
+        else if (updateMsg instanceof int[]) {
             int[] shuffledIdArray = (int[]) updateMsg;
             try {
                 LandTileImageLoader landTileImageLoader = LandTileImageLoader.getInstance();
@@ -116,8 +124,14 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     }
 
     public void displayLoadingScreen() {
-        loadingScreen = new LoadingScreen();
-        scene.setRoot(loadingScreen);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/fxml_carcassonne_loading_screen.fxml"));
+            loadingScreenController = new FXMLLoadingScreenController();
+            loader.setController(loadingScreenController);
+            scene.setRoot(loader.load());
+        } catch (IOException ex) {
+            Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void startGame(int id, List<String> names) {

@@ -2,8 +2,8 @@ package carcassonneserver;
 
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.awt.Point;
+import java.awt.event.ActionListener;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 import model.CarcassonneGameModel;
 
 public class CarcassonneServer extends Observable implements RmiService {
@@ -25,11 +27,34 @@ public class CarcassonneServer extends Observable implements RmiService {
     private final static int PLAYERNUMBER = 2;
     private static List<WrappedObserver> playerObservers = new ArrayList<>();
     private List<String> names = new ArrayList<>();
+    private static Timer timer;
+    int interval = 30;
     private CarcassonneServer carser = this;
 
     public CarcassonneServer() {
         thread.start();
         
+        int delay = 1000;
+        int period = 1000;
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                setInterval();
+                System.out.println(interval);
+                notifyObservers(new Object[] {"timer", interval});
+                setChanged();
+
+            }
+        }, delay, period);
+    }
+    
+    private int setInterval() {
+        if (countObservers() == PLAYERNUMBER || interval == 1) {
+            timer.cancel();
+        }
+        return --interval;
     }
 
     Thread thread = new Thread() {

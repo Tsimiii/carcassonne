@@ -371,7 +371,6 @@ public class FXMLGameController extends Group implements Initializable {
     }
     
     public void countPointUpdate(int[] point) {
-        System.out.println("A játékos pontja: " + point);
         for(int i=0; i<points.length; i++) {
             points[i].setText(point[i] + " pont");
         }

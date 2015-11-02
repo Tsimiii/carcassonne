@@ -128,8 +128,13 @@ public class LandTile {
         return components[ind];
     }
     
-    public void setDone(int ind, boolean done) {
-        continuousParts[ind].setCheckedDuringPointCount(done);
+    public void setDone(int val) {
+        for(LandTilePart ltp : continuousParts) {
+            if(ltp.contains(val)) {
+                ltp.setCheckedDuringPointCount(true);
+                break;
+            }
+        }
     }
     
     public boolean getDone(int ind) {

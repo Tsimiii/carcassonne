@@ -5,9 +5,13 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <Pane fx:id="content" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.FXMLMenuController">
-    <BorderPane id="borderPane" minHeight="768" minWidth="1154">
+    <BorderPane id="borderPane">
+        <top>
+            <Text id="carcassonneText" text="CARCASSONNE" translateX="700" translateY="200" scaleX="5" scaleY="5" fill="#0000ff"></Text>
+        </top>
         <center>
             <VBox spacing="80">
                 <children>

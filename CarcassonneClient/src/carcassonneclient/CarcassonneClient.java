@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.stage.Screen;
 
@@ -18,18 +19,21 @@ public class CarcassonneClient extends Application {
 
     @Override
     public void start(Stage primaryStage) throws URISyntaxException, RemoteException, IOException {
-
         Group group = new Group();
-        scene = new Scene(group, 2000, 1000);
+        scene = new Scene(group);
         scene.getStylesheets().add(this.getClass().getResource("/resources/css/style.css").toExternalForm());
 
-       CommunicationController controller = new CommunicationController(scene);
-        
-       Screen screen = Screen.getPrimary();
-       
+        CommunicationController controller = new CommunicationController(scene);
+
         primaryStage.setScene(scene);
-        //primaryStage.setFullScreen(true);
         primaryStage.show();
+        
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+        primaryStage.setX(bounds.getMinX());
+        primaryStage.setY(bounds.getMinY());
+        primaryStage.setWidth(bounds.getWidth());
+        primaryStage.setHeight(bounds.getHeight());
     }
 
     public static void main(String[] args) {
