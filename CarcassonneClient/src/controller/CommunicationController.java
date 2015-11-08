@@ -10,6 +10,7 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -26,7 +27,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     private RmiService remoteService;
     private FXMLGameController gameController;
     private FXMLLocateFollowerController locateFollowerController;
-    private FXMLLoadingScreenController loadingScreenController;
+    private FXMLLoadingScreenController loadingScreenController = new FXMLLoadingScreenController();
 
     private Stage stage;
     private Image img;
@@ -79,8 +80,8 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             gameController.rotateLeftUpdate();
         } else if (updateMsg.equals("successRotateRight")) {
             gameController.rotateRightUpdate();
-        } else if (updateMsg instanceof List<?>) {
-            gameController.illegalPlacesOnTableUpdate((List<Point>) updateMsg);
+        } else if (updateMsg instanceof Set<?>) {
+            gameController.illegalPlacesOnTableUpdate((Set<Point>) updateMsg);
         } else if (updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("locateLandTile")) {
             gameController.locateLandTileUpdate((Point) ((Object[]) updateMsg)[1]);
         } else if (updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("locateFollower")) {
@@ -96,7 +97,11 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
              Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    gameController.followerNumberUpdate((int[]) ((Object[]) updateMsg)[1], (List<Point>) ((Object[]) updateMsg)[2]);
+                    try {
+                        gameController.followerNumberUpdate((int[]) ((Object[]) updateMsg)[1], (List<Point>) ((Object[]) updateMsg)[2]);
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             });
         }else if (updateMsg.equals("YourTurn")) {
@@ -126,7 +131,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     public void displayLoadingScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/fxml_carcassonne_loading_screen.fxml"));
-            loadingScreenController = new FXMLLoadingScreenController();
+            //loadingScreenController = new FXMLLoadingScreenController();
             loader.setController(loadingScreenController);
             scene.setRoot(loader.load());
         } catch (IOException ex) {
@@ -179,6 +184,10 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             gameController.landTileCantBeLocatednformationMessage();
         }
     }
+    
+    public void chooseFaceDownLandTileDone() throws RemoteException {
+        remoteService.chooseFaceDownLandTileDone();
+    }
 
     public void clickRotateLeft() throws RemoteException {
         remoteService.rotateLeftLandTile();
@@ -218,6 +227,10 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
 
     public void countPoints() throws RemoteException {
         remoteService.countPoints();
+    }
+    
+    public void nextPlayersTurn() throws RemoteException {
+        remoteService.whosTurnIsIt();
     }
 
     public Image getImg() {

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -43,7 +44,7 @@ public class FXMLGameController extends Group implements Initializable {
     @FXML protected ImageView imageView;
     @FXML protected Button leftRotateButton;
     @FXML protected Button rightRotateButton;
-    @FXML protected VBox rightVBox;
+    @FXML protected VBox leftVBox;
     private int id;
     private List<String> namesList;
     private Label[] names = new Label[2];
@@ -144,7 +145,7 @@ public class FXMLGameController extends Group implements Initializable {
            gridPane.add(names[i], 0, 0);
            gridPane.add(points[i], 1, 0);
            gridPane.add(followers[i], 0, 1);
-           rightVBox.getChildren().add(gridPane);
+           leftVBox.getChildren().add(gridPane);
         }
     }
     
@@ -210,7 +211,7 @@ public class FXMLGameController extends Group implements Initializable {
         imageView.setRotate(degree);
     }
     
-    public void illegalPlacesOnTableUpdate(List<Point> illegalPoints) {
+    public void illegalPlacesOnTableUpdate(Set<Point> illegalPoints) {
         removePreviousIllegalPlacesOnTable();
         for(Point p : illegalPoints) {
             centerRectangles[p.x][p.y].setDisable(true);
@@ -295,10 +296,11 @@ public class FXMLGameController extends Group implements Initializable {
         }
     };
     
-    public void chooseLandTileUpdate(Point p) {
+    public void chooseLandTileUpdate(Point p) throws RemoteException { 
         rightButtons[p.x][p.y].setDisable(true);
         drawnLandTiles.add(p);
         imageView.setImage(landTiles[p.x*5+p.y]);
+        delegate.chooseFaceDownLandTileDone();
     }
     
     public void enableRotateButtons() {
@@ -337,6 +339,7 @@ public class FXMLGameController extends Group implements Initializable {
         centerRectangles[p.x][p.y].setFill(new ImagePattern(imageView.getImage()));
         centerRectangles[p.x][p.y].setDisable(true);
         centerRectangles[p.x][p.y].getTransforms().add(new Rotate(degree, 60, 60));
+        System.out.println("degr: " + degree);
         expansionOfTheTable(p.x, p.y);
     }
     
@@ -376,11 +379,13 @@ public class FXMLGameController extends Group implements Initializable {
         }
         imageView.setImage(null);
         imageView.setRotate(360);
+        System.out.println(degree);
         degree = 0;
+        System.out.println("DE HÁT ITT VAN WTF");
         disableOrEnableEverything(true);
     }
     
-    public void followerNumberUpdate(int[] followerNumbers, List<Point> freeCircles) {
+    public void followerNumberUpdate(int[] followerNumbers, List<Point> freeCircles) throws RemoteException {
         for(int i=0; i<followerNumbers.length; i++) {
             followers[i].setText(followerNumbers[i] + " alattvaló");
         }
@@ -397,6 +402,7 @@ public class FXMLGameController extends Group implements Initializable {
                 circles.get(p).setFill(Color.LIGHTGRAY);
             }
         }
+        delegate.nextPlayersTurn();
     }
         
     private final EventHandler<MouseEvent> ractangleEnterAction = (MouseEvent t) -> {

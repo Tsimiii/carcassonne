@@ -13,6 +13,8 @@ public interface RmiService extends Remote{
     
     String chooseFaceDownLandTile(Point p) throws RemoteException;
     
+    void chooseFaceDownLandTileDone() throws RemoteException;
+    
     void rotateLeftLandTile() throws RemoteException;
     
     void rotateRightLandTile() throws RemoteException;

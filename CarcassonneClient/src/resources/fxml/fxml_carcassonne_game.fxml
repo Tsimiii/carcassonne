@@ -18,7 +18,7 @@
         </ScrollPane>
     </center>
     <right>
-        <VBox spacing="10">
+        <VBox fx:id="rightVBox" spacing="10">
             <children>
                 <GridPane fx:id="rightGridPane"></GridPane>
                 <ImageView fx:id="imageView" fitHeight="200" fitWidth="200">
@@ -36,7 +36,7 @@
         </VBox>
     </right>
     <left>
-        <VBox fx:id="rightVBox" spacing="50">
+        <VBox fx:id="leftVBox" spacing="50">
         </VBox>
     </left>
 </BorderPane>

@@ -1,9 +1,9 @@
 package carcassonneserver;
 
+import artificialintelligence.CarcassonneAI;
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
 import java.awt.Point;
-import java.awt.event.ActionListener;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -15,6 +15,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.CarcassonneGameModel;
 
 public class CarcassonneServer extends Observable implements RmiService {
@@ -26,9 +28,10 @@ public class CarcassonneServer extends Observable implements RmiService {
     private static boolean timesUp = false;
     private final static int PLAYERNUMBER = 2;
     private static List<WrappedObserver> playerObservers = new ArrayList<>();
+    private List<CarcassonneAI> artificialIntelligences = new ArrayList<>();
     private List<String> names = new ArrayList<>();
     private static Timer timer;
-    int interval = 30;
+    int interval = 20;
     private CarcassonneServer carser = this;
 
     public CarcassonneServer() {
@@ -45,9 +48,18 @@ public class CarcassonneServer extends Observable implements RmiService {
                 System.out.println(interval);
                 notifyObservers(new Object[] {"timer", interval});
                 setChanged();
+                
+                if(interval == 0 && countObservers() < PLAYERNUMBER && countObservers() > 0) {
+                    for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
+                        CarcassonneAI carcassonneAI = new CarcassonneAI();
+                        artificialIntelligences.add(carcassonneAI);
+                    }
+                }
 
             }
+            
         }, delay, period);
+        
     }
     
     private int setInterval() {
@@ -61,10 +73,18 @@ public class CarcassonneServer extends Observable implements RmiService {
         @Override
         public void run() {
             while (true) {
-                if (countObservers() == PLAYERNUMBER) {
+                if (countObservers() > 0 && (countObservers() == PLAYERNUMBER || interval == 0)) {
                     carcassonneGameModel = new CarcassonneGameModel(PLAYERNUMBER);
+                    for(CarcassonneAI ai : artificialIntelligences) {
+                        ai.delegate = CarcassonneServer.this;
+                        ai.setGameModel(carcassonneGameModel);
+                    }
                     setChanged();
                     notifyObservers(carcassonneGameModel.getShuffledIdArray());
+                    
+                    for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
+                        names.add("Gépi játékos " + (i+1));
+                    }
                     setChanged();
                     for(int i=0; i<playerObservers.size(); i++) {
                         playerObservers.get(i).update(carser, new Object[] {"startgame", i, names});
@@ -108,9 +128,20 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
     
     @Override
-    public void whosTurnIsIt() {
-        setChanged();
-        playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
+    public void whosTurnIsIt() throws RemoteException {
+        if(!carcassonneGameModel.isGameEnded()) {
+            if(carcassonneGameModel.getTurn() < playerObservers.size()) {
+                setChanged();
+                playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
+            } else {
+                System.out.println("AI jön");
+                try {
+                    artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).chooseLandTile();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(CarcassonneServer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 
     @Override
@@ -120,16 +151,28 @@ public class CarcassonneServer extends Observable implements RmiService {
         if (firstchoose) {
             setChanged();
             notifyObservers(p);
+            if(carcassonneGameModel.getTurn() < playerObservers.size()) {
+                setChanged();
+                playerObservers.get(carcassonneGameModel.getTurn()).update(this, "rotateButtonEnabled");
+            }
             setChanged();
-            setChanged();
-            playerObservers.get(carcassonneGameModel.getTurn()).update(this, "rotateButtonEnabled");
             notifyObservers(carcassonneGameModel.getForbiddenPlacesOnTheTable());
             if(!carcassonneGameModel.isLandTileCanBeLocated()) {
                 return "cantBeLocated";
             }
+            for(CarcassonneAI ai : artificialIntelligences) {
+                ai.removeFromPointsOfLandTilesCanBeChosed(p);
+            }
             return "success";
         }
         return "multipleChoose";
+    }
+    
+    @Override
+    public void chooseFaceDownLandTileDone() throws RemoteException {
+        if(carcassonneGameModel.getTurn() >= playerObservers.size()) {
+            artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).decideBestLocation();
+        }
     }
 
     @Override
@@ -191,7 +234,9 @@ public class CarcassonneServer extends Observable implements RmiService {
         setChanged();
         notifyObservers(new Object[] {"getFollowerNumber", carcassonneGameModel.getFreeFollowerNumOfPLayers(), carcassonneGameModel.getFreeFollowersAgainPastLocation()});
         setChanged();
-        playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
+        System.out.println("pontszamitas kesz");
+        //whosTurnIsIt();
+        //playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
     }
 
     public static void main(String[] args) {
