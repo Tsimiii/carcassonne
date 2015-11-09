@@ -514,8 +514,8 @@ public class CarcassonneGameModel {
         }
     }
     
-    private List<Integer> mivan(int i) {
-        List<Follower> followers = chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]);
+    private List<Integer> mivan(int index) {
+        List<Follower> followers = chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[index][0]);
         List<Integer> colors = new ArrayList<>();
         for(Follower f : followers) {
             colors.add(f.getColor());
@@ -539,8 +539,8 @@ public class CarcassonneGameModel {
         return freq;
     }
     
-     private List<Integer> mivan(int i, LandTile lt) {
-        List<Follower> followers = lt.getReserved(i);
+     private List<Integer> mivan(int value, LandTile lt) {
+        List<Follower> followers = lt.getReserved(value);
         List<Integer> colors = new ArrayList<>();
         for(Follower f : followers) {
             colors.add(f.getColor());
@@ -815,7 +815,7 @@ public class CarcassonneGameModel {
         return indexes;
     }
     
-    public int[] getReservationOfAComponentOfActualLandTIle(int value) {
+    public int[] getReservationOfAComponentOfActualLandTile(int value) {
         int[] colors = new int[players.length];
         if(!chosenLandTile.getReserved(value).isEmpty()) {
             for(int i=0; i<chosenLandTile.getContinuousParts().length; i++) {
@@ -862,7 +862,128 @@ public class CarcassonneGameModel {
             System.out.println(shuffledIdArray[i]);
         }
     }
-
+            
+    public List<Point> listOfCloistersNearToThePoint(Point p) {
+        List<Point> points = new ArrayList<>();
+        int x = p.x;
+        int y = p.y;
+        if(cells[x-1][y-1].getLandTile() != null && cells[x-1][y-1].getLandTile().getType(12) == CLOISTER && cells[x-1][y-1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x-1, y-1));
+        if(cells[x-1][y].getLandTile() != null && cells[x-1][y].getLandTile().getType(12) == CLOISTER  && cells[x-1][y].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x-1, y));
+        if(cells[x-1][y+1].getLandTile() != null && cells[x-1][y+1].getLandTile().getType(12) == CLOISTER  && cells[x-1][y+1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x-1, y+1));
+        if(cells[x][y-1].getLandTile() != null && cells[x][y-1].getLandTile().getType(12) == CLOISTER  && cells[x][y-1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x, y-1));
+        if(cells[x][y+1].getLandTile() != null && cells[x][y+1].getLandTile().getType(12) == CLOISTER  && cells[x][y+1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x, y+1));
+        if(cells[x+1][y-1].getLandTile() != null && cells[x+1][y-1].getLandTile().getType(12) == CLOISTER  && cells[x+1][y-1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x+1, y-1));
+        if(cells[x+1][y].getLandTile() != null && cells[x+1][y].getLandTile().getType(12) == CLOISTER  && cells[x+1][y].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x+1, y));
+        if(cells[x+1][y+1].getLandTile() != null && cells[x+1][y+1].getLandTile().getType(12) == CLOISTER  && cells[x+1][y+1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x+1, y+1));
+        return points;
+    }
+    
+    public boolean canTryJoinToAnotherCity(int index, Point p) {
+        if(index == 1) {
+            if(cells[p.x+1][p.y-1].getLandTile() != null && (cells[p.x+1][p.y-1].getLandTile().getType(10) == CITY || cells[p.x+1][p.y-1].getLandTile().getType(10) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(10)) {
+                return true;
+            } else if(cells[p.x][p.y-2].getLandTile() != null && (cells[p.x][p.y-2].getLandTile().getType(7) == CITY || cells[p.x][p.y-2].getLandTile().getType(7) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(7)) {
+                return true;
+            } else if(cells[p.x-1][p.y-1].getLandTile() != null && (cells[p.x-1][p.y-1].getLandTile().getType(4) == CITY || cells[p.x-1][p.y-1].getLandTile().getType(4) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(4)) {
+                return true;
+            }
+        } else if(index == 4) {
+            if(cells[p.x+1][p.y-1].getLandTile() != null && (cells[p.x+1][p.y-1].getLandTile().getType(7) == CITY || cells[p.x+1][p.y-1].getLandTile().getType(7) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(7)) {
+                return true;
+            } else if(cells[p.x+2][p.y].getLandTile() != null && (cells[p.x+2][p.y].getLandTile().getType(10) == CITY || cells[p.x+2][p.y].getLandTile().getType(10) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(10)) {
+                return true;
+            } else if(cells[p.x+1][p.y+1].getLandTile() != null && (cells[p.x+1][p.y+1].getLandTile().getType(1) == CITY || cells[p.x+1][p.y+1].getLandTile().getType(1) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(1)) {
+                return true;
+            }
+        } else if(index == 7) {
+            if(cells[p.x-1][p.y+1].getLandTile() != null && (cells[p.x-1][p.y+1].getLandTile().getType(4) == CITY || cells[p.x-1][p.y+1].getLandTile().getType(4) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(4)) {
+                return true;
+            } else if(cells[p.x][p.y+2].getLandTile() != null && (cells[p.x][p.y+2].getLandTile().getType(1) == CITY || cells[p.x][p.y+2].getLandTile().getType(1) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(1)) {
+                return true;
+            } else if(cells[p.x+1][p.y+1].getLandTile() != null && (cells[p.x+1][p.y+1].getLandTile().getType(10) == CITY || cells[p.x+1][p.y+1].getLandTile().getType(10) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(10)) {
+                return true;
+            }
+        } else if(index == 10) {
+            if(cells[p.x-1][p.y-1].getLandTile() != null && (cells[p.x-1][p.y-1].getLandTile().getType(7) == CITY || cells[p.x-1][p.y-1].getLandTile().getType(7) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(7)) {
+                return true;
+            } else if(cells[p.x-2][p.y].getLandTile() != null && (cells[p.x-2][p.y].getLandTile().getType(4) == CITY || cells[p.x-2][p.y].getLandTile().getType(4) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(4)) {
+                return true;
+            } else if(cells[p.x-1][p.y+1].getLandTile() != null && (cells[p.x-1][p.y+1].getLandTile().getType(1) == CITY || cells[p.x-1][p.y+1].getLandTile().getType(1) == CITYWITHPENNANT)
+                    && isTheReservationConvinientToJoin(1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+        public boolean canTryJoinToAnotherRoad(int index, Point p) {
+        if(index == 1) {
+            if(cells[p.x+1][p.y-1].getLandTile() != null && cells[p.x+1][p.y-1].getLandTile().getType(10) == ROAD && isTheReservationConvinientToJoin(10)) {
+                return true;
+            } else if(cells[p.x][p.y-2].getLandTile() != null && cells[p.x][p.y-2].getLandTile().getType(7) == ROAD && isTheReservationConvinientToJoin(7)) {
+                return true;
+            } else if(cells[p.x-1][p.y-1].getLandTile() != null && cells[p.x-1][p.y-1].getLandTile().getType(4) == ROAD && isTheReservationConvinientToJoin(4)) {
+                return true;
+            }
+        } else if(index == 4) {
+            if(cells[p.x+1][p.y-1].getLandTile() != null && cells[p.x+1][p.y-1].getLandTile().getType(7) == ROAD && isTheReservationConvinientToJoin(7)) {
+                return true;
+            } else if(cells[p.x+2][p.y].getLandTile() != null && cells[p.x+2][p.y].getLandTile().getType(10) == ROAD && isTheReservationConvinientToJoin(10)) {
+                return true;
+            } else if(cells[p.x+1][p.y+1].getLandTile() != null && cells[p.x+1][p.y+1].getLandTile().getType(1) == ROAD && isTheReservationConvinientToJoin(1)) {
+                return true;
+            }
+        } else if(index == 7) {
+            if(cells[p.x-1][p.y+1].getLandTile() != null && cells[p.x-1][p.y+1].getLandTile().getType(4) == ROAD && isTheReservationConvinientToJoin(4)) {
+                return true;
+            } else if(cells[p.x][p.y+2].getLandTile() != null && cells[p.x][p.y+2].getLandTile().getType(1) == ROAD && isTheReservationConvinientToJoin(1)) {
+                return true;
+            } else if(cells[p.x+1][p.y+1].getLandTile() != null && cells[p.x+1][p.y+1].getLandTile().getType(10) == ROAD && isTheReservationConvinientToJoin(10)) {
+                return true;
+            }
+        } else if(index == 10) {
+            if(cells[p.x-1][p.y-1].getLandTile() != null && cells[p.x-1][p.y-1].getLandTile().getType(7) == ROAD && isTheReservationConvinientToJoin(7)) {
+                return true;
+            } else if(cells[p.x-2][p.y].getLandTile() != null && cells[p.x-2][p.y].getLandTile().getType(4) == ROAD && isTheReservationConvinientToJoin(4)) {
+                return true;
+            } else if(cells[p.x-1][p.y+1].getLandTile() != null && cells[p.x-1][p.y+1].getLandTile().getType(1) == ROAD && isTheReservationConvinientToJoin(1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean isTheReservationConvinientToJoin(int index) {
+        List<Integer> reservation = mivan(index, chosenLandTile);
+        int number = reservation.get(turn) + 1;
+        for(Integer num : reservation) {
+            if(num > number) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public int getNeighbourLandTileNumber(Point pos) {
+        int count = 0;
+        if(cells[pos.x][pos.y-1].getLandTile() != null) count++;
+        if(cells[pos.x+1][pos.y].getLandTile() != null) count++;
+        if(cells[pos.x][pos.y+1].getLandTile() != null) count++;
+        if(cells[pos.x-1][pos.y].getLandTile() != null) count++;
+        return count;
+    }
+    
     public int[] getShuffledIdArray() {
         return shuffledIdArray;
     }
