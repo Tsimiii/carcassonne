@@ -263,8 +263,8 @@ public class CarcassonneGameModel {
     public boolean locateLandTileOnTheTable(Point p) {
         if (chosenLandTile != null) {
             cells[p.x][p.y].setLandTile(chosenLandTile);
-            locatedLandTiles.add(chosenLandTile);
             chosenLandTile.setPositionOnTheTable(p.x, p.y);
+            locatedLandTiles.add(chosenLandTile); 
             bliblablo(p, true);
 
             initFollowerPointsOnTheLandTile();
@@ -291,7 +291,9 @@ public class CarcassonneGameModel {
             cells[p.x][p.y].getLandTile().clearReserved(contPart[0]);
         }  
         cells[p.x][p.y].setLandTile(null);
+        System.out.println("MÉRET: " + locatedLandTiles.size());
         locatedLandTiles.remove(chosenLandTile);
+        System.out.println("MÉRET: " + locatedLandTiles.size());
         chosenLandTile.setPositionOnTheTable(-1, -1);
     }
 
@@ -455,7 +457,6 @@ public class CarcassonneGameModel {
         }
         chosenLandTile = null;
         turn = (turn + 1) % players.length;
-            System.out.println("PONT: " + roadAndCityPoint[0] + ", " + roadAndCityPoint[1]);
         return point;
     }
 

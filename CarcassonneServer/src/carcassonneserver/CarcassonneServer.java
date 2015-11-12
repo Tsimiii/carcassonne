@@ -31,7 +31,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     private List<CarcassonneAI> artificialIntelligences = new ArrayList<>();
     private List<String> names = new ArrayList<>();
     private static Timer timer;
-    int interval = 20;
+    int interval = 18;
     private CarcassonneServer carser = this;
 
     public CarcassonneServer() {
@@ -174,11 +174,15 @@ public class CarcassonneServer extends Observable implements RmiService {
         return "multipleChoose";
     }
     
+    private int asd = 0;
+    
     @Override
     public void chooseFaceDownLandTileDone() throws RemoteException {
-        if(carcassonneGameModel.getTurn() >= playerObservers.size()) {
+        asd++;
+        if(carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0) {
             artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).decideBestLocation();
         }
+        
     }
 
     @Override
@@ -220,7 +224,8 @@ public class CarcassonneServer extends Observable implements RmiService {
     
     @Override
     public void locateLandTileDone() throws RemoteException {
-        if(carcassonneGameModel.getTurn() >= playerObservers.size()) {
+        asd++;
+        if(carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0) {
             artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).locateFollower();
         }
     }
@@ -247,8 +252,6 @@ public class CarcassonneServer extends Observable implements RmiService {
         setChanged();
         notifyObservers(new Object[] {"getFollowerNumber", carcassonneGameModel.getFreeFollowerNumOfPLayers(), carcassonneGameModel.getFreeFollowersAgainPastLocation()});
         setChanged();
-        //whosTurnIsIt();
-        //playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
     }
 
     public static void main(String[] args) {

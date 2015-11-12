@@ -304,6 +304,7 @@ public class CarcassonneAI {
     }
     
     public void locateLandTile(Point point) throws RemoteException{
+        
         if(carcassonneGameModel.getEnabledPlacesOnTheTable().size() > 0) {
             for (Iterator<Point> it = carcassonneGameModel.getEnabledPlacesOnTheTable().iterator(); it.hasNext(); ) {
                 Point p = it.next();

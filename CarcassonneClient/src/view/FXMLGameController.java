@@ -49,9 +49,9 @@ public class FXMLGameController extends Group implements Initializable {
     @FXML protected VBox leftVBox;
     private int id;
     private List<String> namesList;
-    private Label[] names = new Label[2];
-    private Label[] points = new Label[2];
-    private Label[] followers = new Label[2];
+    private Label[] names;
+    private Label[] points;
+    private Label[] followers;
     private StackPane[][] stackPane;
     private Rectangle[][] centerRectangles;
     private Button[][] rightButtons = new Button[15][5];
@@ -64,9 +64,12 @@ public class FXMLGameController extends Group implements Initializable {
     
     public CommunicationController delegate;
 
-    public FXMLGameController(int id, List<String> names) {
+    public FXMLGameController(int id, List<String> namesList) {
         this.id = id;
-        this.namesList = names;
+        this.namesList = namesList;
+        names = new Label[this.namesList.size()];
+        followers = new Label[this.namesList.size()];
+        points = new Label[this.namesList.size()];
     }
     
     @Override

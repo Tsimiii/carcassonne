@@ -75,17 +75,50 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
                 }
             });
         } else if (updateMsg instanceof Point && ((Point) updateMsg).x > -1) {
-            gameController.chooseLandTileUpdate((Point) updateMsg);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        gameController.chooseLandTileUpdate((Point) updateMsg);
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
         } else if (updateMsg.equals("successRotateLeft")) {
-            gameController.rotateLeftUpdate();
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    gameController.rotateLeftUpdate();
+                }
+            });
         } else if (updateMsg.equals("successRotateRight")) {
-            gameController.rotateRightUpdate();
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    gameController.rotateRightUpdate();
+                }
+            });
         } else if (updateMsg instanceof Set<?>) {
             gameController.illegalPlacesOnTableUpdate((Set<Point>) updateMsg);
         } else if (updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("locateLandTile")) {
-            gameController.locateLandTileUpdate((Point) ((Object[]) updateMsg)[1]);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    gameController.locateLandTileUpdate((Point) ((Object[]) updateMsg)[1]);
+                }
+            });
         } else if (updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("locateFollower")) {
-            gameController.locateFollowerUpdate((int) ((Object[]) updateMsg)[1], (int) ((Object[]) updateMsg)[2]);
+            /*Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    try {*/
+                        gameController.locateFollowerUpdate((int) ((Object[]) updateMsg)[1], (int) ((Object[]) updateMsg)[2]);
+                    /*} catch (RemoteException ex) {
+                        Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });*/
         } else if (updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("countPoint")) {
             Platform.runLater(new Runnable() {
                 @Override
@@ -105,7 +138,6 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
                 }
             });
         }else if (updateMsg.equals("YourTurn")) {
-            System.out.println(updateMsg);
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
@@ -155,8 +187,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             gameController.delegate = this;
             
             scene.setRoot(loader.load());
-           /* gameController = loader.<FXMLGameController>getController();
-            gameController.delegate = this;*/
+
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
         }
