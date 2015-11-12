@@ -453,12 +453,9 @@ public class CarcassonneGameModel {
         for(int i=0; i<players.length; i++) {
             point[i] = players[i].getPoint();
         }
-        //countFieldPoints();
         chosenLandTile = null;
         turn = (turn + 1) % players.length;
-        /*if(isGameEnded()) {
-            countPointEndOfTheGame();
-        }*/
+            System.out.println("PONT: " + roadAndCityPoint[0] + ", " + roadAndCityPoint[1]);
         return point;
     }
 
@@ -472,7 +469,7 @@ public class CarcassonneGameModel {
                     || chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == CITY || chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == CITYWITHPENNANT)
                     && !done.contains(new Point(chosenLandTile.getId(), i))) {
                 int point = roadAndCityPointsRecursive(chosenLandTile, chosenLandTile.getContinuousParts()[i][0]);
-                if(!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty()) {
+                if(!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty() && point > 0) {
                 List<Integer> freq = mivan(i);
                     for (Integer f : freq) {
                         points[f] += point;

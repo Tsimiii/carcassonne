@@ -309,17 +309,9 @@ public class CarcassonneAI {
                 Point p = it.next();
                 if(point.x == p.x && point.y == p.y) {
                     delegate.locateLandTileOnTheTable(p); 
-                    
-                    /*if(followerPosition == -1) {
-                        locateOrNotFollowerDecision();
-                    }
-                    if(followerPosition > -1) {
-                        delegate.locateFollower(followerPosition);
-                    }*/
                     break;
                 }
             }
-            //delegate.countPoints();
         }
     }
     
@@ -332,13 +324,6 @@ public class CarcassonneAI {
             delegate.locateLandTileOnTheTable(p);
             break;
         } 
-        
-        /*locateOrNotFollowerDecision();
-        if(followerPosition > -1) {
-            delegate.locateFollower(followerPosition);
-        }*/
-        //delegate.countPoints();
-        
     }
     
     public void locateFollower() throws RemoteException {

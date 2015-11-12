@@ -31,7 +31,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     private List<CarcassonneAI> artificialIntelligences = new ArrayList<>();
     private List<String> names = new ArrayList<>();
     private static Timer timer;
-    int interval = 12;
+    int interval = 20;
     private CarcassonneServer carser = this;
 
     public CarcassonneServer() {
