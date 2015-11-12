@@ -21,9 +21,13 @@ public interface RmiService extends Remote{
     
     int locateLandTileOnTheTable(Point where) throws RemoteException;
     
+    void locateLandTileDone() throws RemoteException;
+    
     List<Integer> getFollowerPointsOfActualLandTile() throws RemoteException;
     
     void locateFollower(int where) throws RemoteException;
+    
+   // void locateFollowerDone() throws RemoteException;
     
     void countPoints() throws RemoteException;
 }

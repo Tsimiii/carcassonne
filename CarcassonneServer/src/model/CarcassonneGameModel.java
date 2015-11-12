@@ -456,9 +456,9 @@ public class CarcassonneGameModel {
         //countFieldPoints();
         chosenLandTile = null;
         turn = (turn + 1) % players.length;
-        if(isGameEnded()) {
+        /*if(isGameEnded()) {
             countPointEndOfTheGame();
-        }
+        }*/
         return point;
     }
 
@@ -492,7 +492,6 @@ public class CarcassonneGameModel {
                 valueOfContinuousPartToBeSetDone.clear();
             }
         }
-        System.out.println(tempListForCityEdges.size());
         System.out.println("JKNDKJDN: " + citiesOnTheEdge.toString());
         return points;
     }
@@ -501,7 +500,6 @@ public class CarcassonneGameModel {
         for(int i=0; i<valueOfContinuousPartToBeSetDone.size(); i++) {
             Point p = tempListForCityEdges.get(i);
             cells[p.x][p.y].getLandTile().setDone(valueOfContinuousPartToBeSetDone.get(i));
-            System.out.println(p.x + ", " + p.y + "helyen a " + valueOfContinuousPartToBeSetDone.get(i) + " érték done.");
         }
         List<Point> landTilePoints = new ArrayList<>();
         for(Point p : tempListForCityEdges) {
@@ -701,7 +699,7 @@ public class CarcassonneGameModel {
         return count;
     }
     
-    public int[] countPointEndOfTheGame() { //MEZŐK MÉG NINCSENEK BENNE
+    public int[] countPointEndOfTheGame() {
         int[] point = new int[players.length];
         int pointPart;
         for(int i=0; i<players.length; i++) {
@@ -749,9 +747,6 @@ public class CarcassonneGameModel {
                 for(int i= 0; i < cells[p.x][p.y].getLandTile().getContinuousParts().length; i++) {
                     if(cells[p.x][p.y].getLandTile().getType(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]) == FIELD && !cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]).isEmpty() &&
                            (fols.get(j).isEmpty() || !fols.get(j).contains(cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]).get(0))) && isFieldNeighborWithTheCity(p, cells[p.x][p.y].getLandTile().getContinuousParts()[i])) {
-                        if(fols.get(j).size() > 0) {
-                            System.out.println(fols + ", " + j + ", " + cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]));
-                        }
                         List<Integer> freq = mivan(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0], cells[p.x][p.y].getLandTile());
                         for (Integer f : freq) {
                             point[f] += 3;
@@ -829,6 +824,21 @@ public class CarcassonneGameModel {
         return colors;
     }
     
+    public boolean roadAndCityAreNotReservedByOthers() {
+        for(int[] contPart : chosenLandTile.getContinuousParts()) {
+            for(Follower f : chosenLandTile.getReserved(contPart[0])) {
+                if(f.getColor() != turn) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    public boolean isTheComponentReserved(int value) {
+        return !chosenLandTile.getReserved(value).isEmpty();
+    }
+    
     public boolean isTheBuildedRoadOrCityPartDone(int val) {
         int point = roadAndCityPointsRecursive(chosenLandTile, val);
         done.clear();
@@ -867,14 +877,14 @@ public class CarcassonneGameModel {
         List<Point> points = new ArrayList<>();
         int x = p.x;
         int y = p.y;
-        if(cells[x-1][y-1].getLandTile() != null && cells[x-1][y-1].getLandTile().getType(12) == CLOISTER && cells[x-1][y-1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x-1, y-1));
-        if(cells[x-1][y].getLandTile() != null && cells[x-1][y].getLandTile().getType(12) == CLOISTER  && cells[x-1][y].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x-1, y));
-        if(cells[x-1][y+1].getLandTile() != null && cells[x-1][y+1].getLandTile().getType(12) == CLOISTER  && cells[x-1][y+1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x-1, y+1));
-        if(cells[x][y-1].getLandTile() != null && cells[x][y-1].getLandTile().getType(12) == CLOISTER  && cells[x][y-1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x, y-1));
-        if(cells[x][y+1].getLandTile() != null && cells[x][y+1].getLandTile().getType(12) == CLOISTER  && cells[x][y+1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x, y+1));
-        if(cells[x+1][y-1].getLandTile() != null && cells[x+1][y-1].getLandTile().getType(12) == CLOISTER  && cells[x+1][y-1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x+1, y-1));
-        if(cells[x+1][y].getLandTile() != null && cells[x+1][y].getLandTile().getType(12) == CLOISTER  && cells[x+1][y].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x+1, y));
-        if(cells[x+1][y+1].getLandTile() != null && cells[x+1][y+1].getLandTile().getType(12) == CLOISTER  && cells[x+1][y+1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x+1, y+1));
+        if(cells[x-1][y-1].getLandTile() != null && cells[x-1][y-1].getLandTile().getType(12) == CLOISTER && !cells[x-1][y-1].getLandTile().getReserved(12).isEmpty() && cells[x-1][y-1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x-1, y-1));
+        if(cells[x-1][y].getLandTile() != null && cells[x-1][y].getLandTile().getType(12) == CLOISTER && !cells[x-1][y].getLandTile().getReserved(12).isEmpty() && cells[x-1][y].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x-1, y));
+        if(cells[x-1][y+1].getLandTile() != null && cells[x-1][y+1].getLandTile().getType(12) == CLOISTER && !cells[x-1][y+1].getLandTile().getReserved(12).isEmpty() && cells[x-1][y+1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x-1, y+1));
+        if(cells[x][y-1].getLandTile() != null && cells[x][y-1].getLandTile().getType(12) == CLOISTER && !cells[x][y-1].getLandTile().getReserved(12).isEmpty() && cells[x][y-1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x, y-1));
+        if(cells[x][y+1].getLandTile() != null && cells[x][y+1].getLandTile().getType(12) == CLOISTER && !cells[x][y+1].getLandTile().getReserved(12).isEmpty() && cells[x][y+1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x, y+1));
+        if(cells[x+1][y-1].getLandTile() != null && cells[x+1][y-1].getLandTile().getType(12) == CLOISTER && !cells[x+1][y-1].getLandTile().getReserved(12).isEmpty() && cells[x+1][y-1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x+1, y-1));
+        if(cells[x+1][y].getLandTile() != null && cells[x+1][y].getLandTile().getType(12) == CLOISTER && !cells[x+1][y].getLandTile().getReserved(12).isEmpty() && cells[x+1][y].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x+1, y));
+        if(cells[x+1][y+1].getLandTile() != null && cells[x+1][y+1].getLandTile().getType(12) == CLOISTER && !cells[x+1][y+1].getLandTile().getReserved(12).isEmpty() && cells[x+1][y+1].getLandTile().getReserved(12).get(0).getColor() == turn) points.add(new Point(x+1, y+1));
         return points;
     }
     
@@ -965,14 +975,17 @@ public class CarcassonneGameModel {
     }
     
     public boolean isTheReservationConvinientToJoin(int index) {
-        List<Integer> reservation = mivan(index, chosenLandTile);
-        int number = reservation.get(turn) + 1;
-        for(Integer num : reservation) {
-            if(num > number) {
-                return false;
+        boolean good = false;
+        for(Follower f : chosenLandTile.getReserved(index)) {
+            if(f.getColor() != turn) {
+                good = true;
             }
         }
-        return true;
+        if(!good) {
+            return false;
+        }
+        List<Integer> reservation = mivan(index, chosenLandTile);
+        return reservation.contains(turn);
     }
     
     public int getNeighbourLandTileNumber(Point pos) {
@@ -982,6 +995,137 @@ public class CarcassonneGameModel {
         if(cells[pos.x][pos.y+1].getLandTile() != null) count++;
         if(cells[pos.x-1][pos.y].getLandTile() != null) count++;
         return count;
+    }
+    
+    public boolean isActualLandTilePartReserved(int value) {
+        return !chosenLandTile.getReserved(value).isEmpty();
+    }
+    
+    private List<LandTile> checkedLandTiles = new ArrayList<>();
+    
+    public int getNumberOfStartedCitiesInAField(int val) {
+        done.clear();
+        checkedLandTiles.clear();
+        int count = countStartedCitiesInAField(chosenLandTile, val);
+        return count;
+    }
+    
+    private int countStartedCitiesInAField(LandTile actualLandTile, int val) {
+        int count = 0;
+        int ind = getContinuousPartIndexFromValue(actualLandTile, val);
+        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+            for(int[] contPart : actualLandTile.getContinuousParts()) {
+                if((actualLandTile.getType(contPart[0]) == CITY || actualLandTile.getType(contPart[0]) == CITYWITHPENNANT) ) {
+                    for(int i : contPart) {
+                        for(int in : actualLandTile.getContinuousParts()[ind]) {
+                            dinedone.clear();
+                            if(in > 0) {
+                                if(((i == (in+1)%12 && in!=12) || (i == in-1)/* (actualLandTile.getComponents()[(i+1)%12] == CITY && !actualLandTile.contains(getContinuousPartIndexFromValue(actualLandTile, i), (i+1)%12))*/) && partNotConnectedToACountedOne(actualLandTile, contPart[0])) {
+                                    count++;
+                                    checkedLandTiles.add(actualLandTile);
+                                }
+                            } else if(in == 0) {
+                                if(((i == (in+1)%12 && in!=12) || (i == 11)/* (actualLandTile.getComponents()[(i+1)%12] == CITY && !actualLandTile.contains(getContinuousPartIndexFromValue(actualLandTile, i), (i+1)%12))*/) && partNotConnectedToACountedOne(actualLandTile, contPart[0])) {
+                                    count++;
+                                    checkedLandTiles.add(actualLandTile);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            for (int c : actualLandTile.getContinuousParts()[ind]) {
+                if (c == 0 || c == 1 || c == 2) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y - 1].getLandTile();
+                    if (landTile != null) {
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                            done.add(new Point(actualLandTile.getId(), ind));
+                        }
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 8-c)))) {
+                            count += countStartedCitiesInAField(landTile, 8-c);
+                        }
+                    }
+                } else if (c== 3 || c == 4 || c == 5) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x + 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
+                    if (landTile != null) {
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                            done.add(new Point(actualLandTile.getId(), ind));
+                        }
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 14-c)))) {
+                            count += countStartedCitiesInAField(landTile, 14-c);
+                        }
+                    }
+                } else if (c == 6 || c == 7 ||c == 8) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y + 1].getLandTile();
+                    if (landTile != null) {
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                            done.add(new Point(actualLandTile.getId(), ind));
+                        }
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 8-c)))) {
+                            count += countStartedCitiesInAField(landTile, 8-c);
+                        }
+                    }
+                } else if (c == 9 || c == 10 ||c == 11) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x - 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
+                    if (landTile != null) {
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                            done.add(new Point(actualLandTile.getId(), ind));
+                        }
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 14-c)))) {
+                            count += countStartedCitiesInAField(landTile, 14-c);
+                        }
+                    }
+                }
+            }
+        }
+        return count;
+    }
+    
+    private List<Point> dinedone = new ArrayList<>();
+    
+    private boolean partNotConnectedToACountedOne(LandTile actualLandTile, int val) {
+        if(checkedLandTiles.contains(actualLandTile)) {
+            return false;
+        }
+        int ind = getContinuousPartIndexFromValue(actualLandTile, val);
+        if(!dinedone.contains(new Point(actualLandTile.getId(), ind))) {
+            for (int c : actualLandTile.getContinuousParts()[ind]) {
+                if (c == 1) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y - 1].getLandTile();
+                    if (landTile != null) {
+                        dinedone.add(new Point(actualLandTile.getId(), ind));
+                        if (!dinedone.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 7))) && !partNotConnectedToACountedOne(landTile, 7)) {
+                            return false;
+                        }
+                    }
+                } else if (c == 4) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x + 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
+                    if (landTile != null)  {
+                        dinedone.add(new Point(actualLandTile.getId(), ind));
+                        if (!dinedone.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 10))) && !partNotConnectedToACountedOne(landTile, 10)) {
+                            return false;
+                        }
+                    }
+                } else if (c == 7) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y + 1].getLandTile();
+                    if (landTile != null) {
+                        dinedone.add(new Point(actualLandTile.getId(), ind));
+                        if (!dinedone.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 1))) &&!partNotConnectedToACountedOne(landTile, 1)) {
+                            return false;
+                        }
+                    }
+                } else if (c == 10) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x - 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
+                    if (landTile != null) {
+                        dinedone.add(new Point(actualLandTile.getId(), ind));
+                        if (!dinedone.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 4))) && !partNotConnectedToACountedOne(landTile, 4)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
     
     public int[] getShuffledIdArray() {

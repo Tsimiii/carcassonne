@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -242,7 +244,7 @@ public class FXMLGameController extends Group implements Initializable {
                                 delegate.countPoints();
                             }
                         } catch (RemoteException ex) {
-                            System.out.println("Hiba a kártya elhelyezése során.");
+                            System.err.println("Hiba a kártya elhelyezése során.");
                         }
                     }
                 }
@@ -300,6 +302,12 @@ public class FXMLGameController extends Group implements Initializable {
         rightButtons[p.x][p.y].setDisable(true);
         drawnLandTiles.add(p);
         imageView.setImage(landTiles[p.x*5+p.y]);
+        for(int i=0; i<143; i++) {
+            for(int j=0; j<143; j++) {
+                centerRectangles[i][j].setStroke(Color.BLACK);
+                centerRectangles[i][j].setStrokeWidth(1);
+            }
+        }
         delegate.chooseFaceDownLandTileDone();
     }
     
@@ -339,8 +347,14 @@ public class FXMLGameController extends Group implements Initializable {
         centerRectangles[p.x][p.y].setFill(new ImagePattern(imageView.getImage()));
         centerRectangles[p.x][p.y].setDisable(true);
         centerRectangles[p.x][p.y].getTransforms().add(new Rotate(degree, 60, 60));
-        System.out.println("degr: " + degree);
+        centerRectangles[p.x][p.y].setStrokeWidth(2);
+        centerRectangles[p.x][p.y].setStroke(Color.INDIANRED);
         expansionOfTheTable(p.x, p.y);
+        try {
+            delegate.locateLandTileDone();
+        } catch (RemoteException ex) {
+            Logger.getLogger(FXMLGameController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void locateLandTileWarningMessage() {
@@ -379,9 +393,18 @@ public class FXMLGameController extends Group implements Initializable {
         }
         imageView.setImage(null);
         imageView.setRotate(360);
-        System.out.println(degree);
         degree = 0;
-        System.out.println("DE HÁT ITT VAN WTF");
+        disableOrEnableEverything(true);
+    }
+    
+    public void countPointEndOfTheGameUpdate(int[] point) { //ÉS ITT MÉG JÖJJÖN A VÉGEREDMÉNY ABLAK
+        for(int i=0; i<points.length; i++) {
+            int num = Integer.parseInt(points[i].getText().split("\\s+")[0]);
+            points[i].setText((point[i] + num) + " pont");
+        }
+        imageView.setImage(null);
+        imageView.setRotate(360);
+        degree = 0;
         disableOrEnableEverything(true);
     }
     

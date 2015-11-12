@@ -114,6 +114,13 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             });
         } else if (updateMsg.equals("rotateButtonEnabled")) {
             gameController.enableRotateButtons();
+        } else if(updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("countPointEndOfTheGame")) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    gameController.countPointEndOfTheGameUpdate((int[]) ((Object[]) updateMsg)[1]);
+                }
+            });
         }
     }
 
@@ -204,6 +211,10 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         }
         return successLocate;
     }
+    
+    public void locateLandTileDone() throws RemoteException {
+        remoteService.locateLandTileDone();
+    }
 
     public List<Integer> getFollowerPoints() throws RemoteException {
         List<Integer> followerPoints = remoteService.getFollowerPointsOfActualLandTile();
@@ -224,6 +235,8 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         remoteService.locateFollower(reservedPlace);
         countPoints();
     }
+    
+    
 
     public void countPoints() throws RemoteException {
         remoteService.countPoints();

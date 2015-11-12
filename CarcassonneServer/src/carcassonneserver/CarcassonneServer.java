@@ -31,7 +31,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     private List<CarcassonneAI> artificialIntelligences = new ArrayList<>();
     private List<String> names = new ArrayList<>();
     private static Timer timer;
-    int interval = 20;
+    int interval = 12;
     private CarcassonneServer carser = this;
 
     public CarcassonneServer() {
@@ -134,18 +134,21 @@ public class CarcassonneServer extends Observable implements RmiService {
                 setChanged();
                 playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
             } else {
-                System.out.println("AI jön");
                 try {
                     artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).chooseLandTile();
                 } catch (InterruptedException ex) {
                     Logger.getLogger(CarcassonneServer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+        } else {
+            int[] point = carcassonneGameModel.countPointEndOfTheGame();
+            setChanged();
+            notifyObservers(new Object[] {"countPointEndOfTheGame", point});
         }
     }
 
     @Override
-    public String chooseFaceDownLandTile(Point p) throws RemoteException {
+    public String chooseFaceDownLandTile(Point p) throws RemoteException{
         setChanged();
         boolean firstchoose = carcassonneGameModel.chooseFaceDownLandTile(p);
         if (firstchoose) {
@@ -158,6 +161,9 @@ public class CarcassonneServer extends Observable implements RmiService {
             setChanged();
             notifyObservers(carcassonneGameModel.getForbiddenPlacesOnTheTable());
             if(!carcassonneGameModel.isLandTileCanBeLocated()) {
+                for(CarcassonneAI ai : artificialIntelligences) {
+                    ai.removeFromPointsOfLandTilesCanBeChosed(p);
+                }
                 return "cantBeLocated";
             }
             for(CarcassonneAI ai : artificialIntelligences) {
@@ -213,6 +219,13 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
     
     @Override
+    public void locateLandTileDone() throws RemoteException {
+        if(carcassonneGameModel.getTurn() >= playerObservers.size()) {
+            artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).locateFollower();
+        }
+    }
+    
+    @Override
     public List<Integer> getFollowerPointsOfActualLandTile() throws RemoteException {
         return carcassonneGameModel.getPointsOfFollowers();
     }
@@ -234,7 +247,6 @@ public class CarcassonneServer extends Observable implements RmiService {
         setChanged();
         notifyObservers(new Object[] {"getFollowerNumber", carcassonneGameModel.getFreeFollowerNumOfPLayers(), carcassonneGameModel.getFreeFollowersAgainPastLocation()});
         setChanged();
-        System.out.println("pontszamitas kesz");
         //whosTurnIsIt();
         //playerObservers.get(carcassonneGameModel.getTurn()).update(this, "YourTurn");
     }
