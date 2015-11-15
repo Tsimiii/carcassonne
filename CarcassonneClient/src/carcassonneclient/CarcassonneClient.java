@@ -9,9 +9,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.stage.Screen;
+import javafx.stage.WindowEvent;
 
 public class CarcassonneClient extends Application {
 
@@ -34,6 +36,12 @@ public class CarcassonneClient extends Application {
         primaryStage.setY(bounds.getMinY());
         primaryStage.setWidth(bounds.getWidth());
         primaryStage.setHeight(bounds.getHeight());
+        
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+           @Override public void handle(WindowEvent t) {
+               System.exit(0);
+           }
+        });
     }
 
     public static void main(String[] args) {

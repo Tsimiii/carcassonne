@@ -31,7 +31,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     private List<CarcassonneAI> artificialIntelligences = new ArrayList<>();
     private List<String> names = new ArrayList<>();
     private static Timer timer;
-    int interval = 18;
+    int interval = 12;
     private CarcassonneServer carser = this;
 
     public CarcassonneServer() {
@@ -225,7 +225,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     @Override
     public void locateLandTileDone() throws RemoteException {
         asd++;
-        if(carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0) {
+        if(carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0 && carcassonneGameModel.isChoosenLandTileNotNull()) {
             artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).locateFollower();
         }
     }

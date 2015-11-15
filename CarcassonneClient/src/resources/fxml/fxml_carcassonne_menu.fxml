@@ -10,7 +10,7 @@
 <Pane fx:id="content" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.FXMLMenuController">
     <BorderPane id="borderPane">
         <top>
-            <Text id="carcassonneText" text="CARCASSONNE" translateX="700" translateY="200" scaleX="5" scaleY="5" fill="#0000ff"></Text>
+            <Text id="carcassonneText" text="CARCASSONNE" translateX="770" translateY="200" scaleX="4" scaleY="4"></Text>
         </top>
         <center>
             <VBox spacing="80">
@@ -19,14 +19,19 @@
                        <children>
                              <HBox spacing="30">
                                 <children>
-                                    <Label text="Név"></Label>
-                                    <TextField fx:id="nameTextField"></TextField>
+                                    <Text fx:id="nameText" text="Add meg a nevedet:" translateX="300" translateY="500"  scaleX="2" scaleY="2"></Text>
+                                    <TextField fx:id="nameTextField" prefWidth="300" prefHeight="50"  translateX="600" translateY="496"></TextField>
                                 </children>
                             </HBox>
                             <Label id="errorNameText" text="" disable="true" textFill="RED"></Label>
                         </children>
                     </VBox>
-                    <Button text="Csatlakozás a játékhoz." onAction="#joinGame"></Button>
+                        <HBox spacing="30">
+                            <children>
+                                <Button id="joinButton" text="Csatlakozás a játékhoz" translateX="1300" translateY="520" maxWidth="220" maxHeight="140" onAction="#joinGame" onMouseEntered="#mouseEnter" onMouseExited="#mouseExit"></Button>
+                                <Button id="exitButton" text="Kilépés" translateX="1130" translateY="620" maxWidth="220" maxHeight="140" onAction="#exitAction" onMouseEntered="#mouseEnter" onMouseExited="#mouseExit"></Button>
+                            </children>
+                        </HBox>
                 </children>
             </VBox>
         </center>

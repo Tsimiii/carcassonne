@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -165,6 +166,10 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    
+    public void clickExitAction() {
+         System.exit(0);
     }
 
     public void displayLoadingScreen() {

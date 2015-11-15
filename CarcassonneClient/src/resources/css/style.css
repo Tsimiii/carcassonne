@@ -1,9 +1,56 @@
-#menu_and_loading_pane{
-    -fx-background-image: url("../images/stoneWall.jpg");
+#content{
+    -fx-background-image: url("../images/wooden_background.jpg");
     -fx-background-repeat: stretch;   
-    /*-fx-background-size: 900 506;
-    -fx-background-position: center center;*/
-    //-fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0); 
+}
+#carcassonneText{
+   -fx-font-size: 32px;
+   -fx-font-family: "Georgia";
+   -fx-fill: #A68064;
+   -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 )
+}
+#joinButton,#exitButton {
+    -fx-background-color: 
+        #000000,
+        linear-gradient(#A68064 0%, #785b45 20%, #785b45 100%),
+        linear-gradient(#785b45, #785b45),
+        radial-gradient(center 50% 0%, radius 100%, rgba(132,121,95,0.9), rgba(255,255,255,0));
+    -fx-background-radius: 5,4,3,5;
+    -fx-background-insets: 0,1,2,0;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-font-family: "Arial Black";
+    -fx-text-fill: linear-gradient(#FEE8D6, #EECBAD);
+    -fx-font-size: 12px;
+    -fx-padding: 10 20 10 20;
+}
+#joinButton:hover,#exitButton:hover {
+    -fx-background-color: 
+        #000000,
+        linear-gradient(#b99b84 0%, #A08C7C 20%, #A08C7C 100%),
+        linear-gradient(#A08C7C, #A08C7C),
+        radial-gradient(center 50% 0%, radius 100%, rgba(132,121,95,0.9), rgba(255,255,255,0));
+    -fx-background-radius: 5,4,3,5;
+    -fx-background-insets: 0,1,2,0;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-font-family: "Arial Black";
+    -fx-text-fill: linear-gradient(#FEE8D6, #EECBAD);
+    -fx-font-size: 12px;
+    -fx-padding: 10 20 10 20;
+}
+#nameText {
+   -fx-font-size: 32px;
+   -fx-font-family: "Georgia";
+   -fx-fill: #6B4226;
+   -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 )
+}
+#nameTextField {
+    -fx-background-color: transparent, #97694F, transparent, #CDB38B;
+    -fx-font-family: "Arial Black";
+    -fx-font-size: 20px;
+    -fx-text-fill: linear-gradient(#6B4226, #5C3317);
+    -fx-border-radius: 10 10 0 0;
+    -fx-background-radius: 10, 10, 0, 0;
+    -fx-padding: 0.166667em;
+    -fx-alignment: CENTER;
 }
 #right_buttons{
     -fx-graphic: url("../images/landtileback_icon.jpg");
