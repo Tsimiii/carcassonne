@@ -5,10 +5,11 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox id="vBox" spacing="30"  xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="loading_background" spacing="30"  xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <Label text="A játék hamarosan elindul!"></Label>
-        <Label fx:id="timer" text=""></Label>
+        <Text id="loadingText" text="A játék hamarosan elindul!" translateX="600" translateY="290" scaleX="2" scaleY="2"></Text>
+        <Text fx:id="timer" text="" translateX="780" translateY="600" scaleX="2" scaleY="2"></Text>
     </children>
 </VBox>

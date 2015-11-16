@@ -102,6 +102,10 @@ public class FXMLGameController extends Group implements Initializable {
                else if((i==143/2 && (j==143/2-1 || j==143/2+1)) || (j==143/2 && (i==143/2-1 || i==143/2+1))) {
                    rectangle.setFill(Color.GREEN);
                }
+               else if(((i<143/2-1 && i > 143/2-4) || (i > 143/2+1 && i < 143/2+4)) && ((j<143/2-1 && j > 143/2-6) || (j > 143/2+1 && j < 143/2+6))) {
+                   rectangle.setVisible(false);
+                   rectangle.setDisable(true); 
+               }
                else {
                    rectangle.setHeight(0);
                    rectangle.setWidth(0);
