@@ -214,7 +214,7 @@ public class CarcassonneServer extends Observable implements RmiService {
             setChanged();
             notifyObservers(new Object[] {"locateLandTile", where});
             return 2;
-        } else if(!carcassonneGameModel.playerHasFreeFollower() || carcassonneGameModel.getPointsOfFollowers().isEmpty()) {
+        } else if(successLocate && (!carcassonneGameModel.playerHasFreeFollower() || carcassonneGameModel.getPointsOfFollowers().isEmpty())) {
             setChanged();
             notifyObservers(new Object[] {"locateLandTile", where});
             return 1;
