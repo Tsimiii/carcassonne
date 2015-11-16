@@ -14,9 +14,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -83,6 +85,10 @@ public class FXMLGameController extends Group implements Initializable {
         
         leftRotateButton.setOnMouseClicked(leftRotateButtonClickAction);
         rightRotateButton.setOnMouseClicked(rightRotateButtonClickAction);
+        leftRotateButton.setOnMouseEntered(buttonEnterAction);
+        rightRotateButton.setOnMouseEntered(buttonEnterAction);
+        leftRotateButton.setOnMouseExited(buttonExitAction);
+        rightRotateButton.setOnMouseExited(buttonExitAction);
         
         disableOrEnableEverything(true);
         
@@ -131,6 +137,8 @@ public class FXMLGameController extends Group implements Initializable {
                rightButtons[i][j].setId("right_buttons");
                rightGridPane.add(rightButtons[i][j], j, i);
                rightButtons[i][j].setOnAction(chooseAction);
+               rightButtons[i][j].setOnMouseEntered(buttonEnterAction);
+               rightButtons[i][j].setOnMouseExited(buttonExitAction);
            }
         }
         for(int j=0; j<1; j++) {
@@ -138,6 +146,8 @@ public class FXMLGameController extends Group implements Initializable {
             rightButtons[15-1][j].setId("right_buttons");
             rightGridPane.add(rightButtons[15-1][j], j, 15-1);
             rightButtons[15-1][j].setOnAction(chooseAction);
+            rightButtons[15-1][j].setOnMouseEntered(buttonEnterAction);
+            rightButtons[15-1][j].setOnMouseExited(buttonExitAction);
         }
     }
     
@@ -146,9 +156,12 @@ public class FXMLGameController extends Group implements Initializable {
             GridPane gridPane = new GridPane();
             gridPane.setVgap(15);
             names[i] = new Label();
+            names[i].setId("nameLabel");
             names[i].setText(namesList.get(i) + ": ");
-            points[i] = new Label("0 pont");    
+            points[i] = new Label("0 pont");
+            points[i].setId("pointLabel");
             followers[i] = new Label("7 alattvaló");
+            followers[i].setId("followerLabel");
             followers[i].setTextFill(getColorOfNumber(i));
 
            gridPane.add(names[i], 0, 0);
@@ -344,7 +357,7 @@ public class FXMLGameController extends Group implements Initializable {
         alert.showAndWait();
         
         removePreviousIllegalPlacesOnTable();
-        imageView.setImage(null);
+        imageView.setImage(new Image("file:src/resources/images/empty.jpg"));
         imageView.setRotate(360);
     }
     
@@ -398,7 +411,7 @@ public class FXMLGameController extends Group implements Initializable {
         for(int i=0; i<points.length; i++) {
             points[i].setText(point[i] + " pont");
         }
-        imageView.setImage(null);
+        imageView.setImage(new Image("file:src/resources/images/empty.jpg"));
         imageView.setRotate(360);
         degree = 0;
         disableOrEnableEverything(true);
@@ -409,7 +422,7 @@ public class FXMLGameController extends Group implements Initializable {
             int num = Integer.parseInt(points[i].getText().split("\\s+")[0]);
             points[i].setText((point[i] + num) + " pont");
         }
-        imageView.setImage(null);
+        imageView.setImage(new Image("file:src/resources/images/empty.jpg"));
         imageView.setRotate(360);
         degree = 0;
         disableOrEnableEverything(true);
@@ -440,6 +453,7 @@ public class FXMLGameController extends Group implements Initializable {
             for(int j=0; j<143; j++) {
                 if(centerRectangles[i][j] == t.getSource()) {
                     centerRectangles[i][j].setEffect(new Bloom());
+                    delegate.scene.setCursor(Cursor.HAND);
                 }
             }
         }
@@ -450,9 +464,18 @@ public class FXMLGameController extends Group implements Initializable {
             for(int j=0; j<143; j++) {
                 if(centerRectangles[i][j] == t.getSource()) {
                     centerRectangles[i][j].setEffect(null);
+                    delegate.scene.setCursor(Cursor.DEFAULT);
                 }
             }
         }
+    };
+    
+    private final EventHandler<MouseEvent> buttonEnterAction = (MouseEvent event) -> {
+        delegate.scene.setCursor(Cursor.HAND);
+    };
+    
+    private final EventHandler<MouseEvent> buttonExitAction = (MouseEvent event) -> {
+        delegate.scene.setCursor(Cursor.DEFAULT);
     };
     
 }

@@ -211,6 +211,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             locateFollowerController.delegate = this;
 
             Scene scene = new Scene(loader.load(), 500, 500);
+            scene.getStylesheets().add(this.getClass().getResource("/resources/css/style.css").toExternalForm());
             stage.setScene(scene);
             stage.show();
 

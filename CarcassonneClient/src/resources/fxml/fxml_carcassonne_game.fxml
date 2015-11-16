@@ -18,25 +18,25 @@
         </ScrollPane>
     </center>
     <right>
-        <VBox fx:id="rightVBox" spacing="10">
+        <VBox fx:id="rightVBox" spacing="35" alignment="CENTER" >
             <children>
-                <GridPane fx:id="rightGridPane"></GridPane>
-                <ImageView fx:id="imageView" fitHeight="200" fitWidth="200">
+                <GridPane fx:id="rightGridPane" hgap="5" vgap="5" alignment="CENTER"  ></GridPane>
+                <ImageView fx:id="imageView" fitHeight="200" fitWidth="200" >
                     <image>
-                        <Image url="resources/images/woodenFrame.jpg" />
+                        <Image fx:id="chosenLandTile" url="resources/images/empty.jpg" />
                     </image>
                 </ImageView>
-                <HBox spacing="100" >
+                <HBox spacing="100" alignment="CENTER" >
                     <children>
-                        <Button fx:id="leftRotateButton" text="bal" disable="true" ></Button>
-                        <Button fx:id="rightRotateButton" text="jobb" disable="true"></Button>
+                        <Button fx:id="rightRotateButton" disable="true"></Button>
+                        <Button fx:id="leftRotateButton" disable="true" ></Button>
                     </children>
                 </HBox>
             </children>
         </VBox>
     </right>
     <left>
-        <VBox fx:id="leftVBox" spacing="50">
+        <VBox fx:id="leftVBox" spacing="80" alignment="TOP_CENTER">
         </VBox>
     </left>
 </BorderPane>

@@ -8,7 +8,7 @@
    -fx-fill: #A68064;
    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 )
 }
-#joinButton,#exitButton {
+#joinButton,#exitButton,#locateButton,#skipButton {
     -fx-background-color: 
         #000000,
         linear-gradient(#A68064 0%, #785b45 20%, #785b45 100%),
@@ -22,7 +22,7 @@
     -fx-font-size: 12px;
     -fx-padding: 10 20 10 20;
 }
-#joinButton:hover,#exitButton:hover {
+#joinButton:hover,#exitButton:hover,#locateButton:hover,#skipButton:hover {
     -fx-background-color: 
         #000000,
         linear-gradient(#b99b84 0%, #A08C7C 20%, #A08C7C 100%),
@@ -44,7 +44,8 @@
 }
 #nameTextField {
     -fx-background-color: transparent, #97694F, transparent, #CDB38B;
-    -fx-font-family: "Arial Black";
+    -fx-font-family: "Verdana";
+    -fx-font-weight: bold;
     -fx-font-size: 20px;
     -fx-text-fill: linear-gradient(#6B4226, #5C3317);
     -fx-border-radius: 10 10 0 0;
@@ -53,7 +54,11 @@
     -fx-alignment: CENTER;
 }
 #right_buttons{
-    -fx-graphic: url("../images/landtileback_icon.jpg");
+    -fx-min-width: 40;
+    -fx-min-height: 37;
+    -fx-background-image:  url("../images/landtileback_icon.png");
+    -fx-background-repeat: stretch;
+    -fx-border-color: black;
 }
 #loading_background{
     -fx-background-image: url("../images/loading.jpg");
@@ -69,4 +74,58 @@
 }
 #centerGridPane{
     -fx-background-image: url("../images/table.jpg");
+    -fx-border-style: none;
+    
+}
+#leftVBox {
+    -fx-background-image: url("../images/leftSide.jpg");
+    -fx-background-repeat: repeat;
+    -fx-border-color: transparent #5C3317 transparent transparent;
+    -fx-border-width: 5;
+    -fx-min-width: 210;
+}
+#rightVBox {
+    -fx-background-image: url("../images/leftSide.jpg");
+    -fx-background-repeat: repeat;
+    -fx-min-width: 250;
+}
+#imageView {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+#leftRotateButton {
+    -fx-graphic: url("../images/arrow_left.png");
+    -fx-graphic-repeat: stretch;
+}
+#rightRotateButton {
+    -fx-graphic: url("../images/arrow_right.png");
+    -fx-graphic-repeat: stretch;
+}
+#nameLabel,#pointLabel,#followerLabel {
+    -fx-font-family: "Verdana";
+}
+#nameLabel {
+    -fx-font-weight: bold;
+}
+#locateFollowerVBox {
+    -fx-background-image: url("../images/locate_follower.jpg");
+}
+#leftRotateButton,#rightRotateButton {
+    -fx-background-color: 
+        #000000,
+        linear-gradient(#c8cfd6 0%, #ADB7C1 20%, #ADB7C1 100%),
+        linear-gradient(#ADB7C1, #ADB7C1),
+        radial-gradient(center 50% 0%, radius 100%, rgba(100,110,130,0.6), rgba(255,255,255,0));
+    -fx-background-radius: 5,4,3,5;
+    -fx-background-insets: 0,1,2,0;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+#leftRotateButton:hover,#rightRotateButton:hover {
+    -fx-background-color: 
+        #000000,
+        linear-gradient(#ADB7C1 0%, #d6dbe0 20%, #d6dbe0 100%),
+        linear-gradient(#d6dbe0, #d6dbe0),
+        radial-gradient(center 50% 0%, radius 100%, rgba(100,110,130,0.3), rgba(255,255,255,0));
+    -fx-background-radius: 5,4,3,5;
+    -fx-background-insets: 0,1,2,0;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
 }

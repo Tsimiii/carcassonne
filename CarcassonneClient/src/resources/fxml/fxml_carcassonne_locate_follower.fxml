@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.*?>
 
-<VBox fx:id="vBox" spacing="40"  xmlns:fx="http://javafx.com/fxml/1"> <!--fx:controller="view.FXMLLocateFollowerController"-->
+<VBox fx:id="locateFollowerVBox" spacing="100" alignment="CENTER"  xmlns:fx="http://javafx.com/fxml/1">
  <children>
        <StackPane fx:id="stackPane">
             <children> 
@@ -15,9 +15,9 @@
                 </ImageView> 
             </children>  
         </StackPane>
-        <HBox fx:id="hBox" spacing="20" >
+        <HBox fx:id="hBox" spacing="160" alignment="CENTER" >
             <children>
-                <Button fx:id="locateButton" text="Alattvaló elhelyezése" disable="true"></Button>
+                <Button fx:id="locateButton" text="Alattvaló&#10;elhelyezése" textAlignment="CENTER" disable="true"></Button>
                 <Button fx:id="skipButton" text="Kihagyás"></Button> 
             </children> 
         </HBox> 
