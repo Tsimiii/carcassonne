@@ -707,7 +707,7 @@ public class CarcassonneGameModel {
         if(!endOfGame) {
             freeFollowersAgainPastLocation.add(p);
         }
-        players[turn].setFollowerFree(p);
+        players[cells[p.x][p.y].getLandTile().getReserved(12).get(0).getColor()].setFollowerFree(p);
         return count;
     }
     

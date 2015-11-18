@@ -406,7 +406,7 @@ public class FXMLGameController extends Group implements Initializable {
         centerRectangles[i][j].setHeight(120);
     }
     
-    public void countPointUpdate(int[] point) {
+    public void countPointUpdate(int[] point) throws RemoteException {
         for(int i=0; i<points.length; i++) {
             points[i].setText(point[i] + " pont");
         }
@@ -416,7 +416,7 @@ public class FXMLGameController extends Group implements Initializable {
         disableOrEnableEverything(true);
     }
     
-    public void countPointEndOfTheGameUpdate(int[] point) { //ÉS ITT MÉG JÖJJÖN A VÉGEREDMÉNY ABLAK
+    public void countPointEndOfTheGameUpdate(int[] point) {
         for(int i=0; i<points.length; i++) {
             int num = Integer.parseInt(points[i].getText().split("\\s+")[0]);
             points[i].setText((point[i] + num) + " pont");

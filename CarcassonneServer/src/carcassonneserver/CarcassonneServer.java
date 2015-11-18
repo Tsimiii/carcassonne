@@ -279,7 +279,6 @@ public class CarcassonneServer extends Observable implements RmiService {
         notifyObservers(new Object[] {"countPoint", point});
         setChanged();
         notifyObservers(new Object[] {"getFollowerNumber", carcassonneGameModel.getFreeFollowerNumOfPLayers(), carcassonneGameModel.getFreeFollowersAgainPastLocation()});
-        setChanged();
     }
 
     public static void main(String[] args) throws IOException {

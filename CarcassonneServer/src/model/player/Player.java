@@ -75,8 +75,9 @@ public class Player {
     
     public void setFollowerFree(Point p) {
         for(int i=0; i<followers.length; i++) {
-            if(followers[i].getLocation().equals(p)) {
+            if(followers[i].getLocation().x == p.x && followers[i].getLocation().y == p.y) {
                 followers[i].setLocation(new Point(-1,-1));
+                followers[i].setContPartInd(-1);
                 break;
             }
         }
