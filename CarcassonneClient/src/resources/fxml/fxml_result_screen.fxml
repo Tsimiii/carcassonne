@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane id="resultScreenBorderPane" xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <Text id="resultText" text="Eredményhirdetés" translateX="350" translateY="50" scaleX="2" scaleY="2"></Text>
+    </top>
+    <center>
+        <VBox fx:id="resultScreneVBox" spacing="50" translateY="170">
+            <children></children>
+        </VBox>
+    </center>
+    <bottom>
+        <HBox id="resultHBox" spacing="220" alignment="CENTER" >
+            <children>
+                <Button fx:id="backToMainMenuButton" text="Vissza a menühöz" translateY="-20" translateX="-50" maxWidth="220" maxHeight="140"></Button>
+                <Button fx:id="exitButton" text="Kilépés" translateY="-20" maxWidth="220" translateX="-50" maxHeight="140"></Button>
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>

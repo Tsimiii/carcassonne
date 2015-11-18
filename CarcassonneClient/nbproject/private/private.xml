@@ -10,10 +10,12 @@
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/FXMLLoadingScreenController.java</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/resources/fxml/fxml_carcassonne_locate_follower.fxml</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/resources/fxml/fxml_carcassonne_loading_screen.fxml</file>
+            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/resources/fxml/fxml_result_screen.fxml</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/FXMLLocateFollowerController.java</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/imageloader/LandTileImageLoader.java</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/carcassonneclient/CarcassonneClient.java</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/GameButton.java</file>
+            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/FXMLResultScreenController.java</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/FXMLGameController.java</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/FXMLMenuController.java</file>
         </group>

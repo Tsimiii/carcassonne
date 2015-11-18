@@ -14,14 +14,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Bloom;
@@ -37,6 +34,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
+import view.dialogs.InformationDialog;
+import view.dialogs.WarningDialog;
 import view.imageloader.LandTileImageLoader;
 
 public class FXMLGameController extends Group implements Initializable {
@@ -337,11 +336,7 @@ public class FXMLGameController extends Group implements Initializable {
     }
     
     public void chooseLandTileWarningMessage() {
-        Alert alert = new Alert(AlertType.WARNING);
-        alert.setTitle("Hiba kártyahúzáskor");
-        alert.setHeaderText(null);
-        alert.setContentText("Már húztál egy kártyát!");
-        alert.showAndWait();
+        new WarningDialog("Hiba kártyahúzáskor", "Már húztál egy kártyát!");
     }
     
     public void landTileCantBeLocatednformationMessage() {
@@ -349,12 +344,7 @@ public class FXMLGameController extends Group implements Initializable {
         img.setFitHeight(200);
         img.setFitWidth(200);
         
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("A kártyát nem lehet elhelyezni");
-        alert.setHeaderText(null);
-        alert.setGraphic(img);
-        alert.setContentText("A kártyát nem lehet elhelyezni a táblán. Továbbra is Te következel, húzz egy másik kártyát!");
-        alert.showAndWait();
+        new InformationDialog("A kártyát nem lehet elhelyezni", "A kártyát nem lehet elhelyezni a táblán. Továbbra is Te következel, húzz egy másik kártyát!", img);
         
         removePreviousIllegalPlacesOnTable();
         imageView.setImage(new Image("file:src/resources/images/empty.jpg"));
@@ -378,11 +368,7 @@ public class FXMLGameController extends Group implements Initializable {
     }
     
     public void locateLandTileWarningMessage() {
-        Alert alert = new Alert(AlertType.WARNING);
-        alert.setTitle("Hiba a kártya elhelyezésekor");
-        alert.setHeaderText(null);
-        alert.setContentText("Még nem húztál kártyát!");
-        alert.showAndWait();
+        new WarningDialog("Hiba a kártya elhelyezésekor", "Még nem húztál kártyát!");
     }  
     
     private void expansionOfTheTable(int i, int j) {

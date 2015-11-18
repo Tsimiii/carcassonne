@@ -9,6 +9,8 @@ import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
@@ -58,6 +60,10 @@ public class FXMLLocateFollowerController implements Initializable {
 
         locateButton.setOnMouseClicked(locateAction);
         skipButton.setOnMouseClicked(skipAction);
+        locateButton.setOnMouseEntered(enterAction);
+        skipButton.setOnMouseEntered(enterAction);
+        locateButton.setOnMouseExited(exitAction);
+        skipButton.setOnMouseExited(exitAction);
     }
 
     private void initActualFollowerPositions(List<Integer> positions) {
@@ -102,8 +108,10 @@ public class FXMLLocateFollowerController implements Initializable {
     private final EventHandler<MouseEvent> circleEnterAction = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
+            
             for (int i = 0; i < circle.length; i++) {
                 if (circle[i] == t.getSource()) {
+                    stage.getScene().setCursor(Cursor.HAND);
                     circle[i].setEffect(new Glow());
                 }
             }
@@ -112,9 +120,10 @@ public class FXMLLocateFollowerController implements Initializable {
 
     private final EventHandler<MouseEvent> circleExitAction = new EventHandler<MouseEvent>() {
         @Override
-        public void handle(MouseEvent t) {
+        public void handle(MouseEvent t) {   
             for (int i = 0; i < circle.length; i++) {
                 if (circle[i] == t.getSource()) {
+                    stage.getScene().setCursor(Cursor.DEFAULT);
                     circle[i].setEffect(null);
                 }
             }
@@ -134,13 +143,16 @@ public class FXMLLocateFollowerController implements Initializable {
 
     };
 
-    private final EventHandler<MouseEvent> skipAction = new EventHandler<MouseEvent>() {
-
-        @Override
-        public void handle(MouseEvent event) {
-            delegate.clickSkipAction();
-        }
-
+    private final EventHandler<MouseEvent> skipAction = (MouseEvent event) -> {
+        delegate.clickSkipAction();
+    };
+    
+    private final EventHandler<MouseEvent> enterAction = (MouseEvent event) -> {
+        stage.getScene().setCursor(Cursor.HAND);
+    };
+    
+    private final EventHandler<MouseEvent> exitAction = (MouseEvent event) -> {
+        stage.getScene().setCursor(Cursor.DEFAULT);
     };
     
     private final EventHandler<WindowEvent> closeWindowAction = new EventHandler<WindowEvent>() {

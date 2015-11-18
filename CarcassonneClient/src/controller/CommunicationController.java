@@ -9,7 +9,10 @@ import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,8 +22,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import view.FXMLLoadingScreenController;
 import view.FXMLLocateFollowerController;
+import view.FXMLResultScreenController;
 import view.imageloader.LandTileImageLoader;
 
 public class CommunicationController extends UnicastRemoteObject implements RemoteObserver {
@@ -29,6 +34,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     private FXMLGameController gameController;
     private FXMLLocateFollowerController locateFollowerController;
     private FXMLLoadingScreenController loadingScreenController = new FXMLLoadingScreenController();
+    private FXMLResultScreenController resultScreenController;
 
     private Stage stage;
     private Image img;
@@ -154,6 +160,14 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
                     gameController.countPointEndOfTheGameUpdate((int[]) ((Object[]) updateMsg)[1]);
                 }
             });
+        } else if(updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("sortedPoints")) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                   // System.out.println("ITT VAAAN");
+                    displayResultScreen((List<Point>) ((Object[]) updateMsg)[1], (List<String>)((Object[]) updateMsg)[2]);
+                }
+            });
         }
     }
 
@@ -170,6 +184,11 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     
     public void clickExitAction() {
          System.exit(0);
+    }
+    
+    public void clickBactToMainMenuAction() throws IOException {
+         stage.close();
+         callMenu();
     }
 
     public void displayLoadingScreen() {
@@ -199,6 +218,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     }
 
     public void openLocateFollowerWindow(Image img, double degree) {
+        
         this.img = img;
         this.degree = degree;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/fxml_carcassonne_locate_follower.fxml"));
@@ -210,7 +230,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             loader.setController(locateFollowerController);
             locateFollowerController.delegate = this;
 
-            Scene scene = new Scene(loader.load(), 500, 500);
+            scene = new Scene(loader.load(), 500, 500);
             scene.getStylesheets().add(this.getClass().getResource("/resources/css/style.css").toExternalForm());
             stage.setScene(scene);
             stage.show();
@@ -272,8 +292,6 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         remoteService.locateFollower(reservedPlace);
         countPoints();
     }
-    
-    
 
     public void countPoints() throws RemoteException {
         remoteService.countPoints();
@@ -289,6 +307,26 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
 
     public double getDegree() {
         return degree;
+    }
+    
+    private void displayResultScreen(List<Point> list, List<String> names) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/fxml_result_screen.fxml"));
+        try {
+            stage = new Stage();
+            stage.setTitle("Eredmények");
+
+            resultScreenController = new FXMLResultScreenController(list, names, stage);
+            loader.setController(resultScreenController);
+            resultScreenController.delegate = this;
+
+            scene = new Scene(loader.load(), 1200, 700);
+            scene.getStylesheets().add(this.getClass().getResource("/resources/css/style.css").toExternalForm());
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException ex) {
+            System.err.println("Nem sikerült betölteni az fxml-t!");
+        }
     }
 
 }

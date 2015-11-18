@@ -9,12 +9,13 @@ import controller.CommunicationController;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -22,6 +23,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import view.dialogs.WarningDialog;
 
 public class FXMLMenuController implements Initializable {
 
@@ -32,15 +34,22 @@ public class FXMLMenuController implements Initializable {
     @FXML protected Label errorNameText;
     @FXML protected Button exitButton;
     
+    private Alert alert;
+    
     public CommunicationController delegate;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-   
+        
     }
     
     @FXML private void joinGame(ActionEvent event) {
-        delegate.clickJoinGame(nameTextField.getText());
+        if(!nameTextField.getText().equals("")) {
+            delegate.clickJoinGame(nameTextField.getText());
+        } else {
+            new WarningDialog("Hiányzó név", "Csatlakozás előtt írd be a nevedet!");
+            nameTextField.requestFocus();
+        }
     }
     
     @FXML private void exitAction(ActionEvent event) {

@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Observable;
 
 public interface RmiService extends Remote{
     

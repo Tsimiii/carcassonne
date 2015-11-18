@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import model.follower.Follower;
 import model.landtile.LandTile;
 import model.landtile.LandTileLoader;
@@ -320,10 +321,12 @@ public class CarcassonneGameModel {
                         other.setReserved(otherStarterPlace - i, actual.getReserved(actualStarterPlace + i));
                         hasChanged = true;
                         System.out.println("itt2");
-                    } else if(!actual.getReserved(actualStarterPlace + i).isEmpty() && !twoReservedListsAreEquals(actual.getReserved(actualStarterPlace + i), other.getReserved(otherStarterPlace - i))
-                            && !other.equals(chosenLandTile)) {
+                    } else if(!actual.getReserved(actualStarterPlace + i).isEmpty() && actual.getReserved(actualStarterPlace + i).size() > other.getReserved(otherStarterPlace - i).size()
+                            && !twoReservedListsAreEquals(actual.getReserved(actualStarterPlace + i), other.getReserved(otherStarterPlace - i)) && !other.equals(chosenLandTile)) {
+                        System.out.println("Mielőtt átállítaná: " + other.getReserved());
                         other.clearReserved(otherStarterPlace - i);
                         other.setReserved(otherStarterPlace - i, actual.getReserved(actualStarterPlace + i));
+                        System.out.println("Miután átállította: " + other.getReserved());
                         hasChanged = true;
                         System.out.println("itt3");
                     }
@@ -338,8 +341,8 @@ public class CarcassonneGameModel {
                         other.setReserved(otherStarterPlace + i, actual.getReserved(actualStarterPlace - i));
                         hasChanged = true;
                         System.out.println("itt5");
-                    } else if(!actual.getReserved(actualStarterPlace - i).isEmpty() && !twoReservedListsAreEquals(actual.getReserved(actualStarterPlace - i), other.getReserved(otherStarterPlace + i))
-                            && !other.equals(chosenLandTile)) {
+                    } else if(!actual.getReserved(actualStarterPlace - i).isEmpty() && actual.getReserved(actualStarterPlace + i).size() > other.getReserved(otherStarterPlace - i).size()
+                            && !twoReservedListsAreEquals(actual.getReserved(actualStarterPlace - i), other.getReserved(otherStarterPlace + i)) && !other.equals(chosenLandTile)) {
                         other.clearReserved(otherStarterPlace + i);
                         other.setReserved(otherStarterPlace + i, actual.getReserved(actualStarterPlace - i));
                         hasChanged = true;
@@ -359,6 +362,7 @@ public class CarcassonneGameModel {
     }
     
         private boolean twoReservedListsAreEquals(List<Follower> f1, List<Follower> f2) {
+            System.out.println("2 follow: " + f1.toString() + ", " + f2.toString());
         if(f1.size() == f2.size()) {
             for(Follower f : f1) {
                 if(!f2.contains(f)) {
@@ -741,6 +745,7 @@ public class CarcassonneGameModel {
         int[] fieldPoints = countFieldPoints();
         for(int i=0; i<point.length; i++) {
             point[i] += fieldPoints[i];
+            players[i].addPoint(point[i]);
         }
         System.out.println("VEGSO PONT: elso jatekos: " + point[0] + ", masodik jatekos: " + point[1]);
         return point;
@@ -1173,9 +1178,23 @@ public class CarcassonneGameModel {
     }
     
     public boolean playerHasFreeFollower() {
-        if(players[turn].getFreeFollowerNumber() == 0) {
-            return false;
+        return players[turn].getFreeFollowerNumber() != 0;
+    }
+    
+    public List<Point> sortPlayersByPoint() {
+        Map<Integer, Integer> map = new HashMap<>();
+        Map<Integer, Integer> sortedMap = new TreeMap<>(new PlayerPointComparator(map));
+        for (Player p : players) {
+            map.put(p.getColor(), p.getPoint());
         }
-        return true;
+        sortedMap.putAll(map);
+        
+        List<Point> list = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : sortedMap.entrySet()) {
+            System.out.println(entry.getKey()+ " : " + entry.getValue());
+            list.add(new Point(entry.getKey(), entry.getValue()));
+        }
+        
+        return list;
     }
 }

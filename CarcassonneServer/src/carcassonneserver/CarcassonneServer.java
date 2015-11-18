@@ -4,6 +4,10 @@ import artificialintelligence.CarcassonneAI;
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
 import java.awt.Point;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -13,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -20,21 +25,28 @@ import java.util.logging.Logger;
 import model.CarcassonneGameModel;
 
 public class CarcassonneServer extends Observable implements RmiService {
+    
+    private static CarcassonneProperties prop;
 
     private CarcassonneGameModel carcassonneGameModel;
 
     private WrappedObserver wrappedObserver;
 
     private static boolean timesUp = false;
-    private final static int PLAYERNUMBER = 2;
+    private static int PLAYERNUMBER;
     private static List<WrappedObserver> playerObservers = new ArrayList<>();
     private List<CarcassonneAI> artificialIntelligences = new ArrayList<>();
     private List<String> names = new ArrayList<>();
     private static Timer timer;
-    int interval = 12;
+    private static int STARTERINTERVAL;
+    int interval;
     private CarcassonneServer carser = this;
 
-    public CarcassonneServer() {
+    public CarcassonneServer(CarcassonneProperties prop) {
+        this.prop = prop;
+        PLAYERNUMBER = prop.getPlayerNumber();
+        STARTERINTERVAL = prop.getStarterInterval();
+        this.interval = STARTERINTERVAL;
         thread.start();
         
         int delay = 1000;
@@ -44,15 +56,17 @@ public class CarcassonneServer extends Observable implements RmiService {
 
             @Override
             public void run() {
-                setInterval();
-                System.out.println(interval);
-                notifyObservers(new Object[] {"timer", interval});
-                setChanged();
-                
-                if(interval == 0 && countObservers() < PLAYERNUMBER && countObservers() > 0) {
-                    for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
-                        CarcassonneAI carcassonneAI = new CarcassonneAI();
-                        artificialIntelligences.add(carcassonneAI);
+                if(countObservers() > 0) {
+                    setInterval();
+                    System.out.println(interval);
+                    notifyObservers(new Object[] {"timer", interval});
+                    setChanged();
+
+                    if(interval == 0 && countObservers() < PLAYERNUMBER && countObservers() > 0) {
+                        for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
+                            CarcassonneAI carcassonneAI = new CarcassonneAI();
+                            artificialIntelligences.add(carcassonneAI);
+                        }
                     }
                 }
 
@@ -102,9 +116,12 @@ public class CarcassonneServer extends Observable implements RmiService {
         private static final long serialVersionUID = 1L;
 
         private RemoteObserver ro = null;
+        
+        private String name = null;
 
-        public WrappedObserver(RemoteObserver ro) {
+        public WrappedObserver(RemoteObserver ro, String name) {
             this.ro = ro;
+            this.name = name;
         }
 
         @Override
@@ -114,6 +131,14 @@ public class CarcassonneServer extends Observable implements RmiService {
             } catch (RemoteException e) {
                 System.out.println("Remote exception removing observer:" + this);
                 o.deleteObserver(this);
+                if(countObservers() == 0) {
+                    interval = STARTERINTERVAL;
+                }
+                for(int i=0; i<names.size(); i++) {
+                    if(names.get(i).equals(this.name)) {
+                        names.remove(i);
+                    }
+                }
             }
         }
     }
@@ -121,14 +146,14 @@ public class CarcassonneServer extends Observable implements RmiService {
     @Override
     public void addObserver(RemoteObserver o, String name) throws RemoteException {
         names.add(name);
-        wrappedObserver = new WrappedObserver(o);
+        wrappedObserver = new WrappedObserver(o, name);
         playerObservers.add(wrappedObserver);    
         addObserver(wrappedObserver);
         System.out.println("Added observer:" + wrappedObserver);
     }
     
     @Override
-    public void whosTurnIsIt() throws RemoteException {
+    public void whosTurnIsIt() throws RemoteException {      
         if(!carcassonneGameModel.isGameEnded()) {
             if(carcassonneGameModel.getTurn() < playerObservers.size()) {
                 setChanged();
@@ -144,6 +169,8 @@ public class CarcassonneServer extends Observable implements RmiService {
             int[] point = carcassonneGameModel.countPointEndOfTheGame();
             setChanged();
             notifyObservers(new Object[] {"countPointEndOfTheGame", point});
+            setChanged();
+            notifyObservers(new Object[] {"sortedPoints", carcassonneGameModel.sortPlayersByPoint(), names});
         }
     }
 
@@ -209,6 +236,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     
     @Override
     public int locateLandTileOnTheTable(Point where) throws RemoteException {
+        System.out.println("IDE TENNÉ LE: " + where);
         boolean successLocate = carcassonneGameModel.locateLandTileOnTheTable(where);
         if(successLocate && carcassonneGameModel.playerHasFreeFollower() && !carcassonneGameModel.getPointsOfFollowers().isEmpty()) {
             setChanged();
@@ -254,10 +282,12 @@ public class CarcassonneServer extends Observable implements RmiService {
         setChanged();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        CarcassonneProperties prop = new CarcassonneProperties();
+        
         try {
             Registry reg = LocateRegistry.createRegistry(8080);
-            RmiService carcassonneServer = (RmiService) UnicastRemoteObject.exportObject(new CarcassonneServer(), 8080);
+            RmiService carcassonneServer = (RmiService) UnicastRemoteObject.exportObject(new CarcassonneServer(prop), prop.getPort());
             reg.rebind("carcassonneServer", carcassonneServer);
         } catch (RemoteException ex) {
             System.err.println("Szerver oldali hiba!");
