@@ -1,7 +1,9 @@
 package view;
 
+import carcassonneclient.CarcassonneClientProperties;
 import controller.CommunicationController;
 import java.awt.Point;
+import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -48,6 +50,10 @@ public class FXMLGameController extends Group implements Initializable {
     @FXML protected Button leftRotateButton;
     @FXML protected Button rightRotateButton;
     @FXML protected VBox leftVBox;
+    private final int RIGHTBUTTONROWNUMBER;
+    private final int RIGHTBUTTONCOLUMNNUMBER;
+    private final int LANDTILENUMBER;
+    private int TABLESIZE;
     private int id;
     private List<String> namesList;
     private Label[] names;
@@ -55,8 +61,8 @@ public class FXMLGameController extends Group implements Initializable {
     private Label[] followers;
     private StackPane[][] stackPane;
     private Rectangle[][] centerRectangles;
-    private Button[][] rightButtons = new Button[15][5];
-    private Image[] landTiles = new Image[71];
+    private Button[][] rightButtons;
+    private Image[] landTiles;
     private Point actualLandTileTablePosition;
     private double degree;
     private List<Point> forbiddenPlacesOnTheTable = new ArrayList<>();
@@ -65,7 +71,14 @@ public class FXMLGameController extends Group implements Initializable {
     
     public CommunicationController delegate;
 
-    public FXMLGameController(int id, List<String> namesList) {
+    public FXMLGameController(int id, List<String> namesList) throws IOException {
+        CarcassonneClientProperties prop = new CarcassonneClientProperties();
+        RIGHTBUTTONROWNUMBER = prop.getRightButtonRowNumber();
+        RIGHTBUTTONCOLUMNNUMBER = prop.getRightButtonColumnNumber();
+        LANDTILENUMBER = prop.getLandTileNumber();
+        TABLESIZE = prop.getTableSize();
+        this.rightButtons = new Button[RIGHTBUTTONROWNUMBER][RIGHTBUTTONCOLUMNNUMBER];
+        this.landTiles = new Image[LANDTILENUMBER];
         this.id = id;
         this.namesList = namesList;
         names = new Label[this.namesList.size()];
@@ -95,19 +108,19 @@ public class FXMLGameController extends Group implements Initializable {
     }
     
     private void createRectanglesOnTheTable() {
-        stackPane = new StackPane[143][143];
-        centerRectangles = new Rectangle[143][143];
-        for(int i=0; i<143; i++) {
-           for(int j=0; j<143; j++) {           
+        stackPane = new StackPane[TABLESIZE][TABLESIZE];
+        centerRectangles = new Rectangle[TABLESIZE][TABLESIZE];
+        for(int i=0; i<TABLESIZE; i++) {
+           for(int j=0; j<TABLESIZE; j++) {           
                Rectangle rectangle = new Rectangle(0, 0, 120, 120);
-               if(i==143/2 && j == 143/2) {
+               if(i==TABLESIZE/2 && j == TABLESIZE/2) {
                    rectangle.setDisable(true);
                    rectangle.setFill(new ImagePattern(LandTileImageLoader.getInstance().getStarterLandTile()));
                }
-               else if((i==143/2 && (j==143/2-1 || j==143/2+1)) || (j==143/2 && (i==143/2-1 || i==143/2+1))) {
+               else if((i==TABLESIZE/2 && (j==TABLESIZE/2-1 || j==TABLESIZE/2+1)) || (j==TABLESIZE/2 && (i==TABLESIZE/2-1 || i==TABLESIZE/2+1))) {
                    rectangle.setFill(Color.GREEN);
                }
-               else if(((i<143/2-1 && i > 143/2-4) || (i > 143/2+1 && i < 143/2+4)) && ((j<143/2-1 && j > 143/2-6) || (j > 143/2+1 && j < 143/2+6))) {
+               else if(((i<TABLESIZE/2-1 && i > TABLESIZE/2-4) || (i > TABLESIZE/2+1 && i < TABLESIZE/2+4)) && ((j<TABLESIZE/2-1 && j > TABLESIZE/2-6) || (j > TABLESIZE/2+1 && j < TABLESIZE/2+6))) {
                    rectangle.setVisible(false);
                    rectangle.setDisable(true); 
                }
@@ -130,8 +143,8 @@ public class FXMLGameController extends Group implements Initializable {
     }
     
     private void createRectanglesOnTheRightSide() {
-        for(int i=0; i<15-1; i++) {
-           for(int j=0; j<5; j++) {
+        for(int i=0; i<RIGHTBUTTONROWNUMBER-1; i++) {
+           for(int j=0; j<RIGHTBUTTONCOLUMNNUMBER; j++) {
                rightButtons[i][j] = new GameButton(i, j);
                rightButtons[i][j].setId("right_buttons");
                rightGridPane.add(rightButtons[i][j], j, i);
@@ -141,12 +154,12 @@ public class FXMLGameController extends Group implements Initializable {
            }
         }
         for(int j=0; j<1; j++) {
-            rightButtons[15-1][j] = new GameButton(15-1, j);
-            rightButtons[15-1][j].setId("right_buttons");
-            rightGridPane.add(rightButtons[15-1][j], j, 15-1);
-            rightButtons[15-1][j].setOnAction(chooseAction);
-            rightButtons[15-1][j].setOnMouseEntered(buttonEnterAction);
-            rightButtons[15-1][j].setOnMouseExited(buttonExitAction);
+            rightButtons[RIGHTBUTTONROWNUMBER-1][j] = new GameButton(RIGHTBUTTONROWNUMBER-1, j);
+            rightButtons[RIGHTBUTTONROWNUMBER-1][j].setId("right_buttons");
+            rightGridPane.add(rightButtons[15-1][j], j, RIGHTBUTTONROWNUMBER-1);
+            rightButtons[RIGHTBUTTONROWNUMBER-1][j].setOnAction(chooseAction);
+            rightButtons[RIGHTBUTTONROWNUMBER-1][j].setOnMouseEntered(buttonEnterAction);
+            rightButtons[RIGHTBUTTONROWNUMBER-1][j].setOnMouseExited(buttonExitAction);
         }
     }
     
@@ -252,8 +265,8 @@ public class FXMLGameController extends Group implements Initializable {
     private final EventHandler<MouseEvent> rectangleClickAction = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
-            for(int i=0; i<143; i++) {
-                for(int j=0; j<143; j++) {
+            for(int i=0; i<TABLESIZE; i++) {
+                for(int j=0; j<TABLESIZE; j++) {
                     if(centerRectangles[i][j] == t.getSource()) {
                         try {
                             int successLocate = delegate.locateLandTileOnTheTable(new Point(i,j));
@@ -300,8 +313,8 @@ public class FXMLGameController extends Group implements Initializable {
     private final EventHandler<ActionEvent> chooseAction = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent t) {
-            for(int i=0; i<15; i++) {
-                for(int j=0; j<5; j++) {
+            for(int i=0; i<RIGHTBUTTONROWNUMBER; i++) {
+                for(int j=0; j<RIGHTBUTTONCOLUMNNUMBER; j++) {
                     if(t.getSource() == rightButtons[i][j]) {
                         try { 
                             delegate.chooseFaceDownLandTile(new Point(i,j));
@@ -309,7 +322,7 @@ public class FXMLGameController extends Group implements Initializable {
                             System.err.println("Hiba az adat küldése során!");
                         }
                         break;
-                    } else if(i==14 && j==0) {
+                    } else if(i==RIGHTBUTTONROWNUMBER-1 && j==0) {
                         break;
                     }
                 }
@@ -321,8 +334,8 @@ public class FXMLGameController extends Group implements Initializable {
         rightButtons[p.x][p.y].setDisable(true);
         drawnLandTiles.add(p);
         imageView.setImage(landTiles[p.x*5+p.y]);
-        for(int i=0; i<143; i++) {
-            for(int j=0; j<143; j++) {
+        for(int i=0; i<TABLESIZE; i++) {
+            for(int j=0; j<TABLESIZE; j++) {
                 centerRectangles[i][j].setStroke(Color.BLACK);
                 centerRectangles[i][j].setStrokeWidth(1);
             }
@@ -435,8 +448,8 @@ public class FXMLGameController extends Group implements Initializable {
     }
         
     private final EventHandler<MouseEvent> ractangleEnterAction = (MouseEvent t) -> {
-        for(int i=0; i<143; i++) {
-            for(int j=0; j<143; j++) {
+        for(int i=0; i<TABLESIZE; i++) {
+            for(int j=0; j<TABLESIZE; j++) {
                 if(centerRectangles[i][j] == t.getSource()) {
                     centerRectangles[i][j].setEffect(new Bloom());
                     delegate.scene.setCursor(Cursor.HAND);

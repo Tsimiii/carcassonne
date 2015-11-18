@@ -26,7 +26,7 @@ import model.CarcassonneGameModel;
 
 public class CarcassonneServer extends Observable implements RmiService {
     
-    private static CarcassonneProperties prop;
+    private static CarcassonneServerProperties prop;
 
     private CarcassonneGameModel carcassonneGameModel;
 
@@ -42,7 +42,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     int interval;
     private CarcassonneServer carser = this;
 
-    public CarcassonneServer(CarcassonneProperties prop) {
+    public CarcassonneServer(CarcassonneServerProperties prop) {
         this.prop = prop;
         PLAYERNUMBER = prop.getPlayerNumber();
         STARTERINTERVAL = prop.getStarterInterval();
@@ -283,7 +283,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
 
     public static void main(String[] args) throws IOException {
-        CarcassonneProperties prop = new CarcassonneProperties();
+        CarcassonneServerProperties prop = new CarcassonneServerProperties();
         
         try {
             Registry reg = LocateRegistry.createRegistry(8080);
