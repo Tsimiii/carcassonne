@@ -840,7 +840,8 @@ public class CarcassonneGameModel {
     public boolean roadAndCityAreNotReservedByOthers() {
         for(int[] contPart : chosenLandTile.getContinuousParts()) {
             for(Follower f : chosenLandTile.getReserved(contPart[0])) {
-                if(f.getColor() != turn) {
+                if((chosenLandTile.getType(contPart[0]) == ROAD || chosenLandTile.getType(contPart[0]) == CITY || chosenLandTile.getType(contPart[0]) == CITYWITHPENNANT)
+                        && f.getColor() != turn) {
                     return false;
                 }
             }

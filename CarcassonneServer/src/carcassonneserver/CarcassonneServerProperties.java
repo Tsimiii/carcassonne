@@ -35,4 +35,8 @@ public class CarcassonneServerProperties {
         return Integer.parseInt(prop.getProperty("starterinterval"));
     }
     
+    public int getAIDelay() {
+        return Integer.parseInt(prop.getProperty("aidelay"));
+    }
+    
 }

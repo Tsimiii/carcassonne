@@ -64,7 +64,7 @@ public class CarcassonneServer extends Observable implements RmiService {
 
                     if(interval == 0 && countObservers() < PLAYERNUMBER && countObservers() > 0) {
                         for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
-                            CarcassonneAI carcassonneAI = new CarcassonneAI();
+                            CarcassonneAI carcassonneAI = new CarcassonneAI(prop.getAIDelay());
                             artificialIntelligences.add(carcassonneAI);
                         }
                     }
@@ -212,7 +212,11 @@ public class CarcassonneServer extends Observable implements RmiService {
     public void chooseFaceDownLandTileDone() throws RemoteException {
         asd++;
         if(carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0) {
-            artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).decideBestLocation();
+            try {
+                artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).decideBestLocation();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CarcassonneServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
     }
@@ -259,7 +263,11 @@ public class CarcassonneServer extends Observable implements RmiService {
     public void locateLandTileDone() throws RemoteException {
         asd++;
         if(carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0 && carcassonneGameModel.isChoosenLandTileNotNull()) {
-            artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).locateFollower();
+            try {
+                artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).locateFollower();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CarcassonneServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     

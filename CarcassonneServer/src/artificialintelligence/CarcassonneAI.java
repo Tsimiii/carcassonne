@@ -22,6 +22,8 @@ public class CarcassonneAI {
     private CarcassonneGameModel carcassonneGameModel;
     public CarcassonneServer delegate;
     
+    private int delay;
+    
     private int rule = 100;
     private int rotate = -1;
     private Point tablePosition = new Point(-1, -1);
@@ -29,8 +31,9 @@ public class CarcassonneAI {
     private int connectionNumber = 0;
     private int sizeNumber = 0;
 
-    public CarcassonneAI() {
+    public CarcassonneAI(int delay) {
         initPointsOfLandTilesCanBeChosed();
+        this.delay = delay;
     }
     
     private void initPointsOfLandTilesCanBeChosed() {
@@ -61,7 +64,8 @@ public class CarcassonneAI {
         sizeNumber = 0;
     }
     
-    public void decideBestLocation() throws RemoteException {
+    public void decideBestLocation() throws RemoteException, InterruptedException {
+        Thread.sleep(delay);
         for(int i=0; i<4; i++) {
             for(Iterator<Point> it = carcassonneGameModel.getEnabledPlacesOnTheTable().iterator(); it.hasNext(); ) {
                 Point tablePosition = it.next();
@@ -242,6 +246,14 @@ public class CarcassonneAI {
             this.rotate = rotate;
             this.connectionNumber = carcassonneGameModel.getNeighbourLandTileNumber(tablePosition);
             this.tablePosition = tablePosition;
+        } else if(rule > 16 || (rule == 16 && this.connectionNumber < carcassonneGameModel.getNeighbourLandTileNumber(tablePosition))) {
+            if(!(this.tablePosition.equals(tablePosition) && this.rotate == rotate)) {
+                this.followerPosition = -1;
+            }
+            rule = 16;
+            this.rotate = rotate;
+            this.connectionNumber = carcassonneGameModel.getNeighbourLandTileNumber(tablePosition);
+            this.tablePosition = tablePosition;
         }
     }
     
@@ -327,7 +339,8 @@ public class CarcassonneAI {
         } 
     }
     
-    public void locateFollower() throws RemoteException {
+    public void locateFollower() throws RemoteException, InterruptedException {
+        Thread.sleep(delay);
         if(followerPosition == -1) {
             locateOrNotFollowerDecision();
         }
