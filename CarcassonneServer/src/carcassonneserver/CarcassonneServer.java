@@ -245,7 +245,6 @@ public class CarcassonneServer extends Observable implements RmiService {
     
     @Override
     public int locateLandTileOnTheTable(Point where) throws RemoteException {
-        System.out.println("IDE TENNÉ LE: " + where);
         boolean successLocate = carcassonneGameModel.locateLandTileOnTheTable(where);
         if(successLocate && carcassonneGameModel.playerHasFreeFollower() && !carcassonneGameModel.getPointsOfFollowers().isEmpty()) {
             setChanged();

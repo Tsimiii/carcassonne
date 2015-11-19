@@ -303,7 +303,7 @@ public class FXMLGameController extends Group implements Initializable {
         switch(num) {
             case 0 : return Color.BLUE;
             case 1 : return Color.RED;
-            case 2 : return Color.YELLOW;
+            case 2 : return Color.GOLD;
             case 3 : return Color.GREEN;
             case 4 : return Color.BLACK;
             default : System.err.println("Ilyen id nem létezik!"); return null;

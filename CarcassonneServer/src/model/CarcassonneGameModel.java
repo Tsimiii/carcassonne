@@ -82,7 +82,7 @@ public class CarcassonneGameModel {
         if (chosenLandTile == null) {
             landTileCanBeLocated = false;
             chosenLandTile = landTiles[p.x * 5 + p.y];
-            System.out.println("chosen lt after choose: " + chosenLandTile);
+            System.out.println("\nchosen lt after choose: " + chosenLandTile);
             forbidIllegalPlaces();
             checkWhetherLandTileCanBeLocatedAfterRotates();
             return true;
@@ -107,6 +107,7 @@ public class CarcassonneGameModel {
                 return true;
             }
         }
+        chosenLandTile.setPositionOnTheTable(-2, -2);
         chosenLandTile = null;
         return false;
     }
@@ -281,7 +282,6 @@ public class CarcassonneGameModel {
             locatedLandTiles.add(chosenLandTile);
             chosenLandTile.setPositionOnTheTable(p.x, p.y);
             bliblablo(p, false);
-
             initFollowerPointsOnTheLandTile();
             return true;
         }
@@ -316,19 +316,14 @@ public class CarcassonneGameModel {
                     if (!other.getReserved(otherStarterPlace - i).isEmpty() && actual.getReserved(actualStarterPlace + i).isEmpty()) {
                         actual.setReserved(actualStarterPlace + i, other.getReserved(otherStarterPlace - i));
                         hasChanged = true;
-                        System.out.println("itt1");
                     } else if (other.getReserved(otherStarterPlace - i).isEmpty() && !actual.getReserved(actualStarterPlace + i).isEmpty()) {
                         other.setReserved(otherStarterPlace - i, actual.getReserved(actualStarterPlace + i));
                         hasChanged = true;
-                        System.out.println("itt2");
                     } else if(!actual.getReserved(actualStarterPlace + i).isEmpty() && actual.getReserved(actualStarterPlace + i).size() > other.getReserved(otherStarterPlace - i).size()
                             && !twoReservedListsAreEquals(actual.getReserved(actualStarterPlace + i), other.getReserved(otherStarterPlace - i)) && !other.equals(chosenLandTile)) {
-                        System.out.println("Mielőtt átállítaná: " + other.getReserved());
                         other.clearReserved(otherStarterPlace - i);
                         other.setReserved(otherStarterPlace - i, actual.getReserved(actualStarterPlace + i));
-                        System.out.println("Miután átállította: " + other.getReserved());
                         hasChanged = true;
-                        System.out.println("itt3");
                     }
                 }
             } else {
@@ -336,17 +331,14 @@ public class CarcassonneGameModel {
                     if (!other.getReserved(otherStarterPlace + i).isEmpty() && actual.getReserved(actualStarterPlace - i).isEmpty()) {
                         actual.setReserved(actualStarterPlace - i, other.getReserved(otherStarterPlace + i));
                         hasChanged = true;
-                        System.out.println("itt4");
                     } else if (other.getReserved(otherStarterPlace + i).isEmpty() && !actual.getReserved(actualStarterPlace - i).isEmpty()) {
                         other.setReserved(otherStarterPlace + i, actual.getReserved(actualStarterPlace - i));
                         hasChanged = true;
-                        System.out.println("itt5");
                     } else if(!actual.getReserved(actualStarterPlace - i).isEmpty() && actual.getReserved(actualStarterPlace + i).size() > other.getReserved(otherStarterPlace - i).size()
                             && !twoReservedListsAreEquals(actual.getReserved(actualStarterPlace - i), other.getReserved(otherStarterPlace + i)) && !other.equals(chosenLandTile)) {
                         other.clearReserved(otherStarterPlace + i);
                         other.setReserved(otherStarterPlace + i, actual.getReserved(actualStarterPlace - i));
                         hasChanged = true;
-                        System.out.println("itt6");
                     }
                 }
             }
@@ -362,7 +354,6 @@ public class CarcassonneGameModel {
     }
     
         private boolean twoReservedListsAreEquals(List<Follower> f1, List<Follower> f2) {
-            System.out.println("2 follow: " + f1.toString() + ", " + f2.toString());
         if(f1.size() == f2.size()) {
             for(Follower f : f1) {
                 if(!f2.contains(f)) {
@@ -377,36 +368,26 @@ public class CarcassonneGameModel {
     private void bliblablo(Point landTilePos, boolean real) {
         for(int i=0; i<12; i++) {
             if(i == 0 || i == 1 || i == 2) {
-                /*if(cells[landTilePos.x][landTilePos.y - 1].getLandTile() != null)
-                    System.out.println("bal: " + cells[landTilePos.x][landTilePos.y - 1].getLandTile().getReserved(8-i));*/
                 if(cells[landTilePos.x][landTilePos.y - 1].getLandTile() != null && !cells[landTilePos.x][landTilePos.y - 1].getLandTile().getReserved(8-i).isEmpty()) {
                     addReservationToActualLandTile(landTilePos, new Point(landTilePos.x, landTilePos.y - 1), i, 8-i);
                 }
             } else if(i==3 || i==4 || i==5) {
-                /*if(cells[landTilePos.x+1][landTilePos.y].getLandTile() != null)
-                    System.out.println("alul: " + cells[landTilePos.x+1][landTilePos.y].getLandTile().getReserved(14-i));*/
                 if(cells[landTilePos.x+1][landTilePos.y].getLandTile() != null && !cells[landTilePos.x+1][landTilePos.y].getLandTile().getReserved(14-i).isEmpty()) {
                     addReservationToActualLandTile(landTilePos, new Point(landTilePos.x+1, landTilePos.y), i, 14-i);
                 }
             } else if(i==6 || i==7 || i==8) {
-                /*if(cells[landTilePos.x][landTilePos.y +1].getLandTile() != null)
-                    System.out.println("jobb: " + cells[landTilePos.x][landTilePos.y+1].getLandTile().getReserved(8-i));*/
                 if(cells[landTilePos.x][landTilePos.y+1].getLandTile() != null && !cells[landTilePos.x][landTilePos.y+1].getLandTile().getReserved(8-i).isEmpty()) {
                     addReservationToActualLandTile(landTilePos, new Point(landTilePos.x, landTilePos.y+1), i, 8-i);
                 }
             } else if(i==9 || i==10 || i==11) {
-                /*if(cells[landTilePos.x-1][landTilePos.y].getLandTile() != null)
-                    System.out.println("felul: " + cells[landTilePos.x-1][landTilePos.y].getLandTile().getReserved(14-i));*/
                 if(cells[landTilePos.x-1][landTilePos.y].getLandTile() != null && !cells[landTilePos.x-1][landTilePos.y].getLandTile().getReserved(14-i).isEmpty()) {
                     addReservationToActualLandTile(landTilePos, new Point(landTilePos.x-1, landTilePos.y), i, 14-i);
                 }
             }
         }
-        //System.out.println("nos: " + cells[landTilePos.x][landTilePos.y].getLandTile().getReserved());
         if(real) {
             checkNeighboringLandTileReservations(landTilePos);
         }
-        //System.out.println("nos2: " + cells[landTilePos.x][landTilePos.y].getLandTile().getReserved());
     }
     
     private void addReservationToActualLandTile(Point p1, Point p2, int ind1, int ind2) {
@@ -439,21 +420,15 @@ public class CarcassonneGameModel {
 
     public boolean locateFollower(int place) {
         if(players[turn].getFreeFollowerNumber() > 0) {
-            System.out.println(players[turn]);
-            System.out.println("TURN: " + turn);
-            System.out.println("chosen lt when locate follower: " + chosenLandTile);
-            System.out.println("Pos: " + chosenLandTile.getPositionOnTheTable());
             players[turn].setFollowerLocationAndContPartInd(chosenLandTile.getPositionOnTheTable(), place);
             chosenLandTile.setReserved(place, players[turn].getFollowerByLocation(chosenLandTile.getPositionOnTheTable()));
             checkNeighboringLandTileReservations(chosenLandTile.getPositionOnTheTable());
-            //bliblablo(chosenLandTile.getPositionOnTheTable());
             return true;
         }
         return false;
     }
 
         public int[] countPoints() {
-            System.out.println("chosen lt when count point: " + chosenLandTile);
         freeFollowersAgainPastLocation.clear();
         int[] point = new int[players.length];
         int[] roadAndCityPoint = countRoadAndCityPoints();
@@ -764,8 +739,6 @@ public class CarcassonneGameModel {
                         for (Integer f : freq) {
                             point[f] += 3;
                         }
-                        //fols.set(j, cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]));
-                        //System.out.println(p.x + ", " + p.y + " terulet-ertek: " + cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]);
                         for(Follower f : cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0])) {
                             if(!fols.get(j).contains(f)) {
                                 fols.get(j).add(f);
@@ -1192,7 +1165,6 @@ public class CarcassonneGameModel {
         
         List<Point> list = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : sortedMap.entrySet()) {
-            System.out.println(entry.getKey()+ " : " + entry.getValue());
             list.add(new Point(entry.getKey(), entry.getValue()));
         }
         
