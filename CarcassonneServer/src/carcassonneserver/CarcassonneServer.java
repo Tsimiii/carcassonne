@@ -189,9 +189,9 @@ public class CarcassonneServer extends Observable implements RmiService {
             if(carcassonneGameModel.getTurn() < playerObservers.size()) {
                 setChanged();
                 playerObservers.get(carcassonneGameModel.getTurn()).update(this, "rotateButtonEnabled");
+                setChanged();
+                playerObservers.get(carcassonneGameModel.getTurn()).update(this, carcassonneGameModel.getForbiddenPlacesOnTheTable());
             }
-            setChanged();
-            notifyObservers(carcassonneGameModel.getForbiddenPlacesOnTheTable());
             if(!carcassonneGameModel.isLandTileCanBeLocated()) {
                 for(CarcassonneAI ai : artificialIntelligences) {
                     ai.removeFromPointsOfLandTilesCanBeChosed(p);
@@ -227,8 +227,10 @@ public class CarcassonneServer extends Observable implements RmiService {
         if(successRotateLeft) {
             setChanged();
             notifyObservers("successRotateLeft");
-            setChanged();
-            notifyObservers(carcassonneGameModel.getForbiddenPlacesOnTheTable());
+            if(carcassonneGameModel.getTurn() < playerObservers.size()) {
+                setChanged();
+                playerObservers.get(carcassonneGameModel.getTurn()).update(this, carcassonneGameModel.getForbiddenPlacesOnTheTable());
+            }
         }
     }
 
@@ -238,8 +240,10 @@ public class CarcassonneServer extends Observable implements RmiService {
         if(successRotateRight) {
             setChanged();
             notifyObservers("successRotateRight");
-            setChanged();
-            notifyObservers(carcassonneGameModel.getForbiddenPlacesOnTheTable());
+            if(carcassonneGameModel.getTurn() < playerObservers.size()) {
+                setChanged();
+                playerObservers.get(carcassonneGameModel.getTurn()).update(this, carcassonneGameModel.getForbiddenPlacesOnTheTable());
+            }
         }
     }
     

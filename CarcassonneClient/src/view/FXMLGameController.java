@@ -438,7 +438,7 @@ public class FXMLGameController extends Group implements Initializable {
                 circles.get(p).setFill(Color.PINK);
             } else if(circles.get(p).getFill().equals(Color.GREEN)) {
                 circles.get(p).setFill(Color.LIGHTGREEN);
-            } else if(circles.get(p).getFill().equals(Color.YELLOW)) {
+            } else if(circles.get(p).getFill().equals(Color.GOLD)) {
                 circles.get(p).setFill(Color.LIGHTYELLOW);
             } else if(circles.get(p).getFill().equals(Color.BLACK)) {
                 circles.get(p).setFill(Color.LIGHTGRAY);
