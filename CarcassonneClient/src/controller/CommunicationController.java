@@ -36,6 +36,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     private Image img;
     private double degree;
     private String name;
+    private String chooseInformation = null;
 
     public Scene scene;
 
@@ -239,15 +240,20 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     }
 
     public void chooseFaceDownLandTile(Point p) throws RemoteException {
-        String chooseInformation = remoteService.chooseFaceDownLandTile(p);
-        if (chooseInformation.equals("multipleChoose")) {
+        /*String */chooseInformation = remoteService.chooseFaceDownLandTile(p);
+        /*if (chooseInformation.equals("multipleChoose")) {
             gameController.chooseLandTileWarningMessage();
         } else if (chooseInformation.equals("cantBeLocated")) {
             gameController.landTileCantBeLocatednformationMessage();
-        }
+        }*/
     }
     
     public void chooseFaceDownLandTileDone() throws RemoteException {
+        if (chooseInformation != null && chooseInformation.equals("multipleChoose")) {
+            gameController.chooseLandTileWarningMessage();
+        } else if (chooseInformation != null && chooseInformation.equals("cantBeLocated")) {
+            gameController.landTileCantBeLocatednformationMessage();
+        }
         remoteService.chooseFaceDownLandTileDone();
     }
 

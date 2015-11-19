@@ -58,7 +58,7 @@ public class CarcassonneServer extends Observable implements RmiService {
             public void run() {
                 if(countObservers() > 0) {
                     setInterval();
-                    System.out.println(interval);
+                    System.out.println("interval: " + interval);
                     notifyObservers(new Object[] {"timer", interval});
                     setChanged();
 

@@ -334,6 +334,7 @@ public class FXMLGameController extends Group implements Initializable {
         rightButtons[p.x][p.y].setDisable(true);
         drawnLandTiles.add(p);
         imageView.setImage(landTiles[p.x*5+p.y]);
+        //landTileCantBeLocatednformationMessage();
         for(int i=0; i<TABLESIZE; i++) {
             for(int j=0; j<TABLESIZE; j++) {
                 centerRectangles[i][j].setStroke(Color.BLACK);
