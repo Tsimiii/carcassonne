@@ -171,6 +171,11 @@ public class CarcassonneServer extends Observable implements RmiService {
             notifyObservers(new Object[] {"countPointEndOfTheGame", point});
             setChanged();
             notifyObservers(new Object[] {"sortedPoints", carcassonneGameModel.sortPlayersByPoint(), names});
+            
+            deleteObservers();
+            playerObservers.clear();
+            artificialIntelligences.clear();
+            names.clear();
         }
     }
 

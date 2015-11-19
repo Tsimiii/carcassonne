@@ -10,19 +10,15 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import view.FXMLLoadingScreenController;
 import view.FXMLLocateFollowerController;
 import view.FXMLResultScreenController;
@@ -85,7 +81,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    try {
+                    try { 
                         gameController.chooseLandTileUpdate((Point) updateMsg);
                     } catch (RemoteException ex) {
                         Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
@@ -168,7 +164,6 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                   // System.out.println("ITT VAAAN");
                     displayResultScreen((List<Point>) ((Object[]) updateMsg)[1], (List<String>)((Object[]) updateMsg)[2]);
                 }
             });
@@ -198,7 +193,6 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     public void displayLoadingScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/fxml_carcassonne_loading_screen.fxml"));
-            //loadingScreenController = new FXMLLoadingScreenController();
             loader.setController(loadingScreenController);
             scene.setRoot(loader.load());
         } catch (IOException ex) {
@@ -234,7 +228,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             loader.setController(locateFollowerController);
             locateFollowerController.delegate = this;
 
-            scene = new Scene(loader.load(), 500, 500);
+            Scene scene = new Scene(loader.load(), 500, 500);
             scene.getStylesheets().add(this.getClass().getResource("/resources/css/style.css").toExternalForm());
             stage.setScene(scene);
             stage.show();
@@ -323,7 +317,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             loader.setController(resultScreenController);
             resultScreenController.delegate = this;
 
-            scene = new Scene(loader.load(), 1200, 700);
+            Scene scene = new Scene(loader.load(), 1200, 700);
             scene.getStylesheets().add(this.getClass().getResource("/resources/css/style.css").toExternalForm());
             stage.setScene(scene);
             stage.show();
