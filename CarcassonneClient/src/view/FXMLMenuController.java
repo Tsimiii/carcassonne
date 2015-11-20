@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view;
 
 import controller.CommunicationController;
@@ -15,14 +10,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import view.dialogs.WarningDialog;
 
 public class FXMLMenuController implements Initializable {
@@ -40,10 +35,14 @@ public class FXMLMenuController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+       nameTextField.setOnKeyPressed(keyPressed);
     }
     
     @FXML private void joinGame(ActionEvent event) {
+        joinGameCommands();
+    }
+    
+    private void joinGameCommands() {
         if(!nameTextField.getText().equals("")) {
             delegate.clickJoinGame(nameTextField.getText());
         } else {
@@ -65,4 +64,11 @@ public class FXMLMenuController implements Initializable {
     private void mouseExit(MouseEvent event){
         delegate.scene.setCursor(Cursor.DEFAULT);
     }
+    
+    EventHandler<KeyEvent> keyPressed = (KeyEvent e) -> {
+       if(e.getCode().equals(KeyCode.ENTER)) {
+           joinGameCommands();
+       }
+    };
+    
 }
