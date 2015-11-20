@@ -51,7 +51,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
     
     private void createAndStartThreadAndStartTimer() {
-        thread = new MyThread();
+        thread = new JoinPlayersThread();
         thread.start();
         int delay = 1000;
         int period = 1000;
@@ -69,26 +69,25 @@ public class CarcassonneServer extends Observable implements RmiService {
     
     public class MyTimerTask extends TimerTask{
         @Override
-            public void run() {
-                if(countObservers() > 0) {
-                    setInterval();
-                    System.out.println("interval: " + interval);
-                    notifyObservers(new Object[] {"timer", interval});
-                    setChanged();
+        public void run() {
+            if(countObservers() > 0) {
+                setInterval();
+                System.out.println("interval: " + interval);
+                notifyObservers(new Object[] {"timer", interval});
+                setChanged();
 
-                    if(interval == 0 && countObservers() < PLAYERNUMBER && countObservers() > 0) {
-                        for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
-                            CarcassonneAI carcassonneAI = new CarcassonneAI(prop.getAIDelay());
-                            artificialIntelligences.add(carcassonneAI);
-                        }
+                if(interval == 0 && countObservers() < PLAYERNUMBER && countObservers() > 0) {
+                    for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
+                        CarcassonneAI carcassonneAI = new CarcassonneAI(prop.getAIDelay());
+                        artificialIntelligences.add(carcassonneAI);
                     }
                 }
-
             }
-    }
+
+        }
+    }  
     
-    
-    public class MyThread extends Thread {
+    public class JoinPlayersThread extends Thread {
         @Override
         public void run() {
             while (true) {
@@ -115,34 +114,6 @@ public class CarcassonneServer extends Observable implements RmiService {
             }
         }
     }
-
-    /*Thread thread = new Thread() {
-        @Override
-        public void run() {
-            while (true) {
-                if (countObservers() > 0 && (countObservers() == PLAYERNUMBER || interval == 0)) {
-                    carcassonneGameModel = new CarcassonneGameModel(PLAYERNUMBER);
-                    for(CarcassonneAI ai : artificialIntelligences) {
-                        ai.delegate = CarcassonneServer.this;
-                        ai.setGameModel(carcassonneGameModel);
-                    }
-                    setChanged();
-                    notifyObservers(carcassonneGameModel.getShuffledIdArray());
-                    
-                    for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
-                        names.add("Gépi játékos " + (i+1));
-                    }
-                    setChanged();
-                    for(int i=0; i<playerObservers.size(); i++) {
-                        playerObservers.get(i).update(carser, new Object[] {"startgame", i, names});
-                    }
-                    setChanged();
-                    playerObservers.get(0).update(carser, "YourTurn");
-                    break;
-                }
-            }
-        };
-    };*/
     
     private class WrappedObserver implements Observer, Serializable {
 

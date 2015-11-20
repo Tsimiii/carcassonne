@@ -5,17 +5,14 @@ import java.awt.Point;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -25,7 +22,7 @@ public class FXMLResultScreenController implements Initializable{
     private List<Point> list;
     private List<String> names;
     private Stage stage;
-    @FXML protected VBox resultScreneVBox;
+    @FXML protected GridPane resultGridPane;
     @FXML protected Button exitButton;
     @FXML protected Button backToMainMenuButton;
     
@@ -55,18 +52,15 @@ public class FXMLResultScreenController implements Initializable{
         Text[] nameText = new Text[names.size()];
         Text[] pointText = new Text[names.size()];
         for (int j=list.size()-1; j>-1; j--) {
-            HBox hBox = new HBox();
             rankingText[list.size()-j-1] = new Text((list.size()-j)+".");
             rankingText[list.size()-j-1].setId("rankingTextResult");
-            rankingText[list.size()-j-1].setTranslateX(210);
+            resultGridPane.add(rankingText[list.size()-j-1], 0, list.size()-j-1);
             nameText[list.size()-j-1] = new Text(names.get(list.get(j).x));
             nameText[list.size()-j-1].setId("nameTextResult");
-            nameText[list.size()-j-1].setTranslateX(410);
+            resultGridPane.add(nameText[list.size()-j-1], 1, list.size()-j-1);
             pointText[list.size()-j-1] = new Text(list.get(j).y+" pont");
             pointText[list.size()-j-1].setId("pointTextResult");
-            pointText[list.size()-j-1].setTranslateX(610);
-            hBox.getChildren().addAll(rankingText[list.size()-j-1], nameText[list.size()-j-1], pointText[list.size()-j-1]);
-            resultScreneVBox.getChildren().add(hBox);
+            resultGridPane.add(pointText[list.size()-j-1], 2, list.size()-j-1);
         }
     }
     

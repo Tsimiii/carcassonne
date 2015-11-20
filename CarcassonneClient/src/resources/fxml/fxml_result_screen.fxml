@@ -12,9 +12,7 @@
         <Text id="resultText" text="Eredményhirdetés" translateX="350" translateY="50" scaleX="2" scaleY="2"></Text>
     </top>
     <center>
-        <VBox fx:id="resultScreneVBox" spacing="50" translateY="170">
-            <children></children>
-        </VBox>
+        <GridPane fx:id="resultGridPane" hgap="150" vgap="50" translateY="160" translateX="230"></GridPane>
     </center>
     <bottom>
         <HBox id="resultHBox" spacing="220" alignment="CENTER" >
