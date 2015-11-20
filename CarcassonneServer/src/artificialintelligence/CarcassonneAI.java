@@ -54,7 +54,7 @@ public class CarcassonneAI {
         Point point = pointsOfLandTilesCanBeChosed.get(ind);
         String message;
         do {
-            System.out.println("itt vagyok");
+            System.out.println("itt vagyok: " + delegate);
             message = delegate.chooseFaceDownLandTile(point);
         }while(message.equals("cantBeLocated"));
         rule = 100;

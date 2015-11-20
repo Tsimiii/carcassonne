@@ -79,6 +79,7 @@ public class CarcassonneGameModel {
     }
 
     public boolean chooseFaceDownLandTile(Point p) {
+        System.out.println("BELÉP");
         if (chosenLandTile == null) {
             landTileCanBeLocated = false;
             chosenLandTile = landTiles[p.x * 5 + p.y];

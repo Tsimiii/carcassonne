@@ -91,10 +91,12 @@ public class CarcassonneServer extends Observable implements RmiService {
         @Override
         public void run() {
             while (true) {
-                if (countObservers() > 0 && (countObservers() == PLAYERNUMBER || interval == 0)) {
+                if (countObservers() > 0 && (countObservers() == PLAYERNUMBER || interval == 0) &&
+                        (countObservers()<PLAYERNUMBER && !artificialIntelligences.isEmpty() || countObservers() == PLAYERNUMBER)) {
+                    
                     carcassonneGameModel = new CarcassonneGameModel(PLAYERNUMBER);
                     for(CarcassonneAI ai : artificialIntelligences) {
-                        ai.delegate = CarcassonneServer.this;
+                        ai.delegate = carser;
                         ai.setGameModel(carcassonneGameModel);
                     }
                     setChanged();
@@ -189,6 +191,7 @@ public class CarcassonneServer extends Observable implements RmiService {
 
     @Override
     public String chooseFaceDownLandTile(Point p) throws RemoteException{
+        System.out.println("IDE BELÉP");
         setChanged();
         boolean firstchoose = carcassonneGameModel.chooseFaceDownLandTile(p);
         if (firstchoose) {
