@@ -33,6 +33,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     private static List<WrappedObserver> playerObservers = new ArrayList<>();
     private List<CarcassonneAI> artificialIntelligences = new ArrayList<>();
     private List<String> names = new ArrayList<>();
+    private Thread thread;
     private static Timer timer;
     private static int STARTERINTERVAL;
     int interval;
@@ -43,14 +44,31 @@ public class CarcassonneServer extends Observable implements RmiService {
         PLAYERNUMBER = prop.getPlayerNumber();
         STARTERINTERVAL = prop.getStarterInterval();
         this.interval = STARTERINTERVAL;
-        thread.start();
+        if(countObservers() == 0) {
+            createAndStartThreadAndStartTimer();
+        }
         
+    }
+    
+    private void createAndStartThreadAndStartTimer() {
+        thread = new MyThread();
+        thread.start();
         int delay = 1000;
         int period = 1000;
+        interval=STARTERINTERVAL;
         timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-
-            @Override
+        timer.scheduleAtFixedRate(new MyTimerTask(), delay, period);
+    }
+    
+    private int setInterval() {
+        if (countObservers() == PLAYERNUMBER || interval == 1) {
+            timer.cancel();
+        }
+        return --interval;
+    }
+    
+    public class MyTimerTask extends TimerTask{
+        @Override
             public void run() {
                 if(countObservers() > 0) {
                     setInterval();
@@ -67,19 +85,38 @@ public class CarcassonneServer extends Observable implements RmiService {
                 }
 
             }
-            
-        }, delay, period);
-        
     }
     
-    private int setInterval() {
-        if (countObservers() == PLAYERNUMBER || interval == 1) {
-            timer.cancel();
+    
+    public class MyThread extends Thread {
+        @Override
+        public void run() {
+            while (true) {
+                if (countObservers() > 0 && (countObservers() == PLAYERNUMBER || interval == 0)) {
+                    carcassonneGameModel = new CarcassonneGameModel(PLAYERNUMBER);
+                    for(CarcassonneAI ai : artificialIntelligences) {
+                        ai.delegate = CarcassonneServer.this;
+                        ai.setGameModel(carcassonneGameModel);
+                    }
+                    setChanged();
+                    notifyObservers(carcassonneGameModel.getShuffledIdArray());
+                    
+                    for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
+                        names.add("Gépi játékos " + (i+1));
+                    }
+                    setChanged();
+                    for(int i=0; i<playerObservers.size(); i++) {
+                        playerObservers.get(i).update(carser, new Object[] {"startgame", i, names});
+                    }
+                    setChanged();
+                    playerObservers.get(0).update(carser, "YourTurn");
+                    break;
+                }
+            }
         }
-        return --interval;
     }
 
-    Thread thread = new Thread() {
+    /*Thread thread = new Thread() {
         @Override
         public void run() {
             while (true) {
@@ -105,7 +142,7 @@ public class CarcassonneServer extends Observable implements RmiService {
                 }
             }
         };
-    };
+    };*/
     
     private class WrappedObserver implements Observer, Serializable {
 
@@ -128,6 +165,7 @@ public class CarcassonneServer extends Observable implements RmiService {
                 System.out.println("Remote exception removing observer:" + this);
                 o.deleteObserver(this);
                 if(countObservers() == 0) {
+                    thread.interrupt();
                     interval = STARTERINTERVAL;
                 }
                 playerObservers.remove(this);
@@ -169,10 +207,12 @@ public class CarcassonneServer extends Observable implements RmiService {
             setChanged();
             notifyObservers(new Object[] {"sortedPoints", carcassonneGameModel.sortPlayersByPoint(), names});
             
+            thread.interrupt();
             deleteObservers();
             playerObservers.clear();
             artificialIntelligences.clear();
             names.clear();
+            createAndStartThreadAndStartTimer();
         }
     }
 

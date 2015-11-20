@@ -55,6 +55,7 @@ public class CarcassonneAI {
         String message;
         do {
             message = delegate.chooseFaceDownLandTile(point);
+            System.out.println(message);
         }while(message.equals("cantBeLocated"));
         rule = 100;
         rotate = -1;
