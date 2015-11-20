@@ -303,7 +303,7 @@ public class FXMLGameController extends Group implements Initializable {
         switch(num) {
             case 0 : return Color.BLUE;
             case 1 : return Color.RED;
-            case 2 : return Color.rgb(255, 193, 37);
+            case 2 : return Color.rgb(255, 148, 5);
             case 3 : return Color.GREEN;
             case 4 : return Color.BLACK;
             default : System.err.println("Ilyen id nem létezik!"); return null;
@@ -438,8 +438,8 @@ public class FXMLGameController extends Group implements Initializable {
                 circles.get(p).setFill(Color.PINK);
             } else if(circles.get(p).getFill().equals(Color.GREEN)) {
                 circles.get(p).setFill(Color.LIGHTGREEN);
-            } else if(circles.get(p).getFill().equals(Color.rgb(255, 193, 37))) {
-                circles.get(p).setFill(Color.LIGHTYELLOW);
+            } else if(circles.get(p).getFill().equals(Color.rgb(255, 148, 5))) {
+                circles.get(p).setFill(Color.rgb(255,236,139));
             } else if(circles.get(p).getFill().equals(Color.BLACK)) {
                 circles.get(p).setFill(Color.LIGHTGRAY);
             }
