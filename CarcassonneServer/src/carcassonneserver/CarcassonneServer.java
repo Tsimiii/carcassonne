@@ -36,7 +36,8 @@ public class CarcassonneServer extends Observable implements RmiService {
     private Thread thread;
     private static Timer timer;
     private static int STARTERINTERVAL;
-    int interval;
+    private int interval;
+    private boolean gameIsNotStartedOrEnded;
     private CarcassonneServer carser = this;
 
     public CarcassonneServer(CarcassonneServerProperties prop) {
@@ -44,6 +45,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         PLAYERNUMBER = prop.getPlayerNumber();
         STARTERINTERVAL = prop.getStarterInterval();
         this.interval = STARTERINTERVAL;
+        gameIsNotStartedOrEnded = true;
         if(countObservers() == 0) {
             createAndStartThreadAndStartTimer();
         }
@@ -105,6 +107,7 @@ public class CarcassonneServer extends Observable implements RmiService {
                     for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
                         names.add("Gépi játékos " + (i+1));
                     }
+                    gameIsNotStartedOrEnded = false;
                     setChanged();
                     for(int i=0; i<playerObservers.size(); i++) {
                         playerObservers.get(i).update(carser, new Object[] {"startgame", i, names});
@@ -147,6 +150,10 @@ public class CarcassonneServer extends Observable implements RmiService {
                         names.remove(i);
                     }
                 }
+                if(!gameIsNotStartedOrEnded) {
+                    System.out.println("itten");
+                    gameIsOverBecauseSomebodyQuitted();
+                }
             }
         }
     }
@@ -158,6 +165,19 @@ public class CarcassonneServer extends Observable implements RmiService {
         playerObservers.add(wrappedObserver);    
         addObserver(wrappedObserver);
         System.out.println("Added observer:" + wrappedObserver);
+    }
+    
+    private void gameIsOverBecauseSomebodyQuitted() {
+        setChanged();
+        notifyObservers("gameIsOver");
+        
+        gameIsNotStartedOrEnded = true;
+        thread.interrupt();
+        deleteObservers();
+        playerObservers.clear();
+        artificialIntelligences.clear();
+        names.clear();
+        createAndStartThreadAndStartTimer();
     }
     
     @Override
@@ -180,6 +200,7 @@ public class CarcassonneServer extends Observable implements RmiService {
             setChanged();
             notifyObservers(new Object[] {"sortedPoints", carcassonneGameModel.sortPlayersByPoint(), names});
             
+            gameIsNotStartedOrEnded = true;
             thread.interrupt();
             deleteObservers();
             playerObservers.clear();
@@ -191,7 +212,6 @@ public class CarcassonneServer extends Observable implements RmiService {
 
     @Override
     public String chooseFaceDownLandTile(Point p) throws RemoteException{
-        System.out.println("IDE BELÉP");
         setChanged();
         boolean firstchoose = carcassonneGameModel.chooseFaceDownLandTile(p);
         if (firstchoose) {
@@ -222,7 +242,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     @Override
     public void chooseFaceDownLandTileDone() throws RemoteException {
         asd++;
-        if(carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0) {
+        if(!gameIsNotStartedOrEnded && carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0) {
             try {
                 artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).decideBestLocation();
             } catch (InterruptedException ex) {
@@ -276,7 +296,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     @Override
     public void locateLandTileDone() throws RemoteException {
         asd++;
-        if(carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0 && carcassonneGameModel.isChoosenLandTileNotNull()) {
+        if(!gameIsNotStartedOrEnded && carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0 && carcassonneGameModel.isChoosenLandTileNotNull()) {
             try {
                 artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).locateFollower();
             } catch (InterruptedException ex) {

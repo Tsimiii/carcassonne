@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -19,7 +18,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.w3c.dom.ls.LSInput;
 import view.FXMLLoadingScreenController;
 import view.FXMLLocateFollowerController;
 import view.FXMLResultScreenController;
@@ -167,6 +165,17 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
                 @Override
                 public void run() {
                     displayResultScreen((List<Point>) ((Object[]) updateMsg)[1], (List<String>)((Object[]) updateMsg)[2]);
+                }
+            });
+        } else if(updateMsg.equals("gameIsOver")) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        gameController.gameIsOverMessageUpdate();
+                    } catch (IOException ex) {
+                        Logger.getLogger(CommunicationController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             });
         }
@@ -328,6 +337,13 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
         }
+    }
+    
+    public void endOfGameBecauseSomebodyQuittedClickOnOK() throws IOException {
+        if(stage != null) {
+            stage.close();
+        }
+        callMenu();
     }
 
 }

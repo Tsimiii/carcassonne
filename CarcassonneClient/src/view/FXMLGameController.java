@@ -477,4 +477,9 @@ public class FXMLGameController extends Group implements Initializable {
         delegate.scene.setCursor(Cursor.DEFAULT);
     };
     
+    public void gameIsOverMessageUpdate() throws IOException {
+        new WarningDialog("Játék vége", "Sajnos valaki elhagyta a játékot, így a játék véget ért.");
+        delegate.endOfGameBecauseSomebodyQuittedClickOnOK();
+    }
+    
 }
