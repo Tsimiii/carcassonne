@@ -4,10 +4,7 @@ import artificialintelligence.CarcassonneAI;
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
 import java.awt.Point;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -17,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -111,7 +107,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         };
     };
     
-        private class WrappedObserver implements Observer, Serializable {
+    private class WrappedObserver implements Observer, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -134,6 +130,7 @@ public class CarcassonneServer extends Observable implements RmiService {
                 if(countObservers() == 0) {
                     interval = STARTERINTERVAL;
                 }
+                playerObservers.remove(this);
                 for(int i=0; i<names.size(); i++) {
                     if(names.get(i).equals(this.name)) {
                         names.remove(i);
