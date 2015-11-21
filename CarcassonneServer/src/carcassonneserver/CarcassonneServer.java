@@ -33,7 +33,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     private static List<WrappedObserver> playerObservers = new ArrayList<>();
     private List<CarcassonneAI> artificialIntelligences = new ArrayList<>();
     private List<String> names = new ArrayList<>();
-    private Thread thread;
+    private Thread jointPlayersThread;
     private static Timer timer;
     private static int STARTERINTERVAL;
     private int interval;
@@ -53,8 +53,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
     
     private void createAndStartThreadAndStartTimer() {
-        thread = new JoinPlayersThread();
-        thread.start();
+        jointPlayersThread = new JoinPlayersThread();
         int delay = 1000;
         int period = 1000;
         interval=STARTERINTERVAL;
@@ -84,6 +83,9 @@ public class CarcassonneServer extends Observable implements RmiService {
                         artificialIntelligences.add(carcassonneAI);
                     }
                 }
+                if(interval == 0 || countObservers() == PLAYERNUMBER) {
+                    jointPlayersThread.start();
+                }
             }
 
         }
@@ -91,32 +93,25 @@ public class CarcassonneServer extends Observable implements RmiService {
     
     public class JoinPlayersThread extends Thread {
         @Override
-        public void run() {
-            while (true) {
-                if (countObservers() > 0 && (countObservers() == PLAYERNUMBER || interval == 0) &&
-                        (countObservers()<PLAYERNUMBER && !artificialIntelligences.isEmpty() || countObservers() == PLAYERNUMBER)) {
-                    
-                    carcassonneGameModel = new CarcassonneGameModel(PLAYERNUMBER);
-                    for(CarcassonneAI ai : artificialIntelligences) {
-                        ai.delegate = carser;
-                        ai.setGameModel(carcassonneGameModel);
-                    }
-                    setChanged();
-                    notifyObservers(carcassonneGameModel.getShuffledIdArray());
-                    
-                    for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
-                        names.add("Gépi játékos " + (i+1));
-                    }
-                    gameIsNotStartedOrEnded = false;
-                    setChanged();
-                    for(int i=0; i<playerObservers.size(); i++) {
-                        playerObservers.get(i).update(carser, new Object[] {"startgame", i, names});
-                    }
-                    setChanged();
-                    playerObservers.get(0).update(carser, "YourTurn");
-                    break;
-                }
+        public void run() {           
+            carcassonneGameModel = new CarcassonneGameModel(PLAYERNUMBER);
+            for(CarcassonneAI ai : artificialIntelligences) {
+                ai.delegate = carser;
+                ai.setGameModel(carcassonneGameModel);
             }
+            setChanged();
+            notifyObservers(carcassonneGameModel.getShuffledIdArray());
+
+            for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
+                names.add("Gépi játékos " + (i+1));
+            }
+            gameIsNotStartedOrEnded = false;
+            setChanged();
+            for(int i=0; i<playerObservers.size(); i++) {
+                playerObservers.get(i).update(carser, new Object[] {"startgame", i, names});
+            }
+            setChanged();
+            playerObservers.get(0).update(carser, "YourTurn");
         }
     }
     
@@ -141,7 +136,7 @@ public class CarcassonneServer extends Observable implements RmiService {
                 System.out.println("Remote exception removing observer:" + this);
                 o.deleteObserver(this);
                 if(countObservers() == 0) {
-                    thread.interrupt();
+                    jointPlayersThread.interrupt();
                     interval = STARTERINTERVAL;
                 }
                 playerObservers.remove(this);
@@ -151,7 +146,6 @@ public class CarcassonneServer extends Observable implements RmiService {
                     }
                 }
                 if(!gameIsNotStartedOrEnded) {
-                    System.out.println("itten");
                     gameIsOverBecauseSomebodyQuitted();
                 }
             }
@@ -172,7 +166,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         notifyObservers("gameIsOver");
         
         gameIsNotStartedOrEnded = true;
-        thread.interrupt();
+        jointPlayersThread.interrupt();
         deleteObservers();
         playerObservers.clear();
         artificialIntelligences.clear();
@@ -201,7 +195,7 @@ public class CarcassonneServer extends Observable implements RmiService {
             notifyObservers(new Object[] {"sortedPoints", carcassonneGameModel.sortPlayersByPoint(), names});
             
             gameIsNotStartedOrEnded = true;
-            thread.interrupt();
+            jointPlayersThread.interrupt();
             deleteObservers();
             playerObservers.clear();
             artificialIntelligences.clear();
