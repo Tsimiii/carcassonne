@@ -58,6 +58,14 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
+                    loadingScreenController.setTimer(((Object[])updateMsg)[1]);
+                }
+            });
+        }
+        else if(updateMsg instanceof Object[] && ((Object[]) updateMsg)[0].equals("timer2")) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
                     loadingScreenController.setTimer(((Object[])updateMsg)[1].toString());
                 }
             });

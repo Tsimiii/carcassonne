@@ -84,6 +84,10 @@ public class CarcassonneServer extends Observable implements RmiService {
                     }
                 }
                 if(interval == 0 || countObservers() == PLAYERNUMBER) {
+                    if(interval > 0) {
+                        notifyObservers(new Object[] {"timer2", "Megfelelő számú játékos csatlakozott!"});
+                        setChanged();
+                    }
                     jointPlayersThread.start();
                 }
             }

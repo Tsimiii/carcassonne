@@ -446,7 +446,7 @@ public class CarcassonneGameModel {
             point[i] = players[i].getPoint();
         }
         chosenLandTile = null;
-        turn = (turn + 1) % players.length;
+        nextTurn();
         return point;
     }
 
@@ -1134,6 +1134,10 @@ public class CarcassonneGameModel {
 
     public List<Integer> getPointsOfFollowers() {
         return pointsOfFollowers;
+    }
+    
+    public void nextTurn() {
+        turn = (turn + 1) % players.length;
     }
 
     public int getTurn() {
