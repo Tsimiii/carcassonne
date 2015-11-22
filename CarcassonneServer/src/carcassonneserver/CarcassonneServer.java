@@ -33,7 +33,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     private static List<WrappedObserver> playerObservers = new ArrayList<>();
     private List<CarcassonneAI> artificialIntelligences = new ArrayList<>();
     private List<String> names = new ArrayList<>();
-    private Thread jointPlayersThread;
+    private Thread joinPlayersThread;
     private static Timer timer;
     private static int STARTERINTERVAL;
     private int interval;
@@ -53,7 +53,7 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
     
     private void createAndStartThreadAndStartTimer() {
-        jointPlayersThread = new JoinPlayersThread();
+        joinPlayersThread = new JoinPlayersThread();
         int delay = 1000;
         int period = 1000;
         interval=STARTERINTERVAL;
@@ -88,7 +88,7 @@ public class CarcassonneServer extends Observable implements RmiService {
                         notifyObservers(new Object[] {"timer2", "Megfelelő számú játékos csatlakozott!"});
                         setChanged();
                     }
-                    jointPlayersThread.start();
+                    joinPlayersThread.start();
                 }
             }
 
@@ -140,7 +140,7 @@ public class CarcassonneServer extends Observable implements RmiService {
                 System.out.println("Remote exception removing observer:" + this);
                 o.deleteObserver(this);
                 if(countObservers() == 0) {
-                    jointPlayersThread.interrupt();
+                    joinPlayersThread.interrupt();
                     interval = STARTERINTERVAL;
                 }
                 playerObservers.remove(this);
@@ -170,7 +170,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         notifyObservers("gameIsOver");
         
         gameIsNotStartedOrEnded = true;
-        jointPlayersThread.interrupt();
+        joinPlayersThread.interrupt();
         deleteObservers();
         playerObservers.clear();
         artificialIntelligences.clear();
@@ -199,7 +199,7 @@ public class CarcassonneServer extends Observable implements RmiService {
             notifyObservers(new Object[] {"sortedPoints", carcassonneGameModel.sortPlayersByPoint(), names});
             
             gameIsNotStartedOrEnded = true;
-            jointPlayersThread.interrupt();
+            joinPlayersThread.interrupt();
             deleteObservers();
             playerObservers.clear();
             artificialIntelligences.clear();
