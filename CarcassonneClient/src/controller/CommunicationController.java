@@ -7,6 +7,7 @@ import carcassonneshared.RmiService;
 import java.awt.Point;
 import java.io.IOException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
@@ -344,6 +345,12 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
 
         } catch (IOException ex) {
             System.err.println("Nem sikerült betölteni az fxml-t!");
+        }
+    }
+    
+    public void quitFromGame() throws RemoteException {
+        if(remoteService != null) {
+            remoteService.quitFromGame(this);
         }
     }
     

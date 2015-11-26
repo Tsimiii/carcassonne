@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
@@ -39,6 +41,11 @@ public class CarcassonneClient extends Application {
         
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
            @Override public void handle(WindowEvent t) {
+               try {
+                   controller.quitFromGame();
+               } catch (RemoteException ex) {
+                   Logger.getLogger(CarcassonneClient.class.getName()).log(Level.SEVERE, null, ex);
+               }
                System.exit(0);
            }
         });

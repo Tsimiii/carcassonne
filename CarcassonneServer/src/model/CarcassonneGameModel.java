@@ -721,6 +721,7 @@ public class CarcassonneGameModel {
             System.out.println("Játékosok száma másodszor: " + players.length);
             System.out.println("MÉRET: " + players[i].getLocatedFollowers().size());
             for (Follower f : players[i].getLocatedFollowers()) {
+                System.out.println(f.getLocation().x + ", " + f.getLocation().y);
                 LandTile lt = cells[f.getLocation().x][f.getLocation().y].getLandTile();
                 if (lt.getType(f.getContPartInd()) == ROAD) {
                     pointPart = roadAndCityPointsRecursive(lt, f.getContPartInd());
@@ -765,6 +766,7 @@ public class CarcassonneGameModel {
                 for (int i = 0; i < cells[p.x][p.y].getLandTile().getContinuousParts().length; i++) {
                     if (cells[p.x][p.y].getLandTile().getType(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]) == FIELD && !cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]).isEmpty()
                             && (fols.get(j).isEmpty() || !fols.get(j).contains(cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]).get(0))) && isFieldNeighborWithTheCity(p, cells[p.x][p.y].getLandTile().getContinuousParts()[i])) {
+                        
                         //kiiratás
                         List<Integer> freq = mivan(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0], cells[p.x][p.y].getLandTile());
                         System.out.print(p + " helyen: freq: " + freq + ", akik rajta vannak: ");

@@ -50,14 +50,15 @@ public class CarcassonneAI {
     }
     
     public void chooseLandTile() throws RemoteException, InterruptedException {
-        int ind = random.nextInt(pointsOfLandTilesCanBeChosed.size());
-        Point point = pointsOfLandTilesCanBeChosed.get(ind);
         String message;
         do {
+            int ind = random.nextInt(pointsOfLandTilesCanBeChosed.size());
+            Point point = pointsOfLandTilesCanBeChosed.get(ind);
             System.out.println("itt vagyok: " + delegate); 
             message = delegate.chooseFaceDownLandTile(point);
             System.out.println("itt vagyok: " + message);
-        }while(!message.equals("success"));
+        }while(!message.equals("success") && !message.equals("multipleChoose"));
+        System.out.println("RÁADÁSUL KI IS LÉPETT");
         rule = 100;
         rotate = -1;
         tablePosition = new Point(-1,-1);

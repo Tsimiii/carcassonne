@@ -301,10 +301,10 @@ public class FXMLGameController extends Group implements Initializable {
     
     private Color getColorOfNumber(int num) {
         switch(num) {
-            case 0 : return Color.BLUE;
+            case 0 : return Color.rgb(30,144,255);
             case 1 : return Color.RED;
-            case 2 : return Color.rgb(255, 148, 5);
-            case 3 : return Color.GREEN;
+            case 2 : return Color.rgb(218,165,32);
+            case 3 : return Color.rgb(46,139,87);
             case 4 : return Color.BLACK;
             default : System.err.println("Ilyen id nem létezik!"); return null;
         }
@@ -357,7 +357,7 @@ public class FXMLGameController extends Group implements Initializable {
         img.setFitHeight(200);
         img.setFitWidth(200);
         
-        new InformationDialog("A kártyát nem lehet elhelyezni", "A kártyát nem lehet elhelyezni a táblán. Továbbra is Te következel, húzz egy másik kártyát!", img);
+        new InformationDialog("A kártyát nem lehet elhelyezni", "Az általad kihúzott kártyát nem lehet elhelyezni a táblán. Továbbra is Te következel, húzz egy másikat!", img);
         
         removePreviousIllegalPlacesOnTable();
         imageView.setImage(new Image("file:src/resources/images/empty.jpg"));
@@ -432,16 +432,16 @@ public class FXMLGameController extends Group implements Initializable {
             followers[i].setText(followerNumbers[i] + " alattvaló");
         }
         for(Point p : freeCircles) {
-            if(circles.get(p).getFill().equals(Color.BLUE)) {
-                circles.get(p).setFill(Color.LIGHTBLUE);
+            if(circles.get(p).getFill().equals(Color.rgb(30,144,255))) {
+                circles.get(p).setFill(Color.rgb(176,224,230));
             } else if(circles.get(p).getFill().equals(Color.RED)) {
-                circles.get(p).setFill(Color.PINK);
-            } else if(circles.get(p).getFill().equals(Color.GREEN)) {
-                circles.get(p).setFill(Color.LIGHTGREEN);
-            } else if(circles.get(p).getFill().equals(Color.rgb(255, 148, 5))) {
-                circles.get(p).setFill(Color.rgb(255,236,139));
+                circles.get(p).setFill(Color.rgb(255,160,122));
+            } else if(circles.get(p).getFill().equals(Color.rgb(218,165,32))) {
+                circles.get(p).setFill(Color.rgb(238,232,170));
+            } else if(circles.get(p).getFill().equals(Color.rgb(46,139,87))) {
+                circles.get(p).setFill(Color.rgb(152,251,152));
             } else if(circles.get(p).getFill().equals(Color.BLACK)) {
-                circles.get(p).setFill(Color.LIGHTGRAY);
+                circles.get(p).setFill(Color.rgb(190,190,190));
             }
         }
         delegate.nextPlayersTurn();

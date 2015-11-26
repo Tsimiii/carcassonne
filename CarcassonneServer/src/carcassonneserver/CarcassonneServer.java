@@ -137,7 +137,7 @@ public class CarcassonneServer extends Observable implements RmiService {
             try {
                 ro.update(o.toString(), arg);
             } catch (RemoteException e) {
-                System.out.println("Remote exception removing observer:" + this);
+              /*  System.out.println("Remote exception removing observer:" + this);
                 o.deleteObserver(this);
                 if(countObservers() == 0) {
                     joinPlayersThread.interrupt();
@@ -151,7 +151,7 @@ public class CarcassonneServer extends Observable implements RmiService {
                 }
                 if(!gameIsNotStartedOrEnded) {
                     gameIsOverBecauseSomebodyQuitted();
-                }
+                }*/
             }
         }
     }
@@ -163,6 +163,27 @@ public class CarcassonneServer extends Observable implements RmiService {
         playerObservers.add(wrappedObserver);    
         addObserver(wrappedObserver);
         System.out.println("Added observer:" + wrappedObserver);
+    }
+    
+    @Override
+    public void quitFromGame(RemoteObserver o) throws RemoteException {
+        System.out.println("Remote exception removing observer:" + this);
+        WrappedObserver w = null;
+        for(WrappedObserver wo : playerObservers) {
+            if(wo.ro.equals(o)) {
+                w = wo;
+                names.remove(wo.name);
+            }
+        }
+        playerObservers.remove(w);
+        deleteObserver(w);
+        if(countObservers() == 0) {
+            joinPlayersThread.interrupt();
+            interval = STARTERINTERVAL;
+        }
+        if(!gameIsNotStartedOrEnded) {
+            gameIsOverBecauseSomebodyQuitted();
+        }
     }
     
     private void gameIsOverBecauseSomebodyQuitted() {
@@ -239,8 +260,11 @@ public class CarcassonneServer extends Observable implements RmiService {
     
     @Override
     public void chooseFaceDownLandTileDone() throws RemoteException {
+        System.out.println("Végzet a kihúzással");
         asd++;
+        System.out.println("asd: " + asd);
         if(!gameIsNotStartedOrEnded && carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0) {
+            System.out.println("és még ide is belépett.");
             try {
                 artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).decideBestLocation();
             } catch (InterruptedException ex) {
