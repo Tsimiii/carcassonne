@@ -87,7 +87,6 @@ public class Player {
         List<Follower> locatedFollowers = new ArrayList<>();
         for(Follower f : followers) {
             if(!(f.getLocation().x == -1 || f.getLocation().y == -1)) {
-                System.out.println("playersnél: " + f.getLocation());
                 locatedFollowers.add(f);
             }
         }

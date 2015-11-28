@@ -716,35 +716,33 @@ public class CarcassonneGameModel {
     public int[] countPointEndOfTheGame() {
         int[] point = new int[players.length];
         int pointPart;
-        System.out.println("Játékosok száma először: " + players.length);
         for (int i = 0; i < players.length; i++) {
-            System.out.println("Játékosok száma másodszor: " + players.length);
-            System.out.println("MÉRET: " + players[i].getLocatedFollowers().size());
             for (Follower f : players[i].getLocatedFollowers()) {
-                System.out.println(f.getLocation().x + ", " + f.getLocation().y);
-                LandTile lt = cells[f.getLocation().x][f.getLocation().y].getLandTile();
-                if (lt.getType(f.getContPartInd()) == ROAD) {
-                    pointPart = roadAndCityPointsRecursive(lt, f.getContPartInd());
-                    List<Integer> freq = mivan(f.getContPartInd(), lt);
-                    for (Integer fr : freq) {
-                        point[fr] += pointPart;
+                if(f.getLocation().x != -1 && f.getLocation().y != -1) {
+                    LandTile lt = cells[f.getLocation().x][f.getLocation().y].getLandTile();
+                    if (lt.getType(f.getContPartInd()) == ROAD) {
+                        pointPart = roadAndCityPointsRecursive(lt, f.getContPartInd());
+                        List<Integer> freq = mivan(f.getContPartInd(), lt);
+                        for (Integer fr : freq) {
+                            point[fr] += pointPart;
+                        }
+                        for (Follower fr : lt.getReserved(f.getContPartInd())) {
+                            fr.setLocation(new Point(-1, -1));
+                            fr.setContPartInd(-1);
+                        }
+                    } else if (lt.getType(f.getContPartInd()) == CITY || lt.getType(f.getContPartInd()) == CITYWITHPENNANT) {
+                        pointPart = roadAndCityPointsRecursive(lt, f.getContPartInd()) / 2;
+                        List<Integer> freq = mivan(f.getContPartInd(), lt);
+                        for (Integer fr : freq) {
+                            point[fr] += pointPart;
+                        }
+                        for (Follower fr : lt.getReserved(f.getContPartInd())) {
+                            fr.setLocation(new Point(-1, -1));
+                            fr.setContPartInd(-1);
+                        }
+                    } else if (lt.getType(f.getContPartInd()) == CLOISTER) {
+                        point[i] += countCloisterPoint(f.getLocation());
                     }
-                    for (Follower fr : lt.getReserved(f.getContPartInd())) {
-                        fr.setLocation(new Point(-1, -1));
-                        fr.setContPartInd(-1);
-                    }
-                } else if (lt.getType(f.getContPartInd()) == CITY || lt.getType(f.getContPartInd()) == CITYWITHPENNANT) {
-                    pointPart = roadAndCityPointsRecursive(lt, f.getContPartInd()) / 2;
-                    List<Integer> freq = mivan(f.getContPartInd(), lt);
-                    for (Integer fr : freq) {
-                        point[fr] += pointPart;
-                    }
-                    for (Follower fr : lt.getReserved(f.getContPartInd())) {
-                        fr.setLocation(new Point(-1, -1));
-                        fr.setContPartInd(-1);
-                    }
-                } else if (lt.getType(f.getContPartInd()) == CLOISTER) {
-                    point[i] += countCloisterPoint(f.getLocation());
                 }
             }
         }
