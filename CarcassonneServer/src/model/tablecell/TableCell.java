@@ -2,6 +2,7 @@ package model.tablecell;
 
 import model.landtile.LandTile;
 
+//A játéktábla egy cellája
 public class TableCell {
     private LandTile landTile;
 

@@ -23,7 +23,6 @@
                                     <TextField fx:id="nameTextField" prefWidth="300" prefHeight="50"  translateX="600" translateY="496"></TextField>
                                 </children>
                             </HBox>
-                            <Label id="errorNameText" text="" disable="true" textFill="RED"></Label>
                         </children>
                     </VBox>
                         <HBox spacing="30">

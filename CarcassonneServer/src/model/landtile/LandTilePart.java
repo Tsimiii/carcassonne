@@ -49,7 +49,7 @@ public class LandTilePart {
         reserved.clear();
     }
 
-    public boolean isCheckedDuringPointCount() {
+   public boolean isCheckedDuringPointCount() {
         return checkedDuringPointCount;
     }
 

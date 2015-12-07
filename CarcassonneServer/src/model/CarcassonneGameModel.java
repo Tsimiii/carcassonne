@@ -269,7 +269,7 @@ public class CarcassonneGameModel {
             cells[p.x][p.y].setLandTile(chosenLandTile);
             chosenLandTile.setPositionOnTheTable(p.x, p.y);
             locatedLandTiles.add(chosenLandTile);
-            bliblablo(p, true);
+            setReservationOfTheLocatedLandTile(p, true);
             initFollowerPointsOnTheLandTile();
             return true;
         }
@@ -281,7 +281,7 @@ public class CarcassonneGameModel {
             cells[p.x][p.y].setLandTile(chosenLandTile);
             locatedLandTiles.add(chosenLandTile);
             chosenLandTile.setPositionOnTheTable(p.x, p.y);
-            bliblablo(p, false);
+            setReservationOfTheLocatedLandTile(p, false);
             initFollowerPointsOnTheLandTile();
             return true;
         }
@@ -365,7 +365,7 @@ public class CarcassonneGameModel {
         return false;
     }
 
-    private void bliblablo(Point landTilePos, boolean real) {
+    private void setReservationOfTheLocatedLandTile(Point landTilePos, boolean real) {
         for (int i = 0; i < 12; i++) {
             if (i == 0 || i == 1 || i == 2) {
                 if (cells[landTilePos.x][landTilePos.y - 1].getLandTile() != null && !cells[landTilePos.x][landTilePos.y - 1].getLandTile().getReserved(8 - i).isEmpty()) {
@@ -446,12 +446,12 @@ public class CarcassonneGameModel {
             point[i] = players[i].getPoint();
         }
 
-        int[] fieldPoints = countFieldPoints();
+       /* int[] fieldPoints = countFieldPoints();
         System.out.print("MEZŐ: ");
         for (Integer f : fieldPoints) {
             System.out.print(f + ", ");
         }
-        System.out.println("");
+        System.out.println("");*/
 
         chosenLandTile = null;
         nextTurn();
@@ -469,7 +469,7 @@ public class CarcassonneGameModel {
                     && !done.contains(new Point(chosenLandTile.getId(), i))) {
                 int point = roadAndCityPointsRecursive(chosenLandTile, chosenLandTile.getContinuousParts()[i][0]);
                 if (!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty() && point > 0) {
-                    List<Integer> freq = mivan(i);
+                    List<Integer> freq = getColorOfMostFrequentFollowersOfAContinuousPart(i);
                     for (Integer f : freq) {
                         points[f] += point;
                     }
@@ -508,7 +508,7 @@ public class CarcassonneGameModel {
         }
     }
 
-    private List<Integer> mivan(int index) {
+    private List<Integer> getColorOfMostFrequentFollowersOfAContinuousPart(int index) {
         List<Follower> followers = chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[index][0]);
         List<Integer> colors = new ArrayList<>();
         for (Follower f : followers) {
@@ -533,7 +533,7 @@ public class CarcassonneGameModel {
         return freq;
     }
 
-    private List<Integer> mivan(int value, LandTile lt) {
+    private List<Integer> getColorOfMostFrequentFollowersOfAContinuousPart(int value, LandTile lt) {
         List<Follower> followers = lt.getReserved(value);
         List<Integer> colors = new ArrayList<>();
         for (Follower f : followers) {
@@ -722,7 +722,7 @@ public class CarcassonneGameModel {
                     LandTile lt = cells[f.getLocation().x][f.getLocation().y].getLandTile();
                     if (lt.getType(f.getContPartInd()) == ROAD) {
                         pointPart = roadAndCityPointsRecursive(lt, f.getContPartInd());
-                        List<Integer> freq = mivan(f.getContPartInd(), lt);
+                        List<Integer> freq = getColorOfMostFrequentFollowersOfAContinuousPart(f.getContPartInd(), lt);
                         for (Integer fr : freq) {
                             point[fr] += pointPart;
                         }
@@ -732,7 +732,7 @@ public class CarcassonneGameModel {
                         }
                     } else if (lt.getType(f.getContPartInd()) == CITY || lt.getType(f.getContPartInd()) == CITYWITHPENNANT) {
                         pointPart = roadAndCityPointsRecursive(lt, f.getContPartInd()) / 2;
-                        List<Integer> freq = mivan(f.getContPartInd(), lt);
+                        List<Integer> freq = getColorOfMostFrequentFollowersOfAContinuousPart(f.getContPartInd(), lt);
                         for (Integer fr : freq) {
                             point[fr] += pointPart;
                         }
@@ -766,7 +766,7 @@ public class CarcassonneGameModel {
                             && (fols.get(j).isEmpty() || !fols.get(j).contains(cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0]).get(0))) && isFieldNeighborWithTheCity(p, cells[p.x][p.y].getLandTile().getContinuousParts()[i])) {
                         
                         //kiiratás
-                        List<Integer> freq = mivan(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0], cells[p.x][p.y].getLandTile());
+                        List<Integer> freq = getColorOfMostFrequentFollowersOfAContinuousPart(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0], cells[p.x][p.y].getLandTile());
                         System.out.print(p + " helyen: freq: " + freq + ", akik rajta vannak: ");
                         for (Follower r : cells[p.x][p.y].getLandTile().getReserved(cells[p.x][p.y].getLandTile().getContinuousParts()[i][0])) {
                             System.out.print(r.getColor() + ", ");
@@ -839,8 +839,8 @@ public class CarcassonneGameModel {
         if (!chosenLandTile.getReserved(value).isEmpty()) {
             for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
                 if (chosenLandTile.contains(i, value)) {
-                    for (int j = 0; j < mivan(i).size(); j++) {
-                        colors[mivan(i).get(j)]++;
+                    for (int j = 0; j < getColorOfMostFrequentFollowersOfAContinuousPart(i).size(); j++) {
+                        colors[getColorOfMostFrequentFollowersOfAContinuousPart(i).get(j)]++;
                     }
                 }
             }
@@ -1041,7 +1041,7 @@ public class CarcassonneGameModel {
         if (!good) {
             return false;
         }
-        List<Integer> reservation = mivan(index, chosenLandTile);
+        List<Integer> reservation = getColorOfMostFrequentFollowersOfAContinuousPart(index, chosenLandTile);
         return reservation.contains(turn);
     }
 

@@ -1,5 +1,6 @@
 package view;
 
+import view.button.GameButton;
 import carcassonneclient.CarcassonneClientProperties;
 import controller.CommunicationController;
 import java.awt.Point;

@@ -132,9 +132,9 @@ public class CarcassonneAI {
                             this.connectionNumber = carcassonneGameModel.getNeighbourLandTileNumber(tablePosition);
                             setFollowerPosition(index);
                             //itt
-                        } else if((rule > 13 || (rule == 13 && this.connectionNumber < carcassonneGameModel.getNeighbourLandTileNumber(tablePosition)) || (rule < 13 && this.tablePosition.equals(tablePosition) && this.rotate == rotate && followerPosition == -1)) && carcassonneGameModel.roadAndCityAreNotReservedByOthers() && carcassonneGameModel.canTryJoinToAnotherCity(index, tablePosition)) {
-                            if(rule >= 13) {
-                                rule = 13;
+                        } else if((rule > 12 || (rule == 12 && this.connectionNumber < carcassonneGameModel.getNeighbourLandTileNumber(tablePosition)) || (rule < 12 && this.tablePosition.equals(tablePosition) && this.rotate == rotate && followerPosition == -1)) && carcassonneGameModel.roadAndCityAreNotReservedByOthers() && carcassonneGameModel.canTryJoinToAnotherCity(index, tablePosition)) {
+                            if(rule >= 12) {
+                                rule = 12;
                                 this.rotate = rotate;
                                 this.tablePosition = tablePosition;
                             }
@@ -182,7 +182,7 @@ public class CarcassonneAI {
                         this.connectionNumber = carcassonneGameModel.getNeighbourLandTileNumber(tablePosition);
                         setFollowerPosition(index);
                     } else {
-                        if(placeOfConnectionIsProper(index, tablePosition) && carcassonneGameModel.roadAndCityAreNotReservedByOthers() && (rule > 12 || (rule == 12 && this.connectionNumber < carcassonneGameModel.getNeighbourLandTileNumber(tablePosition)) || (rule < 12 && this.tablePosition.equals(tablePosition) && this.rotate == rotate && followerPosition == -1))) {
+                        if(placeOfConnectionIsProper(index, tablePosition) && carcassonneGameModel.roadAndCityAreNotReservedByOthers() && (rule > 11 || (rule == 11 && this.connectionNumber < carcassonneGameModel.getNeighbourLandTileNumber(tablePosition)) || (rule < 11 && this.tablePosition.equals(tablePosition) && this.rotate == rotate && followerPosition == -1))) {
                             this.connectionNumber = carcassonneGameModel.getNeighbourLandTileNumber(tablePosition);
                             if(carcassonneGameModel.getFreeFollowerNumOfPLayers()[carcassonneGameModel.getTurn()] > 1) {
                                 if(!carcassonneGameModel.getActualLandTileComponentIndex(CITY).isEmpty() && !carcassonneGameModel.isActualLandTilePartReserved(carcassonneGameModel.getActualLandTileComponentIndex(CITY).get(0))) {
@@ -196,21 +196,21 @@ public class CarcassonneAI {
                                     this.followerPosition = -1;
                                 }
                             }
-                            if(rule >= 12) {
-                                rule = 12;
+                            if(rule >= 11) {
+                                rule = 11;
                                 this.rotate = rotate;
                                 this.tablePosition = tablePosition;
                             }
                             //itt
-                        } else if((rule > 14 || (rule == 14 && this.connectionNumber < carcassonneGameModel.getNeighbourLandTileNumber(tablePosition)) || (rule < 14 && this.tablePosition.equals(tablePosition) && this.rotate == rotate && followerPosition == -1)) && carcassonneGameModel.roadAndCityAreNotReservedByOthers() && carcassonneGameModel.canTryJoinToAnotherRoad(index, tablePosition)) {   
+                        } else if((rule > 13 || (rule == 13 && this.connectionNumber < carcassonneGameModel.getNeighbourLandTileNumber(tablePosition)) || (rule < 13 && this.tablePosition.equals(tablePosition) && this.rotate == rotate && followerPosition == -1)) && carcassonneGameModel.roadAndCityAreNotReservedByOthers() && carcassonneGameModel.canTryJoinToAnotherRoad(index, tablePosition)) {   
                             this.connectionNumber = carcassonneGameModel.getNeighbourLandTileNumber(tablePosition);
                             if(carcassonneGameModel.getFreeFollowerNumOfPLayers()[carcassonneGameModel.getTurn()] > 1) {
                                 setFollowerPosition(index);
                             } else if(!(this.tablePosition.equals(tablePosition) && this.rotate == rotate)) {
                                     this.followerPosition = -1;
                             }
-                            if(rule >= 14) {
-                                rule = 14;
+                            if(rule >= 13) {
+                                rule = 13;
                                 this.rotate = rotate;
                                 this.tablePosition = tablePosition;
                             }
@@ -246,19 +246,19 @@ public class CarcassonneAI {
             this.rotate = rotate;
             this.connectionNumber = carcassonneGameModel.getNeighbourLandTileNumber(tablePosition);
             this.tablePosition = tablePosition;
-        } else if((rule > 15 || (rule == 15 && this.connectionNumber < carcassonneGameModel.getNeighbourLandTileNumber(tablePosition))) && carcassonneGameModel.roadAndCityAreNotReservedByOthers()) {
+        } else if((rule > 14 || (rule == 14 && this.connectionNumber < carcassonneGameModel.getNeighbourLandTileNumber(tablePosition))) && carcassonneGameModel.roadAndCityAreNotReservedByOthers()) {
+            if(!(this.tablePosition.equals(tablePosition) && this.rotate == rotate)) {
+                this.followerPosition = -1;
+            }
+            rule = 14;
+            this.rotate = rotate;
+            this.connectionNumber = carcassonneGameModel.getNeighbourLandTileNumber(tablePosition);
+            this.tablePosition = tablePosition;
+        } else if(rule > 15 || (rule == 15 && this.connectionNumber < carcassonneGameModel.getNeighbourLandTileNumber(tablePosition))) {
             if(!(this.tablePosition.equals(tablePosition) && this.rotate == rotate)) {
                 this.followerPosition = -1;
             }
             rule = 15;
-            this.rotate = rotate;
-            this.connectionNumber = carcassonneGameModel.getNeighbourLandTileNumber(tablePosition);
-            this.tablePosition = tablePosition;
-        } else if(rule > 16 || (rule == 16 && this.connectionNumber < carcassonneGameModel.getNeighbourLandTileNumber(tablePosition))) {
-            if(!(this.tablePosition.equals(tablePosition) && this.rotate == rotate)) {
-                this.followerPosition = -1;
-            }
-            rule = 16;
             this.rotate = rotate;
             this.connectionNumber = carcassonneGameModel.getNeighbourLandTileNumber(tablePosition);
             this.tablePosition = tablePosition;

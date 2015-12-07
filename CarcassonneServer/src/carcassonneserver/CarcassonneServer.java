@@ -48,8 +48,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         gameIsNotStartedOrEnded = true;
         if(countObservers() == 0) {
             createAndStartThreadAndStartTimer();
-        }
-        
+        } 
     }
     
     private void createAndStartThreadAndStartTimer() {
@@ -58,7 +57,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         int period = 1000;
         interval=STARTERINTERVAL;
         timer = new Timer();
-        timer.scheduleAtFixedRate(new MyTimerTask(), delay, period);
+        timer.scheduleAtFixedRate(new CarcassonneTimer(), delay, period);
     }
     
     private int setInterval() {
@@ -68,7 +67,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         return --interval;
     }
     
-    public class MyTimerTask extends TimerTask{
+    public class CarcassonneTimer extends TimerTask{
         @Override
         public void run() {
             if(countObservers() > 0) {
@@ -137,21 +136,6 @@ public class CarcassonneServer extends Observable implements RmiService {
             try {
                 ro.update(o.toString(), arg);
             } catch (RemoteException e) {
-              /*  System.out.println("Remote exception removing observer:" + this);
-                o.deleteObserver(this);
-                if(countObservers() == 0) {
-                    joinPlayersThread.interrupt();
-                    interval = STARTERINTERVAL;
-                }
-                playerObservers.remove(this);
-                for(int i=0; i<names.size(); i++) {
-                    if(names.get(i).equals(this.name)) {
-                        names.remove(i);
-                    }
-                }
-                if(!gameIsNotStartedOrEnded) {
-                    gameIsOverBecauseSomebodyQuitted();
-                }*/
             }
         }
     }
@@ -357,9 +341,9 @@ public class CarcassonneServer extends Observable implements RmiService {
             Registry reg = LocateRegistry.createRegistry(8080);
             RmiService carcassonneServer = (RmiService) UnicastRemoteObject.exportObject(new CarcassonneServer(prop), prop.getPort());
             reg.rebind("carcassonneServer", carcassonneServer);
+            System.out.println("Elindult a szerver.");
         } catch (RemoteException ex) {
-            System.err.println("Szerver oldali hiba!");
+            System.err.println("Ezen a porton már fut szerver!");
         }
-        System.out.println("Elindult a szerver.");
     }  
 }

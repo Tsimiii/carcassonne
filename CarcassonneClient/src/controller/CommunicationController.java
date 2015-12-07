@@ -7,7 +7,6 @@ import carcassonneshared.RmiService;
 import java.awt.Point;
 import java.io.IOException;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
@@ -67,7 +66,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    loadingScreenController.setTimer(((Object[])updateMsg)[1].toString());
+                    loadingScreenController.setEnoughJoinText(((Object[])updateMsg)[1].toString());
                 }
             });
         }

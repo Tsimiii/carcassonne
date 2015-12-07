@@ -11,6 +11,6 @@
     <children>
         <Text id="loadingText" text="A játék hamarosan elindul!" translateX="600" translateY="290" scaleX="2" scaleY="2"></Text>
         <Text fx:id="timer" text="" translateX="780" translateY="600" scaleX="2" scaleY="2"></Text>
-        <Text fx:id="timer2" text="" translateX="580" translateY="500" scaleX="1.5" scaleY="1.5" visible="false" ></Text>
+        <Text fx:id="enoughJoin" text="" translateX="580" translateY="500" scaleX="1.5" scaleY="1.5" visible="false" ></Text>
     </children>
 </VBox>

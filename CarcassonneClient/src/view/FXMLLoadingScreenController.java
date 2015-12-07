@@ -9,7 +9,7 @@ import javafx.scene.text.Text;
 public class FXMLLoadingScreenController implements Initializable {
     
     @FXML protected Text timer;
-    @FXML protected Text timer2;
+    @FXML protected Text enoughJoin;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -19,10 +19,10 @@ public class FXMLLoadingScreenController implements Initializable {
         timer.setText(time.toString());
     }
     
-    public void setTimer(String time) {
+    public void setEnoughJoinText(String time) {
         timer.setVisible(false);
-        timer2.setVisible(true);
-        timer2.setText(time);
+        enoughJoin.setVisible(true);
+        enoughJoin.setText(time);
     }
     
 }
