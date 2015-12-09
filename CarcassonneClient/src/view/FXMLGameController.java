@@ -362,7 +362,7 @@ public class FXMLGameController extends Group implements Initializable {
         new InformationDialog("A kártyát nem lehet elhelyezni", "Az általad kihúzott kártyát nem lehet elhelyezni a táblán. Továbbra is Te következel, húzz egy másikat!", img);
         
         removePreviousIllegalPlacesOnTable();
-        imageView.setImage(new Image("file:src/resources/images/empty.jpg"));
+        imageView.setImage(new Image("/resources/images/empty.jpg"));
         imageView.setRotate(360);
     }
     
@@ -412,7 +412,7 @@ public class FXMLGameController extends Group implements Initializable {
         for(int i=0; i<points.length; i++) {
             points[i].setText(point[i] + " pont");
         }
-        imageView.setImage(new Image("file:src/resources/images/empty.jpg"));
+        imageView.setImage(new Image("/resources/images/empty.jpg"));
         imageView.setRotate(360);
         degree = 0;
         disableOrEnableEverything(true);
@@ -423,7 +423,7 @@ public class FXMLGameController extends Group implements Initializable {
             int num = Integer.parseInt(points[i].getText().split("\\s+")[0]);
             points[i].setText((point[i] + num) + " pont");
         }
-        imageView.setImage(new Image("file:src/resources/images/empty.jpg"));
+        imageView.setImage(new Image("/resources/images/empty.jpg"));
         imageView.setRotate(360);
         degree = 0;
         disableOrEnableEverything(true);

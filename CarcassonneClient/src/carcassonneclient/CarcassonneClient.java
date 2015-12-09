@@ -34,10 +34,11 @@ public class CarcassonneClient extends Application {
         
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
-        primaryStage.setX(bounds.getMinX());
-        primaryStage.setY(bounds.getMinY());
-        primaryStage.setWidth(bounds.getWidth());
-        primaryStage.setHeight(bounds.getHeight());
+        System.out.println(bounds.getMinX() + " " + bounds.getMinY() + " " + bounds.getWidth() + " " + bounds.getHeight());
+        primaryStage.setX(0);
+        primaryStage.setY(0);
+        primaryStage.setWidth(1920);
+        primaryStage.setHeight(1032);
         
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
            @Override public void handle(WindowEvent t) {

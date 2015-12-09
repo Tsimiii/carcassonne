@@ -4,6 +4,7 @@ import artificialintelligence.CarcassonneAI;
 import carcassonneshared.RemoteObserver;
 import carcassonneshared.RmiService;
 import java.awt.Point;
+import java.io.Console;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -21,8 +22,6 @@ import java.util.logging.Logger;
 import model.CarcassonneGameModel;
 
 public class CarcassonneServer extends Observable implements RmiService {
-    
-    private static CarcassonneServerProperties prop;
 
     private CarcassonneGameModel carcassonneGameModel;
 
@@ -40,10 +39,9 @@ public class CarcassonneServer extends Observable implements RmiService {
     private boolean gameIsNotStartedOrEnded;
     private CarcassonneServer carser = this;
 
-    public CarcassonneServer(CarcassonneServerProperties prop) {
-        this.prop = prop;
-        PLAYERNUMBER = prop.getPlayerNumber();
-        STARTERINTERVAL = prop.getStarterInterval();
+    public CarcassonneServer(int playerNumber, int starterInterval) {
+        PLAYERNUMBER = playerNumber;
+        STARTERINTERVAL = starterInterval;
         this.interval = STARTERINTERVAL;
         gameIsNotStartedOrEnded = true;
         if(countObservers() == 0) {
@@ -78,7 +76,7 @@ public class CarcassonneServer extends Observable implements RmiService {
 
                 if(interval == 0 && countObservers() < PLAYERNUMBER && countObservers() > 0) {
                     for(int i=0; i<PLAYERNUMBER-countObservers(); i++) {
-                        CarcassonneAI carcassonneAI = new CarcassonneAI(prop.getAIDelay());
+                        CarcassonneAI carcassonneAI = new CarcassonneAI(500);
                         artificialIntelligences.add(carcassonneAI);
                     }
                 }
@@ -335,15 +333,22 @@ public class CarcassonneServer extends Observable implements RmiService {
     }
 
     public static void main(String[] args) throws IOException {
-        CarcassonneServerProperties prop = new CarcassonneServerProperties();
+        Console c = System.console();
+        int playerNumber = Integer.parseInt(c.readLine("Játékosok száma: "));
+        int starterInterval = Integer.parseInt(c.readLine("Csatlakozási idö: "));
         
-        try {
-            Registry reg = LocateRegistry.createRegistry(8080);
-            RmiService carcassonneServer = (RmiService) UnicastRemoteObject.exportObject(new CarcassonneServer(prop), prop.getPort());
-            reg.rebind("carcassonneServer", carcassonneServer);
-            System.out.println("Elindult a szerver.");
-        } catch (RemoteException ex) {
-            System.err.println("Ezen a porton már fut szerver!");
-        }
+        boolean success = false;
+        do {
+            try {
+                int port = Integer.parseInt(c.readLine("Portszám: "));
+                Registry reg = LocateRegistry.createRegistry(port);
+                RmiService carcassonneServer = (RmiService) UnicastRemoteObject.exportObject(new CarcassonneServer(playerNumber, starterInterval), port);
+                reg.rebind("carcassonneServer", carcassonneServer);
+                success = true;
+                System.out.println("Elindult a szerver.");
+            } catch (RemoteException ex) {
+                System.err.println("Ezen a porton már fut szerver! Adj meg egy másikat!");
+            }
+        } while(!success);
     }  
 }
