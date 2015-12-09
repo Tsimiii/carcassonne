@@ -3,16 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/model/landtile/LandTileLoader.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/model/landtile/LandTile.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/model/tablecell/TableCell.java</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/carcassonneserver/CarcassonneServer.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/model/player/Player.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/model/follower/Follower.java</file>
+            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/build.xml</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/carcassonneserver/CarcassonneServerProperties.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/model/CarcassonneGameModel.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/artificialintelligence/CarcassonneAI.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/model/landtile/LandTilePart.java</file>
+            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/manifest.mf</file>
         </group>
     </open-files>
 </project-private>

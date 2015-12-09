@@ -2,6 +2,9 @@ package view.imageloader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import javafx.scene.image.Image;
 
 public class LandTileImageLoader {
@@ -24,23 +27,26 @@ public class LandTileImageLoader {
         loadImages();
     }
     
-    private static void loadImages() throws IOException {
-        starterLandTile = new Image("file:src/resources/images/landtiles/0.png");
-        
-        File directory = new File("src/resources/images/landtiles");
-        
-        if(directory.isDirectory()) {
-            File[] files = directory.listFiles();
+    private void loadImages() throws IOException {
+        starterLandTile = new Image("/resources/images/landtiles/0.png");
+         
+        final String path = "resources/images/landtiles";
+        final File jarFile = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+         
+        if(jarFile.isFile()) {  // Run with JAR file
+            final JarFile jar = new JarFile(jarFile);
             for(int i=0; i<71; i++) {
-                for (File file : files) {
-                    String name = Integer.toString(i);
-                    if (file != null && file.getName().startsWith(Integer.toString(shuffledIdArray[i]))) {
-                        landTileImages[i] = new Image("file:" + file.getPath());
-                        break;
-                    }
+                final Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+                while(entries.hasMoreElements()) {
+                    final String name = entries.nextElement().getName();
+                    if (name.equals(path + "/" + shuffledIdArray[i] + ".png")) { //filter according to the path
+                        landTileImages[i] = new Image("/" + name);
+                        System.out.println(name);
+                    }    
                 }
-            }
-        } 
+            }    
+            jar.close();
+        }
     }
     
     public Image[] getLandTileImages() {

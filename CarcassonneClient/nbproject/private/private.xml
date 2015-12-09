@@ -3,16 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/dialogs/InformationDialog.java</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/controller/CommunicationController.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/FXMLLocateFollowerController.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/button/GameButton.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/FXMLLoadingScreenController.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/resources/fxml/fxml_carcassonne_loading_screen.fxml</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/dialogs/WarningDialog.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/resources/fxml/fxml_result_screen.fxml</file>
+            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/imageloader/LandTileImageLoader.java</file>
+            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/build.xml</file>
+            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/carcassonneclient/CarcassonneClientProperties.java</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/carcassonneclient/CarcassonneClient.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/FXMLResultScreenController.java</file>
+            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/manifest.mf</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/FXMLGameController.java</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneClient/src/view/FXMLMenuController.java</file>
         </group>

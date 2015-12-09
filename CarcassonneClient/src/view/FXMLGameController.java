@@ -109,6 +109,7 @@ public class FXMLGameController extends Group implements Initializable {
     }
     
     private void createRectanglesOnTheTable() {
+        
         stackPane = new StackPane[TABLESIZE][TABLESIZE];
         centerRectangles = new Rectangle[TABLESIZE][TABLESIZE];
         for(int i=0; i<TABLESIZE; i++) {

@@ -9,12 +9,12 @@ import java.util.Properties;
 public class CarcassonneServerProperties {
 
     private Properties prop;
-    String propFileName = "src/resources/config/config.properties";
+    String propFileName = "/resources/config/config.properties";
     InputStream inputStream;
     
     public CarcassonneServerProperties() throws FileNotFoundException, IOException {
         prop = new Properties();
-        inputStream = new FileInputStream(propFileName);
+        inputStream = this.getClass().getResourceAsStream(propFileName);//new FileInputStream(propFileName);
         
         if (inputStream != null) {
                 prop.load(inputStream);
