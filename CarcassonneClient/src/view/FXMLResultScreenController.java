@@ -17,14 +17,15 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+// Az eredményhirdető ablak dinamikus megjelenése
 public class FXMLResultScreenController implements Initializable{
     
-    private List<Point> list;
-    private List<String> names;
+    private List<Point> list; // A pontok listája, az elemek növekvő sorrendben
+    private List<String> names; // A nevek listája
     private Stage stage;
     @FXML protected GridPane resultGridPane;
-    @FXML protected Button exitButton;
-    @FXML protected Button backToMainMenuButton;
+    @FXML protected Button exitButton; // A kilépés gomb
+    @FXML protected Button backToMainMenuButton; // A vissza a menühöz gomb
     
     public CommunicationController delegate;
 
@@ -47,6 +48,7 @@ public class FXMLResultScreenController implements Initializable{
         setBorderPaneCenter();
     }
     
+    // A sorrend szám, valamint a nevek és pontok megjelenítése a pontok szempontjából csökkenő sorrendben
     private void setBorderPaneCenter() {
         Text[] rankingText = new Text[names.size()];
         Text[] nameText = new Text[names.size()];
@@ -64,31 +66,36 @@ public class FXMLResultScreenController implements Initializable{
         }
     }
     
+    // A vissza a menühöz gombra kattintás
     private final EventHandler<MouseEvent> backToMainMenuAction = (MouseEvent event) -> {
         try {
             delegate.clickBactToMainMenuAction();
         } catch(IOException e) {
-            System.err.println("IO exception");
+            System.err.println("Hiba a Vissza a menühöz gombra kattintáskor.");
         }
     };
     
+    // A kilépés gombra kattintás
     private final EventHandler<MouseEvent> exitAction = (MouseEvent event) -> {
         delegate.clickExitAction();
     };
     
+    // Ha gombok fölé megy az egér, ilyenkor a kurzor kéz formájú lesz
     private final EventHandler<MouseEvent> mouseEnter = (MouseEvent event) -> {
         delegate.scene.setCursor(Cursor.HAND);
     };
     
+    // Ha gombok fölül kimegy az egér, ilyenkor a kurzor ismét default formájú lesz
     private final EventHandler<MouseEvent> mouseExit = (MouseEvent event) -> {
         delegate.scene.setCursor(Cursor.DEFAULT);
     };
     
+    // Az X gombra kattintás következében a játékos visszakerül a menübe
     private final EventHandler<WindowEvent> closeWindowAction = (WindowEvent event) -> {
         try {
             delegate.clickBactToMainMenuAction();
         } catch(IOException e) {
-            System.err.println("IO exception");
+            System.err.println("Hiba a Vissza a menühöz gombra kattintáskor.");
         }
     };
     

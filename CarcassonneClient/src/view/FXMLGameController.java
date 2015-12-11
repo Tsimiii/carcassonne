@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -41,15 +39,17 @@ import view.dialogs.InformationDialog;
 import view.dialogs.WarningDialog;
 import view.imageloader.LandTileImageLoader;
 
+// A játék dinamikus megjelenítése
 public class FXMLGameController extends Group implements Initializable {
     
+    // A lehetséges alattvaló pontok helyei
     private final Point[] FOLLOWERDEFAULTPOINTPOSITION = new Point[] {new Point(-50,-40), new Point(-50, 0), new Point(-50, 40), new Point(-40,50), new Point(0, 50), new Point(40,50), new Point(50, 40), new Point(50, 0), new Point(50, -40), new Point(40, -50), new Point(0, -50), new Point(-40, -50), new Point(0, 0)};
 
     @FXML protected GridPane centerGridPane;
     @FXML protected GridPane rightGridPane;
-    @FXML protected ImageView imageView;
-    @FXML protected Button leftRotateButton;
-    @FXML protected Button rightRotateButton;
+    @FXML protected ImageView imageView; // A kihúzott kártya betöltésének helye
+    @FXML protected Button leftRotateButton; // A balra forgatás gombja
+    @FXML protected Button rightRotateButton; // A jobbraforgatás gombja
     @FXML protected VBox leftVBox;
     private final int RIGHTBUTTONROWNUMBER;
     private final int RIGHTBUTTONCOLUMNNUMBER;
@@ -57,23 +57,23 @@ public class FXMLGameController extends Group implements Initializable {
     private int TABLESIZE;
     private int id;
     private List<String> namesList;
-    private Label[] names;
-    private Label[] points;
-    private Label[] followers;
+    private Label[] names; // A játékosok neveinek kiírása
+    private Label[] points; //A játékosok pontszámainak kiírása
+    private Label[] followers; // A játékosok alattvalóinak számának kiírása
     private StackPane[][] stackPane;
-    private Rectangle[][] centerRectangles;
-    private Button[][] rightButtons;
-    private Image[] landTiles;
-    private Point actualLandTileTablePosition;
-    private double degree;
-    private List<Point> forbiddenPlacesOnTheTable = new ArrayList<>();
-    private List<Point> drawnLandTiles = new ArrayList<>();
-    private Map<Point, Circle> circles = new HashMap<>();
+    private Rectangle[][] centerRectangles; // Az asztalon levő cellák
+    private Button[][] rightButtons; // A jobb oldalon levő lefordított területkártyák
+    private Image[] landTiles; // A kártyák képei
+    private Point actualLandTileTablePosition; // Az aktuálisan kihúzott kártya asztalon levő pozíciója
+    private double degree; // A kártya elforgatásának mértéke
+    private List<Point> forbiddenPlacesOnTheTable = new ArrayList<>(); // Az asztalton letiltott helyek listája
+    private List<Point> drawnLandTiles = new ArrayList<>(); // A kihúzott kártyák listája
+    private Map<Point, Circle> circles = new HashMap<>(); // Az alattvalók helyeinek Map-je
     
     public CommunicationController delegate;
 
     public FXMLGameController(int id, List<String> namesList) throws IOException {
-        CarcassonneClientProperties prop = new CarcassonneClientProperties();
+        CarcassonneClientProperties prop = new CarcassonneClientProperties(); 
         RIGHTBUTTONROWNUMBER = prop.getRightButtonRowNumber();
         RIGHTBUTTONCOLUMNNUMBER = prop.getRightButtonColumnNumber();
         LANDTILENUMBER = prop.getLandTileNumber();
@@ -90,7 +90,7 @@ public class FXMLGameController extends Group implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         actualLandTileTablePosition = new Point(-1,-1);
-        landTiles = LandTileImageLoader.getInstance().getLandTileImages();
+        landTiles = LandTileImageLoader.getInstance().getLandTileImages(); // A kártyaképek betöltése
         
         createRectanglesOnTheTable();
         createRectanglesOnTheRightSide();
@@ -103,11 +103,12 @@ public class FXMLGameController extends Group implements Initializable {
         leftRotateButton.setOnMouseExited(buttonExitAction);
         rightRotateButton.setOnMouseExited(buttonExitAction);
         
-        disableOrEnableEverything(true);
+        disableOrEnableEverything(true); //Minden letiltása
         
         degree = 0;
     }
     
+    // Az asztalon levő cellák betöltése
     private void createRectanglesOnTheTable() {
         
         stackPane = new StackPane[TABLESIZE][TABLESIZE];
@@ -115,17 +116,21 @@ public class FXMLGameController extends Group implements Initializable {
         for(int i=0; i<TABLESIZE; i++) {
            for(int j=0; j<TABLESIZE; j++) {           
                Rectangle rectangle = new Rectangle(0, 0, 120, 120);
+               // A középső cella a kezdőlap a megfelelő képpel
                if(i==TABLESIZE/2 && j == TABLESIZE/2) {
                    rectangle.setDisable(true);
                    rectangle.setFill(new ImagePattern(LandTileImageLoader.getInstance().getStarterLandTile()));
                }
+               //A kezdőlap melletti cellák zöldek
                else if((i==TABLESIZE/2 && (j==TABLESIZE/2-1 || j==TABLESIZE/2+1)) || (j==TABLESIZE/2 && (i==TABLESIZE/2-1 || i==TABLESIZE/2+1))) {
                    rectangle.setFill(Color.GREEN);
                }
+               // A többi cella nem látható, megjelenítés miatt itt szükség van a magasság/szélesség megtartására még úgy is, hogy nem láthatóak
                else if(((i<TABLESIZE/2-1 && i > TABLESIZE/2-4) || (i > TABLESIZE/2+1 && i < TABLESIZE/2+4)) && ((j<TABLESIZE/2-1 && j > TABLESIZE/2-6) || (j > TABLESIZE/2+1 && j < TABLESIZE/2+6))) {
                    rectangle.setVisible(false);
                    rectangle.setDisable(true); 
                }
+               // A többi cella nem látható, megjelenítés miatt itt nincs szükség van a magasság/szélesség megtartására
                else {
                    rectangle.setHeight(0);
                    rectangle.setWidth(0);
@@ -144,6 +149,7 @@ public class FXMLGameController extends Group implements Initializable {
         }
     }
     
+    // A lefordított kártyák inicializálása
     private void createRectanglesOnTheRightSide() {
         for(int i=0; i<RIGHTBUTTONROWNUMBER-1; i++) {
            for(int j=0; j<RIGHTBUTTONCOLUMNNUMBER; j++) {
@@ -165,6 +171,8 @@ public class FXMLGameController extends Group implements Initializable {
         }
     }
     
+    
+    // A képernyő bal oldalán levő nevek, pontok, alattvalók számának inicializálása
     private void createLeftSideOfTheScreen() {
         for(int i=0; i<namesList.size(); i++) {
             GridPane gridPane = new GridPane();
@@ -185,6 +193,7 @@ public class FXMLGameController extends Group implements Initializable {
         }
     }
     
+    //Paramétertől függően letiltja vagy elérhetővé teszi a megfelelő elemeket
     private void disableOrEnableEverything(boolean boolParam) {
         for(int i=0; i<centerRectangles.length; i++) {
             for(int j=0; j<centerRectangles[i].length; j++) {
@@ -211,6 +220,7 @@ public class FXMLGameController extends Group implements Initializable {
         }
     }
     
+    // A balraforgatás gombra kattintás
     private final EventHandler<MouseEvent> leftRotateButtonClickAction = new EventHandler<MouseEvent>() { 
         @Override
         public void handle(MouseEvent event) {
@@ -222,6 +232,7 @@ public class FXMLGameController extends Group implements Initializable {
         }
     };
     
+    // A jobbraforgatás gombra kattintás
     private final EventHandler<MouseEvent> rightRotateButtonClickAction = new EventHandler<MouseEvent>() { 
         @Override
         public void handle(MouseEvent event) {
@@ -237,16 +248,19 @@ public class FXMLGameController extends Group implements Initializable {
         disableOrEnableEverything(false);
     }
     
+    // A balraforgatás megjelenítése a szerver műveletei után
     public void rotateLeftUpdate() {
         degree -= 90;
         imageView.setRotate(degree);
     }
     
+    // A jobbraforgatás megjelenítése a szerver műveletei után
     public void rotateRightUpdate() {
         degree += 90;
         imageView.setRotate(degree);
     }
     
+    // A szabálytalan elhelyezések letiltása és átszínezése
     public void illegalPlacesOnTableUpdate(Set<Point> illegalPoints) {
         removePreviousIllegalPlacesOnTable();
         for(Point p : illegalPoints) {
@@ -255,7 +269,7 @@ public class FXMLGameController extends Group implements Initializable {
             forbiddenPlacesOnTheTable.add(p);
         }
     }
-    
+    // A régebbi letiltott helyek törlése, színűk és elérhetésük visszaállítása
     private void removePreviousIllegalPlacesOnTable() {
         for(Point p : forbiddenPlacesOnTheTable) {
             centerRectangles[p.x][p.y].setDisable(false);
@@ -264,6 +278,7 @@ public class FXMLGameController extends Group implements Initializable {
         forbiddenPlacesOnTheTable.clear();
     }
     
+    // Az asztalon levő egy szabályos cellára kattintás a kártya elhelyezése céljából
     private final EventHandler<MouseEvent> rectangleClickAction = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
@@ -272,8 +287,10 @@ public class FXMLGameController extends Group implements Initializable {
                     if(centerRectangles[i][j] == t.getSource()) {
                         try {
                             int successLocate = delegate.locateLandTileOnTheTable(new Point(i,j));
+                            // A kártyaelhelyezés sikerült, és van lehetőség alattvaló elhelyezésére 
                             if(successLocate == 2) {
-                                delegate.openLocateFollowerWindow(imageView.getImage(), degree);
+                                delegate.openLocateFollowerWindow(imageView.getImage(), degree); 
+                            //A kártyaelhelyezés sikerült, de nincs lehetőség alattvaló elhelyezésére
                             } else if(successLocate == 1) {
                                 delegate.countPoints();
                             }
@@ -286,10 +303,13 @@ public class FXMLGameController extends Group implements Initializable {
         }
     };
     
+    // Az alattvalók elhelyezésének megjelenítése a szerveroldali változások után
     public void locateFollowerUpdate(int space, int colorNum) throws RemoteException {
         Circle circle = new Circle(8);
+        // A kör megfelelő helyre tolása
         circle.setTranslateX(FOLLOWERDEFAULTPOINTPOSITION[space].x);
         circle.setTranslateY(FOLLOWERDEFAULTPOINTPOSITION[space].y);
+        // A kör az alattvalót birtokló játékosnak megfelelő színű lesz
         circle.setFill(getColorOfNumber(colorNum));
         circle.setStroke(Color.BLACK);
         circles.put(actualLandTileTablePosition, circle);
@@ -301,6 +321,7 @@ public class FXMLGameController extends Group implements Initializable {
         });
     }
     
+    // A körben levő sor alapján (mely a játékosok id-ja) visszaadja a játékos színét
     private Color getColorOfNumber(int num) {
         switch(num) {
             case 0 : return Color.rgb(30,144,255);
@@ -312,6 +333,8 @@ public class FXMLGameController extends Group implements Initializable {
         }
     }
     
+    
+    // A lefordított területkártyák egyikére kattintás
     private final EventHandler<ActionEvent> chooseAction = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent t) {
@@ -332,10 +355,11 @@ public class FXMLGameController extends Group implements Initializable {
         }
     };
     
+    // A kártyahúzás megjelenítése a szerveroldali műveletek elvégzése után
     public void chooseLandTileUpdate(Point p) throws RemoteException { 
-        rightButtons[p.x][p.y].setDisable(true);
+        rightButtons[p.x][p.y].setDisable(true); // A kihúzott kártyalap gombja letiltottá válik
         drawnLandTiles.add(p);
-        imageView.setImage(landTiles[p.x*5+p.y]);
+        imageView.setImage(landTiles[p.x*5+p.y]); //Megjelenik a kártya felfordítva
         for(int i=0; i<TABLESIZE; i++) {
             for(int j=0; j<TABLESIZE; j++) {
                 centerRectangles[i][j].setStroke(Color.BLACK);
@@ -345,15 +369,19 @@ public class FXMLGameController extends Group implements Initializable {
         delegate.chooseFaceDownLandTileDone();
     }
     
+    // A forgatás gombok elérhetővé tétele
     public void enableRotateButtons() {
         leftRotateButton.setDisable(false);
         rightRotateButton.setDisable(false);
     }
     
+    // Warning message, ha többször akarna húzni egymás után a játékos
     public void chooseLandTileWarningMessage() {
         new WarningDialog("Hiba kártyahúzáskor", "Már húztál egy kártyát!");
     }
     
+    
+    //Information message, ha a kihúzott kártyát nem lehet elhelyezni
     public void landTileCantBeLocatednformationMessage() {
         ImageView img = new ImageView(imageView.getImage());
         img.setFitHeight(200);
@@ -366,26 +394,30 @@ public class FXMLGameController extends Group implements Initializable {
         imageView.setRotate(360);
     }
     
+    
+    // Kártyaelhelyezés megjelenítése, miután a szerver elvégezte a műveleteit
     public void locateLandTileUpdate(Point p) {
         actualLandTileTablePosition = p;
         removePreviousIllegalPlacesOnTable();
-        centerRectangles[p.x][p.y].setFill(new ImagePattern(imageView.getImage()));
-        centerRectangles[p.x][p.y].setDisable(true);
-        centerRectangles[p.x][p.y].getTransforms().add(new Rotate(degree, 60, 60));
+        centerRectangles[p.x][p.y].setFill(new ImagePattern(imageView.getImage())); // A cellán megjelenik a megfelelő kép
+        centerRectangles[p.x][p.y].setDisable(true); // A cella letiltásra kerül
+        centerRectangles[p.x][p.y].getTransforms().add(new Rotate(degree, 60, 60)); // A kártyát az előző forgatásnak megfelelően elforgatja
         centerRectangles[p.x][p.y].setStrokeWidth(2);
-        centerRectangles[p.x][p.y].setStroke(Color.INDIANRED);
-        expansionOfTheTable(p.x, p.y);
+        centerRectangles[p.x][p.y].setStroke(Color.INDIANRED); // Az utolsóként elhelyezett kártya színe piros lesz
+        expansionOfTheTable(p.x, p.y); //A tábla mérete nő
         try {
             delegate.locateLandTileDone();
         } catch (RemoteException ex) {
-            Logger.getLogger(FXMLGameController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Hiba a kártyaelhelyezés kész művelet szervernek való elküldésekor.");
         }
     }
     
+    // Warning message, ha a játékos kártyahúzás előtt próbálna elhelyezni egy kártyát
     public void locateLandTileWarningMessage() {
         new WarningDialog("Hiba a kártya elhelyezésekor", "Még nem húztál kártyát!");
     }  
     
+    // Az épp elhelyezett kártya melletti cellák megjelenítése
     private void expansionOfTheTable(int i, int j) {
         if(i > 0 && !centerRectangles[i-1][j].isVisible()) {
             setFieldVisibledOnTheTable(i-1, j);
@@ -401,27 +433,30 @@ public class FXMLGameController extends Group implements Initializable {
         }
     }
     
+    // Az épp elhelyezett kártya melletti cellák megjelenítése
     private void setFieldVisibledOnTheTable(int i, int j) {
-        centerRectangles[i][j].setVisible(true);
-        centerRectangles[i][j].setFill(Color.GREEN);
+        centerRectangles[i][j].setVisible(true); //láthatóvá válik
+        centerRectangles[i][j].setFill(Color.GREEN); //színe zöld lesz
         centerRectangles[i][j].setWidth(120);
         centerRectangles[i][j].setHeight(120);
     }
     
+    // A megfelelő pontok megjelenítése a szerver számolása után
     public void countPointUpdate(int[] point) throws RemoteException {
         for(int i=0; i<points.length; i++) {
-            points[i].setText(point[i] + " pont");
+            points[i].setText(point[i] + " pont"); // A pontok megjelenítésének frissítése
         }
-        imageView.setImage(new Image("/resources/images/empty.jpg"));
-        imageView.setRotate(360);
+        imageView.setImage(new Image("/resources/images/empty.jpg")); // A kihúzott kártya helye ismét üres kép lesz
+        imageView.setRotate(360); // A kihúzott kártya helyének visszaforgatása a kiinduló állapotba
         degree = 0;
         disableOrEnableEverything(true);
     }
     
+    // A szerver záróértékelése után a pontok frissítése
     public void countPointEndOfTheGameUpdate(int[] point) {
         for(int i=0; i<points.length; i++) {
             int num = Integer.parseInt(points[i].getText().split("\\s+")[0]);
-            points[i].setText((point[i] + num) + " pont");
+            points[i].setText((point[i] + num) + " pont"); // A pontok kiírásának frissítése
         }
         imageView.setImage(new Image("/resources/images/empty.jpg"));
         imageView.setRotate(360);
@@ -429,10 +464,12 @@ public class FXMLGameController extends Group implements Initializable {
         disableOrEnableEverything(true);
     }
     
+    // Az alattvalók számának frissítése
     public void followerNumberUpdate(int[] followerNumbers, List<Point> freeCircles) throws RemoteException {
         for(int i=0; i<followerNumbers.length; i++) {
-            followers[i].setText(followerNumbers[i] + " alattvaló");
+            followers[i].setText(followerNumbers[i] + " alattvaló"); // Az alattvalók számának frissítése a kiíratásnál
         }
+        // A felszabadult alattvalók színe halványabbá válik a kártyákon
         for(Point p : freeCircles) {
             if(circles.get(p).getFill().equals(Color.rgb(30,144,255))) {
                 circles.get(p).setFill(Color.rgb(176,224,230));
@@ -448,7 +485,8 @@ public class FXMLGameController extends Group implements Initializable {
         }
         delegate.nextPlayersTurn();
     }
-        
+    
+    // A cella világosabb színűvé változik, ha főlé viszik az egeret
     private final EventHandler<MouseEvent> ractangleEnterAction = (MouseEvent t) -> {
         for(int i=0; i<TABLESIZE; i++) {
             for(int j=0; j<TABLESIZE; j++) {
@@ -460,6 +498,7 @@ public class FXMLGameController extends Group implements Initializable {
         }
     };
     
+    // A cella eredeti színére vált, ha főlé az eget kiviszik felőle
     private final EventHandler<MouseEvent> rectangleExitAction = (MouseEvent t) -> {
         for(int i=0; i<143; i++) {
             for(int j=0; j<143; j++) {
@@ -471,14 +510,17 @@ public class FXMLGameController extends Group implements Initializable {
         }
     };
     
+    // Az egér kézzé változik, ha gomb fölé megy
     private final EventHandler<MouseEvent> buttonEnterAction = (MouseEvent event) -> {
         delegate.scene.setCursor(Cursor.HAND);
     };
     
+    // Az egér visszaáll defult megjelenítésre, ha kimegy a gomb felől
     private final EventHandler<MouseEvent> buttonExitAction = (MouseEvent event) -> {
         delegate.scene.setCursor(Cursor.DEFAULT);
     };
     
+    // Warning message, ha kilép valaki a játékból, visszalépés a menübe
     public void gameIsOverMessageUpdate() throws IOException {
         new WarningDialog("Játék vége", "Sajnos valaki elhagyta a játékot, így a játék véget ért.");
         delegate.endOfGameBecauseSomebodyQuittedClickOnOK();

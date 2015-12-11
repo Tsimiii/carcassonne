@@ -3,10 +3,11 @@ package view.dialogs;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
 
+// A figyelmeztető üzenetek megjelenítése
 public class WarningDialog {
     
-    private String title;
-    private String text;
+    private String title; // Az ablak neve
+    private String text; // Az ablakon megjelenő szöveg
 
     public WarningDialog(String title, String text) {
         this.title = title;
@@ -15,6 +16,7 @@ public class WarningDialog {
         showWarningDialog();
     }
     
+    // Megjeleníti az új figyelmeztető ablakot
     private void showWarningDialog() {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             DialogPane dialogPane = alert.getDialogPane();

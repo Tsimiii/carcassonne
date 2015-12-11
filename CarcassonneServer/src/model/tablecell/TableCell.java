@@ -4,7 +4,7 @@ import model.landtile.LandTile;
 
 //A játéktábla egy cellája
 public class TableCell {
-    private LandTile landTile;
+    private LandTile landTile; //A cellán levő területkártya (null, ha nincs rajta)
 
     public TableCell() {
         landTile = null;

@@ -17,37 +17,38 @@ import javafx.scene.Group;
 import javafx.stage.Screen;
 import javafx.stage.WindowEvent;
 
+//kliens fő osztály
 public class CarcassonneClient extends Application {
 
-    private Scene scene;
+    private Scene scene; //a megjelenítés tartalmának konténere
 
     @Override
     public void start(Stage primaryStage) throws URISyntaxException, RemoteException, IOException {
         Group group = new Group();
         scene = new Scene(group);
-        scene.getStylesheets().add(this.getClass().getResource("/resources/css/style.css").toExternalForm());
+        scene.getStylesheets().add(this.getClass().getResource("/resources/css/style.css").toExternalForm()); //style hozzáadása
 
         CommunicationController controller = new CommunicationController(scene);
 
-        primaryStage.setScene(scene);
+        primaryStage.setScene(scene); //az ablak létrehozása
         primaryStage.show();
         
-        Screen screen = Screen.getPrimary();
-        Rectangle2D bounds = screen.getVisualBounds();
-        System.out.println(bounds.getMinX() + " " + bounds.getMinY() + " " + bounds.getWidth() + " " + bounds.getHeight());
+        //a képernyő bal felül jelenik meg
         primaryStage.setX(0);
         primaryStage.setY(0);
+        
+        //a képernyő méretének beállítása
         primaryStage.setWidth(1920);
         primaryStage.setHeight(1032);
         
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() { //Az X-re kattintáskor bezárja az alkalmazást
            @Override public void handle(WindowEvent t) {
                try {
-                   controller.quitFromGame();
+                   controller.quitFromGame(); //A játékos lecsatlakoztatása a szerverről
+                   System.exit(0);
                } catch (RemoteException ex) {
-                   Logger.getLogger(CarcassonneClient.class.getName()).log(Level.SEVERE, null, ex);
-               }
-               System.exit(0);
+                   System.err.println("A játékos szervertől való lecsatlakoztatása sikertelen!");
+               }  
            }
         });
     }

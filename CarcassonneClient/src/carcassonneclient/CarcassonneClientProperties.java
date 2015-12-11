@@ -1,25 +1,26 @@
 package carcassonneclient;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+
+//A megjelenítés statikus értékeinek betöltését szolgáló osztály
 public class CarcassonneClientProperties {
     
     private Properties prop;
-    String propFileName = "/resources/config/config.properties";
+    String propFileName = "/resources/config/config.properties"; //a fájl, ahonnan az adatok betöltődnek
     InputStream inputStream;
 
     public CarcassonneClientProperties() throws FileNotFoundException, IOException {
         prop = new Properties();
-        inputStream = this.getClass().getResourceAsStream(propFileName);//new FileInputStream(propFileName);
+        inputStream = this.getClass().getResourceAsStream(propFileName);
         
         if (inputStream != null) {
-                prop.load(inputStream);
+                prop.load(inputStream); //A prop változóba betölti az adatokat
         } else {
-                throw new FileNotFoundException("Property file '" + propFileName + "' not found in the classpath");
+                throw new FileNotFoundException("A " + propFileName + " Property fájl nem található a megadott útvonalon.");
         }
     }
     

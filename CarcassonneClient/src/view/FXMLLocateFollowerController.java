@@ -21,24 +21,26 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+//Az alattvalók elhelyezésének ablaka, dinamikus megjelenítés
 public class FXMLLocateFollowerController implements Initializable {
 
+    // Az alattvalók lehetséges elhelyezéseinek pontjai
     private final Point[] FOLLOWERDEFAULTPOINTPOSITION = new Point[]{new Point(-90, -70), new Point(-90, 0), new Point(-90, 70), new Point(-70, 90), new Point(0, 90), new Point(70, 90), new Point(90, 70), new Point(90, 0), new Point(90, -70), new Point(70, -90), new Point(0, -90), new Point(-70, -90), new Point(0, 0)};
-    private List<Integer> positionsFromServer;
-    private Point[] followerPositions;
-    private Circle[] circle;
-    private int actualReservedPlace;
+    private List<Integer> positionsFromServer; // A szervertől kapott pontok, ahova alattvalót el lehet helyezni
+    private Point[] followerPositions; //A megfelelő pontok alapján az elhelyezéseket tárolja
+    private Circle[] circle; //Az alattvaló elhelyezésére szolgáló körök
+    private int actualReservedPlace; //Az épp lefoglalt rész indexe
     private double degree;
     private Image image;
     private Stage stage;
     @FXML
     StackPane stackPane;
     @FXML
-    protected ImageView imageView;
+    protected ImageView imageView; // A kép megjelenésének helye
     @FXML
-    protected Button locateButton;
+    protected Button locateButton; // Az alattvaló elhelyezése gomb
     @FXML
-    protected Button skipButton;
+    protected Button skipButton; // A kihagyás gomb
 
     public CommunicationController delegate;
 
@@ -52,7 +54,7 @@ public class FXMLLocateFollowerController implements Initializable {
             System.err.println("Hiba az alattvalók lehetséges elhelyezésének betöltésekor.");
         }
 
-        imageView.setRotate(degree);
+        imageView.setRotate(degree); // Elforgatja a képet a forgatásoknak megfelelően
         imageView.setImage(image);
 
         initFollowerPoints();
@@ -65,6 +67,7 @@ public class FXMLLocateFollowerController implements Initializable {
         skipButton.setOnMouseExited(exitAction);
     }
 
+    // Meghatározza a szervertől kapott pontok alapján a megjelenítés szempontjából ezeknek megfelelő helyeket
     private void initActualFollowerPositions(List<Integer> positions) {
         followerPositions = new Point[positions.size()];
         for (int i = 0; i < positions.size(); i++) {
@@ -72,6 +75,7 @@ public class FXMLLocateFollowerController implements Initializable {
         }
     }
 
+    //A megjelenő körök inicializálása
     private void initFollowerPoints() {
         circle = new Circle[followerPositions.length];
         for (int i = 0; i < followerPositions.length; i++) {
@@ -86,24 +90,26 @@ public class FXMLLocateFollowerController implements Initializable {
         }
     }
 
+    // A körre kattintáskor kiváltódó függvény
     private final EventHandler<MouseEvent> circleClickAction = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
             for (int i = 0; i < circle.length; i++) {
-                circle[i].setFill(Color.SLATEGREY);
-                circle[i].setDisable(false);
+                circle[i].setFill(Color.SLATEGREY); // Az összes kör színét először szürkére állítja (egyszerre csak egy lehet kijelölve)
+                circle[i].setDisable(false); // Az összes kör elérhetővé válik
             }
             for (int i = 0; i < circle.length; i++) {
                 if (circle[i] == t.getSource()) {
-                    circle[i].setFill(Color.LIGHTGREEN);
-                    circle[i].setDisable(true);
-                    actualReservedPlace = positionsFromServer.get(i);
+                    circle[i].setFill(Color.LIGHTGREEN); // A kiválasztott kör zölddé változik
+                    circle[i].setDisable(true); // A kiválasztott kör elérését letiltja
+                    actualReservedPlace = positionsFromServer.get(i); //beállítja aktuálisan foglaltnak a pozíció indexét
                 }
             }
-            locateButton.setDisable(false);
+            locateButton.setDisable(false); // Az alattvaló elhelyezése gomb elérhetővé válik
         }
     };
 
+    // Effekt a körre, ha az egér fölémegy; az egér kéz formájú lesz
     private final EventHandler<MouseEvent> circleEnterAction = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
@@ -117,6 +123,7 @@ public class FXMLLocateFollowerController implements Initializable {
         }
     };
 
+    // Effekt törlése a körről, ha az egér elmegy róla; az egér ismét default formájú lesz
     private final EventHandler<MouseEvent> circleExitAction = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {   
@@ -129,6 +136,7 @@ public class FXMLLocateFollowerController implements Initializable {
         }
     };
 
+    // Az alattvaló elhelyezése gombra kattintás
     private final EventHandler<MouseEvent> locateAction = new EventHandler<MouseEvent>() {
 
         @Override
@@ -142,18 +150,22 @@ public class FXMLLocateFollowerController implements Initializable {
 
     };
 
+    // A kihagyás gombra kattintás
     private final EventHandler<MouseEvent> skipAction = (MouseEvent event) -> {
         delegate.clickSkipAction();
     };
     
+    // Ha gombok fölé megy az egér, ilyenkor a kurzor kéz formájú lesz
     private final EventHandler<MouseEvent> enterAction = (MouseEvent event) -> {
         stage.getScene().setCursor(Cursor.HAND);
     };
     
+    // Ha gombok fölül kimegy az egér, ilyenkor a kurzor ismét default formájú lesz
     private final EventHandler<MouseEvent> exitAction = (MouseEvent event) -> {
         stage.getScene().setCursor(Cursor.DEFAULT);
     };
     
+    // Az X gombra kattintás, ugyanolyan, mintha a kihagyás gombra kattintana a játékos
     private final EventHandler<WindowEvent> closeWindowAction = new EventHandler<WindowEvent>() {
 
         @Override

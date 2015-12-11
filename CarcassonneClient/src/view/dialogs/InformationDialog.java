@@ -4,10 +4,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
 import javafx.scene.image.ImageView;
 
+// Az értesítő üzenetek megjelenítése
 public class InformationDialog {
-    private String title;
-    private String text;
-    private ImageView img;
+    private String title; // Az ablak neve
+    private String text; // Az ablakon megjelenő szöveg
+    private ImageView img; // Az ablakon megjelenő kép
 
     public InformationDialog(String title, String text, ImageView img) {
         this.title = title;
@@ -17,6 +18,7 @@ public class InformationDialog {
         showInformationDialog();
     }
     
+    // Megjeleníti az új értesítő ablakot
     private void showInformationDialog() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         DialogPane dialogPane = alert.getDialogPane();

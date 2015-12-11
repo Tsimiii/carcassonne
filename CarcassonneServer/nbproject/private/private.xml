@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/model/landtile/LandTileLoader.java</file>
             <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/carcassonneserver/CarcassonneServer.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/build.xml</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/carcassonneserver/CarcassonneServerProperties.java</file>
-            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/manifest.mf</file>
+            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/model/CarcassonneGameModel.java</file>
+            <file>file:/C:/Users/Timea/carcassonne_git/carcassonne/CarcassonneServer/src/artificialintelligence/CarcassonneAI.java</file>
         </group>
     </open-files>
 </project-private>
