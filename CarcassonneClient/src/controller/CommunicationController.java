@@ -319,6 +319,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     // A játék közbeni pontszámítás lekérése a szervertől
     public void countPoints() throws RemoteException {
         remoteService.countPoints();
+        nextPlayersTurn();
     }
     
     // A következő játékos lekérése a szervertől

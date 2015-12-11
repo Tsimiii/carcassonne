@@ -409,6 +409,7 @@ public class CarcassonneAI {
             delegate.locateFollower(followerPosition);
         }
         delegate.countPoints();
+        delegate.whosTurnIsIt();
     }
     
     // A kihúzható kártyapozíciók listájából törli a paraméterben meghatározott elemet

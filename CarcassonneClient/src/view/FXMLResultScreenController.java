@@ -90,13 +90,9 @@ public class FXMLResultScreenController implements Initializable{
         delegate.scene.setCursor(Cursor.DEFAULT);
     };
     
-    // Az X gombra kattintás következében a játékos visszakerül a menübe
+    // Az X gombra kattintás következében a játékos kilép az alkalmazásból
     private final EventHandler<WindowEvent> closeWindowAction = (WindowEvent event) -> {
-        try {
-            delegate.clickBactToMainMenuAction();
-        } catch(IOException e) {
-            System.err.println("Hiba a Vissza a menühöz gombra kattintáskor.");
-        }
+            delegate.clickExitAction();
     };
     
 }

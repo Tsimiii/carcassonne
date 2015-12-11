@@ -483,7 +483,7 @@ public class FXMLGameController extends Group implements Initializable {
                 circles.get(p).setFill(Color.rgb(190,190,190));
             }
         }
-        delegate.nextPlayersTurn();
+        //delegate.nextPlayersTurn();
     }
     
     // A cella világosabb színűvé változik, ha főlé viszik az egeret
