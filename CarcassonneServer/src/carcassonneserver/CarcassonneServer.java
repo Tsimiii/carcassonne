@@ -21,20 +21,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.CarcassonneGameModel;
 
+// A Carcassonne szerver osztálya
 public class CarcassonneServer extends Observable implements RmiService {
 
-    private CarcassonneGameModel carcassonneGameModel;
+    private CarcassonneGameModel carcassonneGameModel; // A logikai réteg példánya
 
     private WrappedObserver wrappedObserver;
 
     private static boolean timesUp = false;
-    private static int PLAYERNUMBER;
-    private static List<WrappedObserver> playerObservers = new ArrayList<>();
-    private List<CarcassonneAI> artificialIntelligences = new ArrayList<>();
-    private List<String> names = new ArrayList<>();
-    private Thread joinPlayersThread;
+    private static int PLAYERNUMBER; // A játékosok száma
+    private static List<WrappedObserver> playerObservers = new ArrayList<>(); // A játékba csatlakozott felhasználókat tároló lista
+    private List<CarcassonneAI> artificialIntelligences = new ArrayList<>(); // A mesterséges intelligenciákat tároló lista
+    private List<String> names = new ArrayList<>(); // A játékosok neveit tároló lista
+    private Thread joinPlayersThread; // A játékosok csatlakozását kezelő szál
     private static Timer timer;
-    private static int STARTERINTERVAL;
+    private static int STARTERINTERVAL; // A csatlakozási idő kezdőértéke
     private int interval;
     private boolean gameIsNotStartedOrEnded;
     private CarcassonneServer carser = this;
@@ -49,6 +50,7 @@ public class CarcassonneServer extends Observable implements RmiService {
         } 
     }
     
+    // A játékosok csatlakozásához és az időzítőhöz tartozó szál létrehozása
     private void createAndStartThreadAndStartTimer() {
         joinPlayersThread = new JoinPlayersThread();
         int delay = 1000;
@@ -216,8 +218,10 @@ public class CarcassonneServer extends Observable implements RmiService {
         setChanged();
         boolean firstchoose = carcassonneGameModel.chooseFaceDownLandTile(p);
         if (firstchoose) {
-            setChanged();
-            notifyObservers(p);
+            if((carcassonneGameModel.getTurn() >= playerObservers.size() && carcassonneGameModel.isLandTileCanBeLocated()) || carcassonneGameModel.getTurn() < playerObservers.size()) {
+                setChanged();
+                notifyObservers(p);
+            }
             if(carcassonneGameModel.getTurn() < playerObservers.size()) {
                 setChanged();
                 playerObservers.get(carcassonneGameModel.getTurn()).update(this, "rotateButtonEnabled");
@@ -244,8 +248,8 @@ public class CarcassonneServer extends Observable implements RmiService {
     public void chooseFaceDownLandTileDone() throws RemoteException {
         System.out.println("Végzet a kihúzással");
         asd++;
-        System.out.println("asd: " + asd);
-        if(!gameIsNotStartedOrEnded && carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0) {
+        System.out.println("asd: " + asd); 
+        if(!gameIsNotStartedOrEnded && carcassonneGameModel.getTurn() >= playerObservers.size() && asd%countObservers() == 0 ) {
             System.out.println("és még ide is belépett.");
             try {
                 artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).decideBestLocation();
