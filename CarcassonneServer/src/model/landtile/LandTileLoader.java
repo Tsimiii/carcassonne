@@ -1,7 +1,9 @@
 package model.landtile;
 
+// A területkártyák inicializálását szolgáló osztály
 public class LandTileLoader {
     
+    // A kártyán szereplő lehetséges elemek
     private final int FIELD = 0;
     private final int ROAD = 1;
     private final int CITY = 2;
@@ -9,8 +11,8 @@ public class LandTileLoader {
     private final int CLOISTER = 3;
     private final int NOTHING = 5;
     
-    private LandTile starterLandTile;
-    private LandTile[] landTiles;
+    private LandTile starterLandTile; // A kezdőkártya
+    private LandTile[] landTiles; // A többi kártya tömbje
 
     public LandTileLoader() {
         landTiles = new LandTile[71];
@@ -19,6 +21,7 @@ public class LandTileLoader {
         initLandTiles();
     }
     
+    // A kártyák inicializálása, a LandTile osztály példányainak létrehozása
     private void initLandTiles() {
         int ind = 0;
         for(int i=0; i<8; i++) {
@@ -108,10 +111,12 @@ public class LandTileLoader {
         landTiles[ind] = new LandTile(ind+1, new int[] {CITYWITHPENNANT, CITYWITHPENNANT, CITYWITHPENNANT, FIELD, FIELD, FIELD, CITYWITHPENNANT, CITYWITHPENNANT, CITYWITHPENNANT, CITYWITHPENNANT, CITYWITHPENNANT, CITYWITHPENNANT, CITYWITHPENNANT}, new int[][] {new int[]{0,1,2,6,7,8,9,10,11,12}, new int[]{3,4,5}});
     }
 
+    // Visszaadja a kezdőkártyát
     public LandTile getStarterLandTile() {
         return starterLandTile;
     }
 
+    // Visszaadja a többi kártya tömbjét
     public LandTile[] getLandTiles() {
         return landTiles;
     }

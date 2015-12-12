@@ -3,6 +3,7 @@ package model;
 import java.util.Comparator;
 import java.util.Map;
 
+// A játék végén a pontok rendezéséhez a Map-ek összehasonlítását segítő osztály
 public class PlayerPointComparator implements Comparator<Integer>{
         Map<Integer, Integer> map;
 
@@ -10,6 +11,7 @@ public class PlayerPointComparator implements Comparator<Integer>{
             this.map = map;
         }
 
+        // A Comparator osztály összehasonlításának felülírása
         @Override
         public int compare(Integer o1, Integer o2) {
             if (map.get(o1) >= map.get(o2)) {
