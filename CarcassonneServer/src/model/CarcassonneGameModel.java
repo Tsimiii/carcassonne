@@ -114,7 +114,7 @@ public class CarcassonneGameModel {
     }
 
     public boolean rotateLeftLandTile() {
-        if (chosenLandTile != null) {
+        if (chosenLandTile != null && !locatedLandTiles.contains(chosenLandTile)) {
             setNewContinuousPartsAfterRotateLeft();
             chosenLandTile.setComponents(getLeftRotateArray(chosenLandTile));
             forbidIllegalPlaces();
@@ -124,7 +124,7 @@ public class CarcassonneGameModel {
     }
 
     public boolean rotateRightLandTile() {
-        if (chosenLandTile != null) {
+        if (chosenLandTile != null && !locatedLandTiles.contains(chosenLandTile)) {
             setNewContinuousPartsAfterRotateRight();
             chosenLandTile.setComponents(getRightRotateArray(chosenLandTile));
             forbidIllegalPlaces();
@@ -265,7 +265,7 @@ public class CarcassonneGameModel {
     }
 
     public boolean locateLandTileOnTheTable(Point p) {
-        if (chosenLandTile != null) {
+        if (chosenLandTile != null && !locatedLandTiles.contains(chosenLandTile)) {
             cells[p.x][p.y].setLandTile(chosenLandTile);
             chosenLandTile.setPositionOnTheTable(p.x, p.y);
             locatedLandTiles.add(chosenLandTile);
@@ -277,7 +277,7 @@ public class CarcassonneGameModel {
     }
 
     public boolean locateLandTileJustForTry(Point p) {
-        if (chosenLandTile != null) {
+        if (chosenLandTile != null && !locatedLandTiles.contains(chosenLandTile)) {
             cells[p.x][p.y].setLandTile(chosenLandTile);
             locatedLandTiles.add(chosenLandTile);
             chosenLandTile.setPositionOnTheTable(p.x, p.y);
