@@ -16,8 +16,10 @@ import model.landtile.LandTileLoader;
 import model.player.Player;
 import model.tablecell.TableCell;
 
+// A Carcassonne játék logikai rétegét megvalósító osztály
 public class CarcassonneGameModel {
 
+    // A különböző kártyaelemek azonosítói
     private final int FIELD = 0;
     private final int ROAD = 1;
     private final int CITY = 2;
@@ -25,24 +27,24 @@ public class CarcassonneGameModel {
     private final int CLOISTER = 3;
     private final int NOTHING = 5;
 
-    private final Player[] players;
+    private final Player[] players; // A játékosokat tároló tömb
     private final LandTileLoader landTileLoader;
-    private final LandTile[] landTiles;
-    private LandTile chosenLandTile;
-    private TableCell[][] cells;
-    private final int[] shuffledIdArray;
-    private List<LandTile> locatedLandTiles;
-    private Set<Point> forbiddenPlacesOnTheTable;
-    private Set<Point> enabledPlacesOnTheTable;
+    private final LandTile[] landTiles; // A területkártyákat tároló tömb
+    private LandTile chosenLandTile; // Az aktuálisan kihúzott kártya
+    private TableCell[][] cells; // Az asztalon levő cellák mátrixa
+    private final int[] shuffledIdArray; // Az összekevert kártyák azonosítójának tömbje
+    private List<LandTile> locatedLandTiles; // Az elhelyezett kártyák listája
+    private Set<Point> forbiddenPlacesOnTheTable; // Az asztal kártya elhelyezés szemopontjából letiltott cellák a táblán
+    private Set<Point> enabledPlacesOnTheTable; // Az asztal elérhető cellái a kártya elhelyezés szempontjából
     private boolean landTileCanBeLocated;
-    private List<Integer> pointsOfFollowers;
-    private List<Point> freeFollowersAgainPastLocation = new ArrayList<>();
-    private List<List<Point>> citiesOnTheEdge = new ArrayList<>();
+    private List<Integer> pointsOfFollowers; // Az adott kártyán az alattvaló lehetséges elhelyezésének pontjai
+    private List<Point> freeFollowersAgainPastLocation = new ArrayList<>(); // A kártya elhelyezés után az ismét szabaddá vált alattvalók listája
+    private List<List<Point>> citiesOnTheEdge = new ArrayList<>(); // Az egyes várak szélső elemei
     private boolean endOfGame = false;
-    private int turn;
+    private int turn; // Azt jelzi, hogy melyik játékos következik
 
     public CarcassonneGameModel(int playerNumber) {
-        landTileLoader = new LandTileLoader();
+        landTileLoader = new LandTileLoader(); // a területkártyák inicializálása
         landTiles = landTileLoader.getLandTiles();
         shuffledIdArray = new int[71];
         chosenLandTile = null;
@@ -54,35 +56,40 @@ public class CarcassonneGameModel {
         players = new Player[playerNumber];
         initPlayers(playerNumber);
         turn = 0;
-        shuffleLandTileArray();
+        shuffleLandTileArray(); // A kártyák keverése
     }
 
+    // Az asztalon levő cellák inicializálása
     private void initCells() {
-        cells = new TableCell[143][143];
+        cells = new TableCell[143][143]; // Ha egy sorba/oszlopba kerül az összes területkártya, akkor is elég legyen biztosan a hely
         for (int i = 0; i < 143; i++) {
             for (int j = 0; j < 143; j++) {
                 cells[i][j] = new TableCell();
             }
         }
-        cells[143 / 2][143 / 2].setLandTile(landTileLoader.getStarterLandTile());
+        cells[143 / 2][143 / 2].setLandTile(landTileLoader.getStarterLandTile()); // A középső cellára helyezi a kezdőkártyát
     }
 
+    // A játékosok inicializálása
     private void initPlayers(int number) {
         for (int i = 0; i < number; i++) {
             players[i] = new Player(i);
         }
     }
 
+    // A területkártyák összekeverése
     private void shuffleLandTileArray() {
         Collections.shuffle(Arrays.asList(landTiles));
         initShuffledIdArray();
     }
 
+    // A kártyahúzásért felelős függvény
     public boolean chooseFaceDownLandTile(Point p) {
         System.out.println("BELÉP");
+        // Ha még nem volt kihúzva kártya az adott körbe
         if (chosenLandTile == null) {
             landTileCanBeLocated = false;
-            chosenLandTile = landTiles[p.x * 5 + p.y];
+            chosenLandTile = landTiles[p.x * 5 + p.y]; // az 5 oszlopos mátrixban így kapjuk meg sorfolytonosan az elemet
             System.out.println("\nchosen lt after choose: " + chosenLandTile);
             forbidIllegalPlaces();
             checkWhetherLandTileCanBeLocatedAfterRotates();
@@ -91,6 +98,7 @@ public class CarcassonneGameModel {
         return false;
     }
 
+    // Visszaadja, hogy az aktuális körben húztak-e már kártyát
     public boolean isChoosenLandTileNotNull() {
         if (chosenLandTile == null) {
             return false;
@@ -98,9 +106,12 @@ public class CarcassonneGameModel {
         return true;
     }
 
+    // Levizsgálja, hogy a kihúzott kártyát el lehet-e szabályosan helyezni az asztalon
     private boolean checkWhetherLandTileCanBeLocatedAfterRotates() {
+        // Minegyik irányban levizsgálja (4 forgatás balra)
         for (int i = 0; i < 4; i++) {
             rotateLeftLandTile();
+            // Amint el lehet helyezni, nem vizsgálja tovább, hanem visszaállítja a kártyát a forgatás szempontjából eredeti helyzetbe
             if (landTileCanBeLocated) {
                 for (int j = 0; j < i + 1; j++) {
                     rotateRightLandTile();
@@ -108,61 +119,70 @@ public class CarcassonneGameModel {
                 return true;
             }
         }
-        chosenLandTile.setPositionOnTheTable(-2, -2);
+        chosenLandTile.setPositionOnTheTable(-2, -2); // Ha a kártyát nem lehet elhelyezni, értéke (-2, -2) lesz
         chosenLandTile = null;
         return false;
     }
 
+    // A kártya balra forgatása
     public boolean rotateLeftLandTile() {
+        // Ha már kihúzták és még nem rakták le a kártyát
         if (chosenLandTile != null && !locatedLandTiles.contains(chosenLandTile)) {
-            setNewContinuousPartsAfterRotateLeft();
-            chosenLandTile.setComponents(getLeftRotateArray(chosenLandTile));
-            forbidIllegalPlaces();
+            setNewContinuousPartsAfterRotateLeft(); // Módosítja az összefüggő területeket a kártyán
+            chosenLandTile.setComponents(getLeftRotateArray(chosenLandTile)); // Beállítja az elforgatásnak megfelelően a kártyaelemeket
+            forbidIllegalPlaces(); // Letiltja a szabálytalan elhelyezéseket
             return true;
         }
         return false;
     }
 
+    // A kártya jobbra forgatása
     public boolean rotateRightLandTile() {
+        // Ha már kihúzták és még nem rakták le a kártyát
         if (chosenLandTile != null && !locatedLandTiles.contains(chosenLandTile)) {
-            setNewContinuousPartsAfterRotateRight();
-            chosenLandTile.setComponents(getRightRotateArray(chosenLandTile));
-            forbidIllegalPlaces();
+            setNewContinuousPartsAfterRotateRight(); // Módosítja az összefüggő területeket a kártyán
+            chosenLandTile.setComponents(getRightRotateArray(chosenLandTile)); // Beállítja az elforgatásnak megfelelően a kártyaelemeket
+            forbidIllegalPlaces(); // Letiltja a szabálytalan elhelyezéseket
             return true;
         }
         return false;
     }
 
+    // Jobbraforgatás után visszaadja a kártyaelemek új tömbjét
     private int[] getRightRotateArray(LandTile actualLandTile) {
         int[] rotateArray = new int[13];
         int temp1 = actualLandTile.getComponents()[0];
         int temp2 = actualLandTile.getComponents()[1];
         int temp3 = actualLandTile.getComponents()[2];
+        // 0-tól a 8. indexig a 3 indexszel az elemek balra csúsznak a tömbben
         for (int i = 0; i < actualLandTile.getComponents().length - 4; i++) {
             rotateArray[i] = actualLandTile.getComponents()[i + 3];
         }
-        rotateArray[9] = temp1;
-        rotateArray[10] = temp2;
-        rotateArray[11] = temp3;
-        rotateArray[12] = actualLandTile.getComponents()[12];
+        rotateArray[9] = temp1; // A 9. indexre kerül az eddigi 0. indexű elem
+        rotateArray[10] = temp2; // A 10. indexre kerül az eddigi 1. indexű elem
+        rotateArray[11] = temp3; // A 11. indexre kerül az eddigi 2. indexű elem
+        rotateArray[12] = actualLandTile.getComponents()[12]; // A 12. indexű elem ugyanott marad
         return rotateArray;
     }
 
+    // Balraforgatás után visszaadja a kártyaelemek új tömbjét
     private int[] getLeftRotateArray(LandTile actualLandTile) {
         int[] rotateArray = new int[13];
         int temp1 = actualLandTile.getComponents()[9];
         int temp2 = actualLandTile.getComponents()[10];
         int temp3 = actualLandTile.getComponents()[11];
+        // 0-tól a 8. indexig a 3 indexszel az elemek jobbra csúsznak a tömbben
         for (int i = 0; i < actualLandTile.getComponents().length - 4; i++) {
             rotateArray[i + 3] = actualLandTile.getComponents()[i];
         }
-        rotateArray[0] = temp1;
-        rotateArray[1] = temp2;
-        rotateArray[2] = temp3;
-        rotateArray[12] = actualLandTile.getComponents()[12];
+        rotateArray[0] = temp1; // A 0. indexre kerül az eddigi 9. indexű elem
+        rotateArray[1] = temp2; // A 1. indexre kerül az eddigi 10. indexű elem
+        rotateArray[2] = temp3; // A 2. indexre kerül az eddigi 11. indexű elem
+        rotateArray[12] = actualLandTile.getComponents()[12]; // A 12. indexű elem ugyanott marad
         return rotateArray;
     }
 
+    // Jobbraforgatás után visszaadja az új összefüggő területeket
     private void setNewContinuousPartsAfterRotateRight() {
         int contPartNum;
         for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
@@ -177,8 +197,8 @@ public class CarcassonneGameModel {
         }
     }
 
+    // Balraforgatás után visszaadja az új összefüggő területeket
     private void setNewContinuousPartsAfterRotateLeft() {
-
         int contPartNum;
         for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
             for (int j = 0; j < chosenLandTile.getContinuousParts()[i].length; j++) {
@@ -192,7 +212,9 @@ public class CarcassonneGameModel {
         }
     }
 
+    // A helytelen elhelyezések letiltása
     private void forbidIllegalPlaces() {
+        // Törli a régebbi eltárolt elemeket
         forbiddenPlacesOnTheTable.clear();
         enabledPlacesOnTheTable.clear();
         int x;
@@ -207,17 +229,22 @@ public class CarcassonneGameModel {
         }
     }
 
+    // Hozzáad elhelyezéseket a letiltott és az elérhető helyeket tároló listákhoz
     private void addForbiddenPointsToList(int x, int y, int index1, int index2, LandTile lt) {
+        // Ha a vizsgált cellán nincs még kártya
         if (cells[x][y].getLandTile() == null) {
+            // Ha a szomszédos hely csatlakozás szempontjából nem jó
             if (!neighboringComponentsAreEqual(lt, index1, index2)) {
-                forbiddenPlacesOnTheTable.add(new Point(x, y));
+                forbiddenPlacesOnTheTable.add(new Point(x, y)); // Hozzáasja a letiltott listához az adott cella pozíciót
+            // Ha a szomszédos hely csatlakozás szempontjából jó
             } else if (isPlaceEnabled(x, y)) {
-                enabledPlacesOnTheTable.add(new Point(x, y));
+                enabledPlacesOnTheTable.add(new Point(x, y)); // Hozzáasja az elérhető listához az adott cella pozíciót
                 landTileCanBeLocated = true;
             }
         }
     }
 
+    // Levizsgálja, hogy az adott cella elérhető-e a kihúzott kártya elhelyezésének szempontjából
     private boolean isPlaceEnabled(int x, int y) {
         if (cells[x][y - 1].getLandTile() != null && !neighboringComponentsAreEqual(cells[x][y - 1].getLandTile(), 0, 8)) {
             return false;
@@ -231,6 +258,10 @@ public class CarcassonneGameModel {
         return true;
     }
 
+    // Levizsgálja, hogy egy elhelyezett kártya egy adott oldal és a kihúzott kártya egy adott oldala megegyezik-e az elemek szempontjából
+    // LandTile lt : a vizsgált elhelyezett kártya
+    // int index1 : a kihúzott kártya vizsgálandó oldalának egy indexe
+    // int index2 : az lt vizsgálandó oldalának egy indexe
     private boolean neighboringComponentsAreEqual(LandTile lt, int index1, int index2) {
         if (index1 >= 8) {
             if (chosenLandTile.getComponents()[index1] != lt.getComponents()[index2]
@@ -264,11 +295,13 @@ public class CarcassonneGameModel {
         return true;
     }
 
+    // A kártya asztalon való elhelyezésének függvénye
     public boolean locateLandTileOnTheTable(Point p) {
+        // Ha már kihúztak, de még nem raktak le kártyát az adott körben
         if (chosenLandTile != null && !locatedLandTiles.contains(chosenLandTile)) {
-            cells[p.x][p.y].setLandTile(chosenLandTile);
-            chosenLandTile.setPositionOnTheTable(p.x, p.y);
-            locatedLandTiles.add(chosenLandTile);
+            cells[p.x][p.y].setLandTile(chosenLandTile); // Beállítja a paraméterben kapott pozícióban az előzőleg kihúzott krátyát
+            chosenLandTile.setPositionOnTheTable(p.x, p.y); // Beállítja az aktuális kártyának a pozícióját
+            locatedLandTiles.add(chosenLandTile); // Hozáadja az kártyát az elhelyezett kártyák listájához
             setReservationOfTheLocatedLandTile(p, true);
             initFollowerPointsOnTheLandTile();
             return true;
@@ -276,6 +309,7 @@ public class CarcassonneGameModel {
         return false;
     }
 
+    // A kárya csak próbaképp való elhelyezése (amikor az MI próbálgat)
     public boolean locateLandTileJustForTry(Point p) {
         if (chosenLandTile != null && !locatedLandTiles.contains(chosenLandTile)) {
             cells[p.x][p.y].setLandTile(chosenLandTile);
@@ -288,15 +322,17 @@ public class CarcassonneGameModel {
         return false;
     }
 
+    // A próbálgatás után az elhelyezés törlése (MI-hez)
     public void removeLocationDatasAfterTrying(Point p) {
         for (int[] contPart : cells[p.x][p.y].getLandTile().getContinuousParts()) {
-            cells[p.x][p.y].getLandTile().clearReserved(contPart[0]);
+            cells[p.x][p.y].getLandTile().clearReserved(contPart[0]); // Törli a kártya foglalásait
         }
-        cells[p.x][p.y].setLandTile(null);
-        locatedLandTiles.remove(chosenLandTile);
-        chosenLandTile.setPositionOnTheTable(-1, -1);
+        cells[p.x][p.y].setLandTile(null); // Törli az adott celláról a táblát
+        locatedLandTiles.remove(chosenLandTile); // Törli az elhelyezett kártyák listájából a kártyát
+        chosenLandTile.setPositionOnTheTable(-1, -1); // A kártya pozíciója ismét (-1, -1) lesz (nem elhelyezett)
     }
 
+    // Levizsgálja a paraméterben megadott kártyapozíció alapján a mellette levő kártyák foglaltságait, és az alapján beállítja az aktuális kártyának is
     private void checkNeighboringLandTileReservations(Point landTilePos) {
         LandTile actualLandTile = cells[landTilePos.x][landTilePos.y].getLandTile();
 
@@ -308,6 +344,8 @@ public class CarcassonneGameModel {
         }
     }
 
+    // Levizsgálja, hogy a paraméterben átadott két kártya a szintén paraméterben átadott pozíciók (valamint az ugyanazon oldalakon levő további pozíciók)
+    // foglaltságaik megegyeznek-e, és ha nem, akkor beállítja őket a megfelelőre (rekurzív, ha történt változás, akkor végiggörgeti az összes csatlakozáson)
     private void setReservedPlaces(LandTile actual, LandTile other, int actualStarterPlace, int otherStarterPlace) {
         boolean hasChanged = false;
         if (other != null) {
@@ -353,6 +391,7 @@ public class CarcassonneGameModel {
         }
     }
 
+    // Levizsgálja, hogy két foglaltságot jellemző lista (alattvalókat tartalmaz) megyegyezik-e
     private boolean twoReservedListsAreEquals(List<Follower> f1, List<Follower> f2) {
         if (f1.size() == f2.size()) {
             for (Follower f : f1) {
@@ -365,7 +404,9 @@ public class CarcassonneGameModel {
         return false;
     }
 
+    // Az aktuálisan elhelyezett kártya foglaltságát beállítja a szomszédainak megfelelően
     private void setReservationOfTheLocatedLandTile(Point landTilePos, boolean real) {
+        // Minden oldal minden indexére beállítja a szomszédos kártya foglaltságát, ha az létezik és nem üres
         for (int i = 0; i < 12; i++) {
             if (i == 0 || i == 1 || i == 2) {
                 if (cells[landTilePos.x][landTilePos.y - 1].getLandTile() != null && !cells[landTilePos.x][landTilePos.y - 1].getLandTile().getReserved(8 - i).isEmpty()) {
@@ -391,6 +432,8 @@ public class CarcassonneGameModel {
 
     }
 
+    // A p1 pozíción levő kártya ind1 összefüggő területének foglaltságához hozzáadja a p2 pozíción levő kártyának az ind2 indexű összefüggő területén
+    // álló olyan alattvalót, aki még eddig nem szerepelt a p1 kártya in1 összefüggő terület foglaltságában
     private void addReservationToActualLandTile(Point p1, Point p2, int ind1, int ind2) {
         List<Follower> fol = cells[p2.x][p2.y].getLandTile().getReserved(ind2);
         for (Follower f : fol) {
@@ -400,8 +443,10 @@ public class CarcassonneGameModel {
         }
     }
 
+    // Meghatározza az alattvaló elhelyezéseinek szabályos pontjait
     private void initFollowerPointsOnTheLandTile() {
         pointsOfFollowers = new ArrayList<>();
+        // Az összes nem foglalt összefüggő területrészből belerak a listába egy indexet (megjelenítés szempontjából a legkedvezőbbet)
         for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
             if (chosenLandTile.contains(i, 12) && chosenLandTile.getReserved(12).isEmpty()) {
                 pointsOfFollowers.add(12);
@@ -419,21 +464,24 @@ public class CarcassonneGameModel {
         }
     }
 
+    // Az alattvaló elhelyezésének függvénye
     public boolean locateFollower(int place) {
+        // Ha a játékos rendelkezik szabad alattvalóval
         if (players[turn].getFreeFollowerNumber() > 0) {
-            players[turn].setFollowerLocationAndContPartInd(chosenLandTile.getPositionOnTheTable(), place);
-            chosenLandTile.setReserved(place, players[turn].getFollowerByLocation(chosenLandTile.getPositionOnTheTable()));
-            checkNeighboringLandTileReservations(chosenLandTile.getPositionOnTheTable());
+            players[turn].setFollowerLocationAndContPartInd(chosenLandTile.getPositionOnTheTable(), place); // Beállítja az alattvaló új helyét, és hogy melyik összefüggő részen szerepel
+            chosenLandTile.setReserved(place, players[turn].getFollowerByLocation(chosenLandTile.getPositionOnTheTable())); // Beállítja a kártya új foglaltságát
+            checkNeighboringLandTileReservations(chosenLandTile.getPositionOnTheTable()); // Átállítja a csatlakozások foglaltságát is
             return true;
         }     
         return false;
     }
 
+    // A lépések közbeni pontszámításért felelős függvény
     public int[] countPoints() {
         freeFollowersAgainPastLocation.clear();
         int[] point = new int[players.length];
-        int[] roadAndCityPoint = countRoadAndCityPoints();
-        int[] cloisterPoint = checkWhetherThereIsACloister();
+        int[] roadAndCityPoint = countRoadAndCityPoints(); // Az utakból és várakból származó pont
+        int[] cloisterPoint = checkWhetherThereIsACloister(); // A kolostorokból származó pont
         for (int i = 0; i < point.length; i++) {
             if (roadAndCityPoint[i] > 0) {
                 players[i].addPoint(roadAndCityPoint[i]);
@@ -445,38 +493,37 @@ public class CarcassonneGameModel {
         for (int i = 0; i < players.length; i++) {
             point[i] = players[i].getPoint();
         }
-
-       /* int[] fieldPoints = countFieldPoints();
-        System.out.print("MEZŐ: ");
-        for (Integer f : fieldPoints) {
-            System.out.print(f + ", ");
-        }
-        System.out.println("");*/
-
         chosenLandTile = null;
-        nextTurn();
+        nextTurn(); // A következő játékos következik
         return point;
     }
 
     private List<Point> done = new ArrayList<>();
 
+    // Az utak és várak pontszámítása
     private int[] countRoadAndCityPoints() {
         int[] points = new int[players.length];
         done.clear();
+        // Az elhelyezett kártya minden összefüggő részét megvizsgálja
         for (int i = 0; i < chosenLandTile.getContinuousParts().length; i++) {
+            // Ha a területrész várból áll, vagy foglalt és útból áll, és még nem volt levizsgálva
             if (((!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty() && chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == ROAD)
                     || chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == CITY || chosenLandTile.getType(chosenLandTile.getContinuousParts()[i][0]) == CITYWITHPENNANT)
                     && !done.contains(new Point(chosenLandTile.getId(), i))) {
                 int point = roadAndCityPointsRecursive(chosenLandTile, chosenLandTile.getContinuousParts()[i][0]);
+                // Ha  területrész foglalt, és a pont az nagyobb mint 0
                 if (!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty() && point > 0) {
-                    List<Integer> freq = getColorOfMostFrequentFollowersOfAContinuousPart(i);
+                    List<Integer> freq = getColorOfMostFrequentFollowersOfAContinuousPart(i); // Levizsgálja, hogy mely sorszámú játékosoknak jár a pont
                     for (Integer f : freq) {
                         points[f] += point;
                     }
                 }
+                // Ha a pont az nagyobb, mint 0
                 if (point > 0) {
-                    addDoneCityPartsToList();
+                    addDoneCityPartsToList(); // A kész várakat eltárolja (mezők pontszámításához kell majd)
+                    // Ha a területrész foglalt is
                     if (!chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0]).isEmpty()) {
+                        // A befejezett rész alattvalóinak felszabadítása
                         for (Follower f : chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[i][0])) {
                             freeFollowersAgainPastLocation.add(f.getLocation());
                             f.setLocation(new Point(-1, -1));
@@ -492,6 +539,7 @@ public class CarcassonneGameModel {
         return points;
     }
 
+    // Eltárolja a befejezett várak széletit egy listában
     private void addDoneCityPartsToList() {
         for (int i = 0; i < valueOfContinuousPartToBeSetDone.size(); i++) {
             Point p = tempListForCityEdges.get(i);
@@ -508,18 +556,21 @@ public class CarcassonneGameModel {
         }
     }
 
+    // Visszaadja a körben kihúzott kártya a paraméterben megkapott indexű összefüggő területéről, hogy melyek azok a játékosok, akik a legtöbb
+    // alattvalóval foglalják azt (egyenlőség esetén mindegyiket)
     private List<Integer> getColorOfMostFrequentFollowersOfAContinuousPart(int index) {
         List<Follower> followers = chosenLandTile.getReserved(chosenLandTile.getContinuousParts()[index][0]);
         List<Integer> colors = new ArrayList<>();
         for (Follower f : followers) {
-            colors.add(f.getColor());
+            colors.add(f.getColor()); // eltárolja az alattvalók színeit
         }
         Map<Integer, Integer> frequent = new HashMap<>();
         for (int j = 0; j < players.length; j++) {
-            frequent.put(j, Collections.frequency(colors, j));
+            frequent.put(j, Collections.frequency(colors, j)); // Az eltárolt színek alapján visszaadja, hogy melyik játékosnak hány alattvalója van az adott területrészen
         }
         List<Integer> freq = new ArrayList<>();
         int max = -1;
+        // A területrészen a legtöbb alattvalóval rendelkező játékos(ok) sorszámát eltárolja egy listában
         for (Map.Entry<Integer, Integer> entry : frequent.entrySet()) {
             if (max == -1 || entry.getValue() == max) {
                 freq.add(entry.getKey());
@@ -533,18 +584,21 @@ public class CarcassonneGameModel {
         return freq;
     }
 
+    // Visszaadja a paraméterben megadott kártya azon összefüggő területéről, melyben a paraméterben szereplő érték benne van, hogy melyek azok a játékosok, akik a legtöbb
+    // alattvalóval foglalják azt (egyenlőség esetén mindegyiket)
     private List<Integer> getColorOfMostFrequentFollowersOfAContinuousPart(int value, LandTile lt) {
         List<Follower> followers = lt.getReserved(value);
         List<Integer> colors = new ArrayList<>();
         for (Follower f : followers) {
-            colors.add(f.getColor());
+            colors.add(f.getColor()); // eltárolja az alattvalók színeit
         }
         Map<Integer, Integer> frequent = new HashMap<>();
         for (int j = 0; j < players.length; j++) {
-            frequent.put(j, Collections.frequency(colors, j));
+            frequent.put(j, Collections.frequency(colors, j)); // Az eltárolt színek alapján visszaadja, hogy melyik játékosnak hány alattvalója van az adott területrészen
         }
         List<Integer> freq = new ArrayList<>();
         int max = -1;
+        // A területrészen a legtöbb alattvalóval rendelkező játékos(ok) sorszámát eltárolja egy listában
         for (Map.Entry<Integer, Integer> entry : frequent.entrySet()) {
             if (max == -1 || entry.getValue() == max) {
                 freq.add(entry.getKey());
@@ -561,113 +615,144 @@ public class CarcassonneGameModel {
     List<Point> tempListForCityEdges = new ArrayList<>();
     List<Integer> valueOfContinuousPartToBeSetDone = new ArrayList<>();
 
+    // Rekurzívan kiszámolja az út vagy a vár pontját
     private int roadAndCityPointsRecursive(LandTile actualLandTile, int val) {
         int point = 0;
         int temppoint = 0;
         int ind = getContinuousPartIndexFromValue(actualLandTile, val);
         if ((actualLandTile.getType(val) == CITY || actualLandTile.getType(val) == CITYWITHPENNANT)) {
-            tempListForCityEdges.add(actualLandTile.getPositionOnTheTable());
+            tempListForCityEdges.add(actualLandTile.getPositionOnTheTable()); 
             valueOfContinuousPartToBeSetDone.add(val);
         }
+        // Ha az aktuális területkártya adott indexű összefüggő része még nem volt levizsgálva a jelenlegi pontszámítás során
         if (!done.contains(new Point(actualLandTile.getId(), ind))) {
             for (int c : actualLandTile.getContinuousParts()[ind]) {
                 if (c == 1) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y - 1].getLandTile();
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y - 1].getLandTile(); // A kártya bal oldalán levő kártya
+                    // Ha a vizsgált kártya bal oldalán levő csatlakozáson nincs kártya
                     if (landTile == null) {
+                        // Ha még nem ért véget a játék
                         if (!endOfGame) {
-                            return -1;
+                            return -1; // A területrész nem fejeződött be, nem jár érte pont, -1 jelzi a sikertelenséget
                         }
+                    // Ha a vizsgált kártya bal oldalán levő csatlakozáson van kártya
                     } else {
+                        // Ha az aktuális kártya még nem volt levizsgálva a jelenlegi pontszámítás során
                         if (!done.contains(new Point(actualLandTile.getId(), ind))) {
-                            done.add(new Point(actualLandTile.getId(), ind));
+                            done.add(new Point(actualLandTile.getId(), ind)); // Hozzáadjuk a done listához, hogy már le lett vizsgálva a pontszámítás során
                         }
+                        // Ha az akutális kártya bal oldalán levő kártya még nem volt levizsgálva a jelenlegi pontszámítás során
                         if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 7)))) {
-                            temppoint = roadAndCityPointsRecursive(landTile, 7);
+                            temppoint = roadAndCityPointsRecursive(landTile, 7); // Visszaadja az innen származó ideiglenes pontszámot
                         }
+                        // Ha a visszakapott pontszám negatív (vagyis valahol már nem volt befejezve az összefüggő rész)
                         if (temppoint < 0) {
+                            // Ha még nem ért véget a játék
                             if (!endOfGame) {
-                                return -1;
+                                return -1; // A területrész nem fejeződött be, nem jár érte pont, -1 jelzi a sikertelenséget
                             }
                         } else {
-                            point += temppoint;
+                            point += temppoint; // Az eddigi pontot hozzáadja a point változóhoz
                             temppoint = 0;
                         }
                     }
                 } else if (c == 4) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x + 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x + 1][actualLandTile.getPositionOnTheTable().y].getLandTile(); // A kártya alatt levő kártya
+                    // Ha a vizsgált kártya alatt levő csatlakozáson nincs kártya
                     if (landTile == null) {
+                        // Ha még nem ért véget a játék
                         if (!endOfGame) {
-                            return -1;
+                            return -1; // A területrész nem fejeződött be, nem jár érte pont, -1 jelzi a sikertelenséget
                         }
+                    // Ha a vizsgált kártya alatt levő csatlakozáson van kártya
                     } else {
+                        // Ha az aktuális kártya még nem volt levizsgálva a jelenlegi pontszámítás során
                         if (!done.contains(new Point(actualLandTile.getId(), ind))) {
-                            done.add(new Point(actualLandTile.getId(), ind));
+                            done.add(new Point(actualLandTile.getId(), ind)); // Hozzáadjuk a done listához, hogy már le lett vizsgálva a pontszámítás során
                         }
+                        // Ha az akutális kártya alatt levő kártya még nem volt levizsgálva a jelenlegi pontszámítás során
                         if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 10)))) {
-                            temppoint = roadAndCityPointsRecursive(landTile, 10);
+                            temppoint = roadAndCityPointsRecursive(landTile, 10); // Visszaadja az innen származó ideiglenes pontszámot
                         }
+                        // Ha a visszakapott pontszám negatív (vagyis valahol már nem volt befejezve az összefüggő rész)
                         if (temppoint < 0) {
+                            // Ha még nem ért véget a játék
                             if (!endOfGame) {
-                                return -1;
+                                return -1; // A területrész nem fejeződött be, nem jár érte pont, -1 jelzi a sikertelenséget
                             }
                         } else {
-                            point += temppoint;
+                            point += temppoint; // Az eddigi pontot hozzáadja a point változóhoz
                             temppoint = 0;
                         }
                     }
                 } else if (c == 7) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y + 1].getLandTile();
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y + 1].getLandTile(); // A kártya jobb oldalán levő kártya
+                    // Ha a vizsgált kártya jobb oldalán levő csatlakozáson nincs kártya
                     if (landTile == null) {
+                        // Ha még nem ért véget a játék
                         if (!endOfGame) {
-                            return -1;
+                            return -1; // A területrész nem fejeződött be, nem jár érte pont, -1 jelzi a sikertelenséget
                         }
+                    // Ha a vizsgált kártya jobb oldalán levő csatlakozáson van kártya
                     } else {
+                        // Ha az aktuális kártya még nem volt levizsgálva a jelenlegi pontszámítás során
                         if (!done.contains(new Point(actualLandTile.getId(), ind))) {
-                            done.add(new Point(actualLandTile.getId(), ind));
+                            done.add(new Point(actualLandTile.getId(), ind)); // Hozzáadjuk a done listához, hogy már le lett vizsgálva a pontszámítás során
                         }
+                        // Ha az akutális kártya jobb oldalán levő kártya még nem volt levizsgálva a jelenlegi pontszámítás során
                         if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 1)))) {
-                            temppoint = roadAndCityPointsRecursive(landTile, 1);
+                            temppoint = roadAndCityPointsRecursive(landTile, 1); // Visszaadja az innen származó ideiglenes pontszámot
                         }
+                        // Ha a visszakapott pontszám negatív (vagyis valahol már nem volt befejezve az összefüggő rész)
                         if (temppoint < 0) {
                             if (!endOfGame) {
-                                return -1;
+                                return -1; // A területrész nem fejeződött be, nem jár érte pont, -1 jelzi a sikertelenséget
                             }
                         } else {
-                            point += temppoint;
+                            point += temppoint; // Az eddigi pontot hozzáadja a point változóhoz
                             temppoint = 0;
                         }
                     }
                 } else if (c == 10) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x - 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x - 1][actualLandTile.getPositionOnTheTable().y].getLandTile(); // A kártya felett levő kártya
+                    // Ha a vizsgált kártya felett levő csatlakozáson nincs kártya
                     if (landTile == null) {
+                        // Ha még nem ért véget a játék
                         if (!endOfGame) {
-                            return -1;
+                            return -1; // A területrész nem fejeződött be, nem jár érte pont, -1 jelzi a sikertelenséget
                         }
+                    // Ha a vizsgált kártya felett levő csatlakozáson van kártya
                     } else {
+                        // Ha az aktuális kártya még nem volt levizsgálva a jelenlegi pontszámítás során
                         if (!done.contains(new Point(actualLandTile.getId(), ind))) {
-                            done.add(new Point(actualLandTile.getId(), ind));
+                            done.add(new Point(actualLandTile.getId(), ind)); // Hozzáadjuk a done listához, hogy már le lett vizsgálva a pontszámítás során
                         }
+                        // Ha az akutális kártya felett levő kártya még nem volt levizsgálva a jelenlegi pontszámítás során
                         if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 4)))) {
-                            temppoint = roadAndCityPointsRecursive(landTile, 4);
+                            temppoint = roadAndCityPointsRecursive(landTile, 4); // Visszaadja az innen származó ideiglenes pontszámot
                         }
+                        // Ha a visszakapott pontszám negatív (vagyis valahol már nem volt befejezve az összefüggő rész)
                         if (temppoint < 0) {
                             if (!endOfGame) {
-                                return -1;
+                                return -1; // A területrész nem fejeződött be, nem jár érte pont, -1 jelzi a sikertelenséget
                             }
                         } else {
-                            point += temppoint;
+                            point += temppoint; // Az eddigi pontot hozzáadja a point változóhoz
                             temppoint = 0;
                         }
                     }
                 }
             }
         }
+        // Ha az aktuális kártya létezik
         if (actualLandTile != null) {
-            point += actualLandTile.getType(actualLandTile.getContinuousParts()[ind][0]);
+            point += actualLandTile.getType(actualLandTile.getContinuousParts()[ind][0]); // A ponthoz hozzáadja az elem típusának logikailag tárolt értékét
+                                                                                          //(út esetén 1, város estén 2, címeses város esetén 4 pont)
         }
         return point;
     }
 
+    // Érték alapján visszaadja, hogy az melyik összefüggő részhez tartozik
     private int getContinuousPartIndexFromValue(LandTile landTile, int val) {
         for (int i = 0; i < landTile.getContinuousParts().length; i++) {
             if (landTile.contains(i, val)) {
