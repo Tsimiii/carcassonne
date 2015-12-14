@@ -1059,87 +1059,105 @@ public class CarcassonneGameModel {
         return points;
     }
 
+    // MI által használ függvény
     // Levizsgálja, hogy van-e lehetősége az MI-nek egy meglévő várterülethez csatlakozni
     public boolean canTryJoinToAnotherCity(int index, Point p) {
-        if (index == 1) {
+        // Az adott elhelyezés adott indexéről levizsgálja, hogy vár/ címeser vár-e, és ha igen, akkor a azon az oldalon a mellette levő mező melletti, alatti és feletti celláról
+        // levizsgálja, hogy van-e rajta kártya, és hogy a megfelelő helyeken ugyanúgy vár/címeres vár van-e, és hogy a foglaltság szempontjából van-e értelme megpróbálkozni csatlakozni másnak a várához
+        if (index == 1) { // Ha a kártya bal oldalán van a vizsgált vérrész
             if (cells[p.x + 1][p.y - 1].getLandTile() != null && (cells[p.x + 1][p.y - 1].getLandTile().getType(10) == CITY || cells[p.x + 1][p.y - 1].getLandTile().getType(10) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(10)) {
+                    && isTheReservationConvinientToJoin(10)) { // A tőle 1-gyel balra és 1-gyel lejjebb levő kártyát vizsgálja
                 return true;
             } else if (cells[p.x][p.y - 2].getLandTile() != null && (cells[p.x][p.y - 2].getLandTile().getType(7) == CITY || cells[p.x][p.y - 2].getLandTile().getType(7) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(7)) {
+                    && isTheReservationConvinientToJoin(7)) { // A tőle 2-vel balra levő kártyát vizsgálja
                 return true;
             } else if (cells[p.x - 1][p.y - 1].getLandTile() != null && (cells[p.x - 1][p.y - 1].getLandTile().getType(4) == CITY || cells[p.x - 1][p.y - 1].getLandTile().getType(4) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(4)) {
+                    && isTheReservationConvinientToJoin(4)) { // A tőle 1-gyel balra és 1-gyel feljebb levő kártyát vizsgálja
                 return true;
             }
-        } else if (index == 4) {
+        } else if (index == 4) { // Ha a kártya alján van a vizsgált vérrész
             if (cells[p.x + 1][p.y - 1].getLandTile() != null && (cells[p.x + 1][p.y - 1].getLandTile().getType(7) == CITY || cells[p.x + 1][p.y - 1].getLandTile().getType(7) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(7)) {
+                    && isTheReservationConvinientToJoin(7)) { // A tőle 1-gyel balra és 1-gyel lejjebb levő kártyát vizsgálja
                 return true;
             } else if (cells[p.x + 2][p.y].getLandTile() != null && (cells[p.x + 2][p.y].getLandTile().getType(10) == CITY || cells[p.x + 2][p.y].getLandTile().getType(10) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(10)) {
+                    && isTheReservationConvinientToJoin(10)) { // A tőle 2-vel lejjebb levő kártyát vizsgálja
                 return true;
             } else if (cells[p.x + 1][p.y + 1].getLandTile() != null && (cells[p.x + 1][p.y + 1].getLandTile().getType(1) == CITY || cells[p.x + 1][p.y + 1].getLandTile().getType(1) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(1)) {
+                    && isTheReservationConvinientToJoin(1)) { // A tőle 1-gyel jobbra és 1-gyel lejjebb levő kártyát vizsgálja
                 return true;
             }
-        } else if (index == 7) {
+        } else if (index == 7) { // Ha a kártya jobb oldalán van a vizsgált vérrész
             if (cells[p.x - 1][p.y + 1].getLandTile() != null && (cells[p.x - 1][p.y + 1].getLandTile().getType(4) == CITY || cells[p.x - 1][p.y + 1].getLandTile().getType(4) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(4)) {
+                    && isTheReservationConvinientToJoin(4)) { // A tőle 1-gyel jobbra és 1-gyel feljebb levő kártyát vizsgálja
                 return true;
             } else if (cells[p.x][p.y + 2].getLandTile() != null && (cells[p.x][p.y + 2].getLandTile().getType(1) == CITY || cells[p.x][p.y + 2].getLandTile().getType(1) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(1)) {
+                    && isTheReservationConvinientToJoin(1)) { // A tőle 2-vel jobbra levő kártyát vizsgálja
                 return true;
             } else if (cells[p.x + 1][p.y + 1].getLandTile() != null && (cells[p.x + 1][p.y + 1].getLandTile().getType(10) == CITY || cells[p.x + 1][p.y + 1].getLandTile().getType(10) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(10)) {
+                    && isTheReservationConvinientToJoin(10)) { // A tőle 1-gyel jobbra és 1-gyel lejjebb levő kártyát vizsgálja
                 return true;
             }
-        } else if (index == 10) {
+        } else if (index == 10) { // Ha a kártya tetején van a vizsgált vérrész
             if (cells[p.x - 1][p.y - 1].getLandTile() != null && (cells[p.x - 1][p.y - 1].getLandTile().getType(7) == CITY || cells[p.x - 1][p.y - 1].getLandTile().getType(7) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(7)) {
+                    && isTheReservationConvinientToJoin(7)) { // A tőle 1-gyel balra és 1-gyel feljebb levő kártyát vizsgálja
                 return true;
             } else if (cells[p.x - 2][p.y].getLandTile() != null && (cells[p.x - 2][p.y].getLandTile().getType(4) == CITY || cells[p.x - 2][p.y].getLandTile().getType(4) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(4)) {
+                    && isTheReservationConvinientToJoin(4)) { // A tőle 2-vel feljebb levő kártyát vizsgálja
                 return true;
             } else if (cells[p.x - 1][p.y + 1].getLandTile() != null && (cells[p.x - 1][p.y + 1].getLandTile().getType(1) == CITY || cells[p.x - 1][p.y + 1].getLandTile().getType(1) == CITYWITHPENNANT)
-                    && isTheReservationConvinientToJoin(1)) {
+                    && isTheReservationConvinientToJoin(1)) { // A tőle 1-gyel jobbra és 1-gyel feljebb levő kártyát vizsgálja
                 return true;
             }
         }
         return false;
     }
 
+    // MI által használ függvény
     // Levizsgálja, hogy van-e lehetősége az MI-nek egy meglévő úthoz csatlakozni
     public boolean canTryJoinToAnotherRoad(int index, Point p) {
-        if (index == 1) {
+        // Az adott elhelyezés adott indexéről levizsgálja, hogy út-e, és ha igen, akkor a azon az oldalon a mellette levő mező melletti, alatti és feletti celláról
+        // levizsgálja, hogy van-e rajta kártya, és hogy a megfelelő helyeken ugyanúgy út van-e, és hogy a foglaltság szempontjából van-e értelme megpróbálkozni csatlakozni másnak a várához
+        if (index == 1) { // Ha a kártya bal oldalán van a vizsgált út
+            // A tőle 1-gyel balra és 1-gyel lejjebb levő kártyát vizsgálja
             if (cells[p.x + 1][p.y - 1].getLandTile() != null && cells[p.x + 1][p.y - 1].getLandTile().getType(10) == ROAD && isTheReservationConvinientToJoin(10)) {
                 return true;
+             // A tőle 2-vel balra levő kártyát vizsgálja
             } else if (cells[p.x][p.y - 2].getLandTile() != null && cells[p.x][p.y - 2].getLandTile().getType(7) == ROAD && isTheReservationConvinientToJoin(7)) {
                 return true;
+            // A tőle 1-gyel balra és 1-gyel feljebb levő kártyát vizsgálja
             } else if (cells[p.x - 1][p.y - 1].getLandTile() != null && cells[p.x - 1][p.y - 1].getLandTile().getType(4) == ROAD && isTheReservationConvinientToJoin(4)) {
                 return true;
             }
-        } else if (index == 4) {
+        } else if (index == 4) { // Ha a kártya alján van a vizsgált út
+            // A tőle 1-gyel balra és 1-gyel lejjebb levő kártyát vizsgálja
             if (cells[p.x + 1][p.y - 1].getLandTile() != null && cells[p.x + 1][p.y - 1].getLandTile().getType(7) == ROAD && isTheReservationConvinientToJoin(7)) {
                 return true;
+            // A tőle 2-vel lejjebb levő kártyát vizsgálja
             } else if (cells[p.x + 2][p.y].getLandTile() != null && cells[p.x + 2][p.y].getLandTile().getType(10) == ROAD && isTheReservationConvinientToJoin(10)) {
                 return true;
+            // A tőle 1-gyel jobbra és 1-gyel lejjebb levő kártyát vizsgálja  
             } else if (cells[p.x + 1][p.y + 1].getLandTile() != null && cells[p.x + 1][p.y + 1].getLandTile().getType(1) == ROAD && isTheReservationConvinientToJoin(1)) {
                 return true;
             }
-        } else if (index == 7) {
+        } else if (index == 7) { // Ha a kártya jobb oldalán van a vizsgált út
+            // A tőle 1-gyel jobbra és 1-gyel feljebb levő kártyát vizsgálja
             if (cells[p.x - 1][p.y + 1].getLandTile() != null && cells[p.x - 1][p.y + 1].getLandTile().getType(4) == ROAD && isTheReservationConvinientToJoin(4)) {
                 return true;
+            // A tőle 2-vel jobbra levő kártyát vizsgálja
             } else if (cells[p.x][p.y + 2].getLandTile() != null && cells[p.x][p.y + 2].getLandTile().getType(1) == ROAD && isTheReservationConvinientToJoin(1)) {
                 return true;
+            // A tőle 1-gyel jobbra és 1-gyel lejjebb levő kártyát vizsgálja
             } else if (cells[p.x + 1][p.y + 1].getLandTile() != null && cells[p.x + 1][p.y + 1].getLandTile().getType(10) == ROAD && isTheReservationConvinientToJoin(10)) {
                 return true;
             }
-        } else if (index == 10) {
+        } else if (index == 10) { // Ha a kártya tetején van a vizsgált út
+            // A tőle 1-gyel balra és 1-gyel feljebb levő kártyát vizsgálja
             if (cells[p.x - 1][p.y - 1].getLandTile() != null && cells[p.x - 1][p.y - 1].getLandTile().getType(7) == ROAD && isTheReservationConvinientToJoin(7)) {
                 return true;
+            // A tőle 2-vel feljebb levő kártyát vizsgálja
             } else if (cells[p.x - 2][p.y].getLandTile() != null && cells[p.x - 2][p.y].getLandTile().getType(4) == ROAD && isTheReservationConvinientToJoin(4)) {
                 return true;
+            // A tőle 1-gyel jobbra és 1-gyel feljebb levő kártyát vizsgálja
             } else if (cells[p.x - 1][p.y + 1].getLandTile() != null && cells[p.x - 1][p.y + 1].getLandTile().getType(1) == ROAD && isTheReservationConvinientToJoin(1)) {
                 return true;
             }
@@ -1161,6 +1179,8 @@ public class CarcassonneGameModel {
         return reservation.contains(turn);
     }
 
+    // MI által használ függvény
+    // Megadja, hogy a 4 szomszédos cella közül mennyin van kártya elhelyezve
     public int getNeighbourLandTileNumber(Point pos) {
         int count = 0;
         if (cells[pos.x][pos.y - 1].getLandTile() != null) {
@@ -1178,12 +1198,16 @@ public class CarcassonneGameModel {
         return count;
     }
 
-    public boolean isActualLandTilePartReserved(int value) {
+    // MI által használ függvény
+    // Megadja, hogy az aktuális kártyán az az összefüggő területrész, melyben a paraméterben szereplő index benne van, foglalt-e
+   public boolean isActualLandTilePartReserved(int value) {
         return !chosenLandTile.getReserved(value).isEmpty();
     }
 
     private List<LandTile> checkedLandTiles = new ArrayList<>();
 
+    // MI által használ függvény
+    // Megadja, hogy a kihúzott területkártyán egy adott indexen fekvő mező hány befejezetlen várral érintkezik
     public int getNumberOfStartedCitiesInAField(int val) {
         done.clear();
         checkedLandTiles.clear();
@@ -1191,6 +1215,7 @@ public class CarcassonneGameModel {
         return count;
     }
 
+    // Megszámolja, hogy a kihúzott kártya val indexű mezője hány megkezdett várral érintkezik
     private int countStartedCitiesInAField(LandTile actualLandTile, int val) {
         int count = 0;
         int ind = getContinuousPartIndexFromValue(actualLandTile, val);
@@ -1201,12 +1226,12 @@ public class CarcassonneGameModel {
                         for (int in : actualLandTile.getContinuousParts()[ind]) {
                             dinedone.clear();
                             if (in > 0) {
-                                if (((i == (in + 1) % 12 && in != 12) || (i == in - 1)/* (actualLandTile.getComponents()[(i+1)%12] == CITY && !actualLandTile.contains(getContinuousPartIndexFromValue(actualLandTile, i), (i+1)%12))*/) && partNotConnectedToACountedOne(actualLandTile, contPart[0])) {
+                                if (((i == (in + 1) % 12 && in != 12) || (i == in - 1)) && partNotConnectedToACountedOne(actualLandTile, contPart[0])) {
                                     count++;
                                     checkedLandTiles.add(actualLandTile);
                                 }
                             } else if (in == 0) {
-                                if (((i == (in + 1) % 12 && in != 12) || (i == 11)/* (actualLandTile.getComponents()[(i+1)%12] == CITY && !actualLandTile.contains(getContinuousPartIndexFromValue(actualLandTile, i), (i+1)%12))*/) && partNotConnectedToACountedOne(actualLandTile, contPart[0])) {
+                                if (((i == (in + 1) % 12 && in != 12) || (i == 11)) && partNotConnectedToACountedOne(actualLandTile, contPart[0])) {
                                     count++;
                                     checkedLandTiles.add(actualLandTile);
                                 }
@@ -1329,14 +1354,17 @@ public class CarcassonneGameModel {
         return pointsOfFollowers;
     }
 
+    // A kör növelése 1-gyel, a körben következő játékos következik
     public void nextTurn() {
         turn = (turn + 1) % players.length;
     }
 
+    // Visszaadja, hogy hanyadik játékos következik a körben
     public int getTurn() {
         return turn;
     }
 
+    // Visszaadja egy tömbben az összes játékosra, hogy hány szabad alattvalója maradt
     public int[] getFreeFollowerNumOfPLayers() {
         int[] followerNums = new int[players.length];
         for (int i = 0; i < players.length; i++) {
@@ -1345,27 +1373,29 @@ public class CarcassonneGameModel {
         return followerNums;
     }
 
+    //Visszaadja, hogy a kör végekor mely alattvalók szabadultak fel
     public List<Point> getFreeFollowersAgainPastLocation() {
         return freeFollowersAgainPastLocation;
     }
 
+    // Visszaadja, hogy a soron levő játékosnak van-e szabad alattvalója
     public boolean playerHasFreeFollower() {
         return players[turn].getFreeFollowerNumber() != 0;
     }
 
+    // A játékosokat növekvő sorrendbe teszi pontszám alapján
     public List<Point> sortPlayersByPoint() {
         Map<Integer, Integer> map = new HashMap<>();
-        Map<Integer, Integer> sortedMap = new TreeMap<>(new PlayerPointComparator(map));
+        Map<Integer, Integer> sortedMap = new TreeMap<>(new PlayerPointComparator(map)); //PlayerPointComparator saját osztály oldja meg az összehasonlítást, az alapján fog rendezni
         for (Player p : players) {
-            map.put(p.getColor(), p.getPoint());
+            map.put(p.getColor(), p.getPoint()); // Beleteszi a játékos színét és a pontszámát a Map-be
         }
-        sortedMap.putAll(map);
+        sortedMap.putAll(map); // A Map rendezése
 
         List<Point> list = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : sortedMap.entrySet()) {
-            list.add(new Point(entry.getKey(), entry.getValue()));
+            list.add(new Point(entry.getKey(), entry.getValue())); // A listába beleteszi a Map elemeit páronként (szín, pont)
         }
-
         return list;
     }
 }
