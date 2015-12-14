@@ -1215,24 +1215,28 @@ public class CarcassonneGameModel {
         return count;
     }
 
-    // Megszámolja, hogy a kihúzott kártya val indexű mezője hány megkezdett várral érintkezik
+    // Megszámolja, hogy a kihúzott kártya val indexű mezője hány legalább megkezdett várral érintkezik (rekurzív)
     private int countStartedCitiesInAField(LandTile actualLandTile, int val) {
         int count = 0;
-        int ind = getContinuousPartIndexFromValue(actualLandTile, val);
+        int ind = getContinuousPartIndexFromValue(actualLandTile, val); // Megkeresi az a területrész indexet, melyben a val érték benne van
+        // Ha az adott területkártya még nem volt levizsgálva
         if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+            // Végigmegy az összes összefüggő területén
             for (int[] contPart : actualLandTile.getContinuousParts()) {
+                // Ha az adott területrész vár vagy címeres vár
                 if ((actualLandTile.getType(contPart[0]) == CITY || actualLandTile.getType(contPart[0]) == CITYWITHPENNANT)) {
                     for (int i : contPart) {
                         for (int in : actualLandTile.getContinuousParts()[ind]) {
-                            dinedone.clear();
+                            done2.clear();
+                            // Ha a vizsgált mezőnek és a várnak van szomszédos pontja, ami még nem volt levizsgálva
                             if (in > 0) {
                                 if (((i == (in + 1) % 12 && in != 12) || (i == in - 1)) && partNotConnectedToACountedOne(actualLandTile, contPart[0])) {
-                                    count++;
+                                    count++; // növeli az értéket
                                     checkedLandTiles.add(actualLandTile);
                                 }
                             } else if (in == 0) {
                                 if (((i == (in + 1) % 12 && in != 12) || (i == 11)) && partNotConnectedToACountedOne(actualLandTile, contPart[0])) {
-                                    count++;
+                                    count++; // növeli az értéket
                                     checkedLandTiles.add(actualLandTile);
                                 }
                             }
@@ -1240,45 +1244,50 @@ public class CarcassonneGameModel {
                     }
                 }
             }
+            // Végigmegy azon a területrészen, melyben a paraméterben szereplő val index benne van
             for (int c : actualLandTile.getContinuousParts()[ind]) {
+                // A kártya bal széle
                 if (c == 0 || c == 1 || c == 2) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y - 1].getLandTile();
-                    if (landTile != null) {
-                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y - 1].getLandTile(); // A kártya bal oldalán levő kártya
+                    if (landTile != null) { // Ha a bal oldali kártya létezik
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) { // Ha az aktuális kártya ind indexű területrésze még nem volt levizsgálva
                             done.add(new Point(actualLandTile.getId(), ind));
                         }
-                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 8 - c)))) {
-                            count += countStartedCitiesInAField(landTile, 8 - c);
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 8 - c)))) { //Ha a bal oldali kártya adott indexű területrésze még nem volt levizsgálva
+                            count += countStartedCitiesInAField(landTile, 8 - c); // Rekurzívan a pont összeszámolása
                         }
                     }
+                // A kártya alja
                 } else if (c == 3 || c == 4 || c == 5) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x + 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
-                    if (landTile != null) {
-                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x + 1][actualLandTile.getPositionOnTheTable().y].getLandTile(); // A kártya alatt levő kártya
+                    if (landTile != null) { // Ha az alsó kártya létezik
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) { // Ha az aktuális kártya ind indexű területrésze még nem volt levizsgálva
                             done.add(new Point(actualLandTile.getId(), ind));
                         }
-                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 14 - c)))) {
-                            count += countStartedCitiesInAField(landTile, 14 - c);
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 14 - c)))) { //Ha az alsó kártya adott indexű területrésze még nem volt levizsgálva
+                            count += countStartedCitiesInAField(landTile, 14 - c); // Rekurzívan a pont összeszámolása
                         }
                     }
+                // A kártya jobb széle
                 } else if (c == 6 || c == 7 || c == 8) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y + 1].getLandTile();
-                    if (landTile != null) {
-                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y + 1].getLandTile(); // A kártya jobb oldalán levő kártya
+                    if (landTile != null) { // Ha a jobb oldali kártya létezik
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) { // Ha az aktuális kártya ind indexű területrésze még nem volt levizsgálva
                             done.add(new Point(actualLandTile.getId(), ind));
                         }
-                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 8 - c)))) {
-                            count += countStartedCitiesInAField(landTile, 8 - c);
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 8 - c)))) { //Ha a jobb oldali kártya adott indexű területrésze még nem volt levizsgálva
+                            count += countStartedCitiesInAField(landTile, 8 - c); // Rekurzívan a pont összeszámolása
                         }
                     }
+                // A kártya teteje
                 } else if (c == 9 || c == 10 || c == 11) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x - 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
-                    if (landTile != null) {
-                        if (!done.contains(new Point(actualLandTile.getId(), ind))) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x - 1][actualLandTile.getPositionOnTheTable().y].getLandTile();  // A kártya felett levő kártya
+                    if (landTile != null) { // Ha a felső kártya létezik
+                        if (!done.contains(new Point(actualLandTile.getId(), ind))) { // Ha az aktuális kártya ind indexű területrésze még nem volt levizsgálva
                             done.add(new Point(actualLandTile.getId(), ind));
                         }
-                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 14 - c)))) {
-                            count += countStartedCitiesInAField(landTile, 14 - c);
+                        if (!done.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 14 - c)))) { //Ha a felső kártya adott indexű területrésze még nem volt levizsgálva
+                            count += countStartedCitiesInAField(landTile, 14 - c); // Rekurzívan a pont összeszámolása
                         }
                     }
                 }
@@ -1287,44 +1296,51 @@ public class CarcassonneGameModel {
         return count;
     }
 
-    private List<Point> dinedone = new ArrayList<>();
+    private List<Point> done2 = new ArrayList<>();
 
+    // Levizsgálja, hogy a paraméterben megkapott kártya val indexe nem része-e egy már összeszámolt várnak (rekurzív)
     private boolean partNotConnectedToACountedOne(LandTile actualLandTile, int val) {
         if (checkedLandTiles.contains(actualLandTile)) {
             return false;
         }
-        int ind = getContinuousPartIndexFromValue(actualLandTile, val);
-        if (!dinedone.contains(new Point(actualLandTile.getId(), ind))) {
+        int ind = getContinuousPartIndexFromValue(actualLandTile, val); //visszaadja, hogy melyik indexű összefüggő részben van benne az adott területkártya val indexe
+        // Ha ez még nem volt levizsgálva
+        if (!done2.contains(new Point(actualLandTile.getId(), ind))) {
+            // Végigmegy a területrész indexein
             for (int c : actualLandTile.getContinuousParts()[ind]) {
+                // A kártya bal oldala
                 if (c == 1) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y - 1].getLandTile();
-                    if (landTile != null) {
-                        dinedone.add(new Point(actualLandTile.getId(), ind));
-                        if (!dinedone.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 7))) && !partNotConnectedToACountedOne(landTile, 7)) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y - 1].getLandTile(); // A bal oldali kártya
+                    if (landTile != null) { // Ha a bal oldali kártya létezik
+                        done2.add(new Point(actualLandTile.getId(), ind)); // Hozzáadja az aktuális kártyát, hogy már le van vizsgálva
+                        if (!done2.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 7))) && !partNotConnectedToACountedOne(landTile, 7)) { // Ha még nem volt levizsgálva és része egy összeszámolt várnak
                             return false;
                         }
                     }
+                // A kártya alja
                 } else if (c == 4) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x + 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
-                    if (landTile != null) {
-                        dinedone.add(new Point(actualLandTile.getId(), ind));
-                        if (!dinedone.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 10))) && !partNotConnectedToACountedOne(landTile, 10)) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x + 1][actualLandTile.getPositionOnTheTable().y].getLandTile(); // A bal oldali kártya
+                    if (landTile != null) { // Ha a bal oldali kártya létezik
+                        done2.add(new Point(actualLandTile.getId(), ind)); // Hozzáadja az aktuális kártyát, hogy már le van vizsgálva
+                        if (!done2.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 10))) && !partNotConnectedToACountedOne(landTile, 10)) { // Ha még nem volt levizsgálva és része egy összeszámolt várnak
                             return false;
                         }
                     }
+                // A kártya jobb oldala
                 } else if (c == 7) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y + 1].getLandTile();
-                    if (landTile != null) {
-                        dinedone.add(new Point(actualLandTile.getId(), ind));
-                        if (!dinedone.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 1))) && !partNotConnectedToACountedOne(landTile, 1)) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x][actualLandTile.getPositionOnTheTable().y + 1].getLandTile(); // A jobb oldali kártya
+                    if (landTile != null) { // Ha a jobb oldali kártya létezik
+                        done2.add(new Point(actualLandTile.getId(), ind)); // Hozzáadja az aktuális kártyát, hogy már le van vizsgálva
+                        if (!done2.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 1))) && !partNotConnectedToACountedOne(landTile, 1)) { // Ha még nem volt levizsgálva és része egy összeszámolt várnak
                             return false;
                         }
                     }
+                // A kártya teteje
                 } else if (c == 10) {
-                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x - 1][actualLandTile.getPositionOnTheTable().y].getLandTile();
-                    if (landTile != null) {
-                        dinedone.add(new Point(actualLandTile.getId(), ind));
-                        if (!dinedone.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 4))) && !partNotConnectedToACountedOne(landTile, 4)) {
+                    LandTile landTile = cells[actualLandTile.getPositionOnTheTable().x - 1][actualLandTile.getPositionOnTheTable().y].getLandTile();  // Az alsó kártya
+                    if (landTile != null) { // Ha az alsó kártya létezik
+                        done2.add(new Point(actualLandTile.getId(), ind)); // Hozzáadja az aktuális kártyát, hogy már le van vizsgálva
+                        if (!done2.contains(new Point(landTile.getId(), getContinuousPartIndexFromValue(landTile, 4))) && !partNotConnectedToACountedOne(landTile, 4)) { // Ha még nem volt levizsgálva és része egy összeszámolt várnak
                             return false;
                         }
                     }
