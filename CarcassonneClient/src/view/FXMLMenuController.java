@@ -2,6 +2,7 @@ package view;
 
 import controller.CommunicationController;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
@@ -40,7 +42,17 @@ public class FXMLMenuController implements Initializable {
     private void joinGameCommands() {
         // Ha a név meg van adva, a program továbblép
         if(!nameTextField.getText().equals("")) {
-            delegate.clickJoinGame(nameTextField.getText());
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Portszám megadása");
+            dialog.setHeaderText(null);
+            dialog.setContentText("Add meg a portszámot:");
+            Optional<String> port = dialog.showAndWait(); // A portszám bekérése kliensoldalon
+            if(port.isPresent()) {
+                delegate.port = Integer.parseInt(port.get());
+                delegate.clickJoinGame(nameTextField.getText());
+            } else {
+                nameTextField.requestFocus();
+            }
         // Ha nincs megadva név, hibaüzenet jön
         } else {
             new WarningDialog("Hiányzó név", "Csatlakozás előtt írd be a nevedet!");

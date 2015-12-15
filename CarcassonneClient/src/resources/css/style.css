@@ -2,13 +2,13 @@
     -fx-background-image: url("../images/wooden_background.jpg");
     -fx-background-repeat: stretch;   
 }
-#carcassonneText,#loadingText,#timer,#timer2,#resultText{
+#carcassonneText,#loadingText,#timer,#enoughJoin,#resultText{
    -fx-font-size: 32px;
    -fx-font-family: "Georgia";
    -fx-fill: #A68064;
    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
-#timer2 {
+#enoughJoin {
     -fx-fill: #89674f;
 }
 #rankingTextResult,#nameTextResult,#pointTextResult {

@@ -405,6 +405,11 @@ public class FXMLGameController extends Group implements Initializable {
         centerRectangles[p.x][p.y].setStrokeWidth(2);
         centerRectangles[p.x][p.y].setStroke(Color.INDIANRED); // Az utolsóként elhelyezett kártya színe piros lesz
         expansionOfTheTable(p.x, p.y); //A tábla mérete nő
+        
+        imageView.setImage(new Image("/resources/images/empty.jpg")); // A kihúzott kártya helye ismét üres kép lesz
+        imageView.setRotate(360); // A kihúzott kártya helyének visszaforgatása a kiinduló állapotba
+        degree = 0;
+        
         try {
             delegate.locateLandTileDone();
         } catch (RemoteException ex) {
@@ -446,9 +451,9 @@ public class FXMLGameController extends Group implements Initializable {
         for(int i=0; i<points.length; i++) {
             points[i].setText(point[i] + " pont"); // A pontok megjelenítésének frissítése
         }
-        imageView.setImage(new Image("/resources/images/empty.jpg")); // A kihúzott kártya helye ismét üres kép lesz
+        /*imageView.setImage(new Image("/resources/images/empty.jpg")); // A kihúzott kártya helye ismét üres kép lesz
         imageView.setRotate(360); // A kihúzott kártya helyének visszaforgatása a kiinduló állapotba
-        degree = 0;
+        degree = 0;*/
         disableOrEnableEverything(true);
     }
     

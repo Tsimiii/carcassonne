@@ -58,12 +58,9 @@ public class CarcassonneAI {
         // Addig húz, amíg a kártyát le tudja valahova tenni
         do {
             int ind = random.nextInt(pointsOfLandTilesCanBeChosed.size()); //kiválaszt egy random számot, a lista ezen indexű kártyáját húzza ki
-            Point point = pointsOfLandTilesCanBeChosed.get(ind);
-            System.out.println("itt vagyok: " + delegate); 
+            Point point = pointsOfLandTilesCanBeChosed.get(ind); 
             message = delegate.chooseFaceDownLandTile(point);
-            System.out.println("itt vagyok: " + message);
         }while(!message.equals("success") && !message.equals("multipleChoose"));
-        System.out.println("RÁADÁSUL KI IS LÉPETT");
         rule = 100;
         rotate = -1;
         tablePosition = new Point(-1,-1);
@@ -88,11 +85,9 @@ public class CarcassonneAI {
         }
         // Ebben az esetben nem talált megfelelő szabályt az MI
         if(rule == 100) {
-            System.out.println("AI Itt nincs rule");
             locateLandTileJustSomewhere(); //Egy véletlenszerű szabályos helyre elhelyezi
         // Ebben az esetben az MI talált megfelelő szabályt
         } else {
-            System.out.println("AI talált rulet: " + rule);
             for(int i=0; i<rotate; i++) {
                 delegate.rotateRightLandTile(); // Az eltárolt forgatásnak megfelelően elforgatja a kártyát
             }

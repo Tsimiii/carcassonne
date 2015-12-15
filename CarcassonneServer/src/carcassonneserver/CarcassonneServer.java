@@ -75,7 +75,6 @@ public class CarcassonneServer extends Observable implements RmiService {
             // Akkor indul el, ha legalább egy játékos már csatlakozott
             if(countObservers() > 0) {
                 setInterval();
-                System.out.println("interval: " + interval);
                 
                 // Elküldi a klienseknek az aktuális időpontot
                 notifyObservers(new Object[] {"timer", interval});
@@ -161,13 +160,11 @@ public class CarcassonneServer extends Observable implements RmiService {
         wrappedObserver = new WrappedObserver(o, name);
         playerObservers.add(wrappedObserver); // A nyilvántartott játékosokhoz hozzáadja az erre szolgáló wrappedObserver példányokat
         addObserver(wrappedObserver);  // Observable osztály függvénye: játékos tárolása
-        System.out.println("Hozzáadott játékos példánya: " + wrappedObserver + ", neve: " + name);
     }
     
     // A játékos kilépését végzi el
     @Override
     public void quitFromGame(RemoteObserver o) throws RemoteException {
-        System.out.println("Remote exception removing observer:" + this);
         WrappedObserver wrappedObserver = null;
         for(WrappedObserver wo : playerObservers) {
             if(wo.remoteObserver.equals(o)) {
@@ -280,12 +277,9 @@ public class CarcassonneServer extends Observable implements RmiService {
     // A kliens végzett a kihúzott kártya megjelenítésével
     @Override
     public void chooseFaceDownLandTileDone() throws RemoteException {
-        System.out.println("Végzett a kihúzással");
         clientAnswerDuringAGame++;
-        System.out.println("chooseNumberDuringAGame: " + clientAnswerDuringAGame);
         // Ha a játék megy, MI van soron és minden kliens végzett a kártya kihúzásának megjelenítésével
         if(!gameIsNotStartedOrEnded && carcassonneGameModel.getTurn() >= playerObservers.size() && clientAnswerDuringAGame%countObservers() == 0 ) {
-            System.out.println("és még ide is belépett.");
             try {
                 artificialIntelligences.get(carcassonneGameModel.getTurn()-playerObservers.size()).decideBestLocation(); // Az MI dönt a legjobb elhelyezésről
             } catch (InterruptedException ex) {

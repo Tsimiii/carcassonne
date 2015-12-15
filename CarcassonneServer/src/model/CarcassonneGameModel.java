@@ -85,12 +85,10 @@ public class CarcassonneGameModel {
 
     // A kártyahúzásért felelős függvény
     public boolean chooseFaceDownLandTile(Point p) {
-        System.out.println("BELÉP");
         // Ha még nem volt kihúzva kártya az adott körbe
         if (chosenLandTile == null) {
             landTileCanBeLocated = false;
             chosenLandTile = landTiles[p.x * 5 + p.y]; // az 5 oszlopos mátrixban így kapjuk meg sorfolytonosan az elemet
-            System.out.println("\nchosen lt after choose: " + chosenLandTile);
             forbidIllegalPlaces();
             checkWhetherLandTileCanBeLocatedAfterRotates();
             return true;
@@ -535,7 +533,6 @@ public class CarcassonneGameModel {
                 valueOfContinuousPartToBeSetDone.clear();
             }
         }
-        System.out.println("JKNDKJDN: " + citiesOnTheEdge.toString());
         return points;
     }
 
@@ -848,7 +845,6 @@ public class CarcassonneGameModel {
             point[i] += fieldPoints[i]; //Pont hozzáadása a point tömb megfelelő eleméhez
             players[i].addPoint(point[i]); // A játékosok pontjainak frissítése a záróértékelés alapján
         }
-        System.out.println("VEGSO PONT: elso jatekos: " + point[0] + ", masodik jatekos: " + point[1]);
         return point;
     }
 
@@ -878,7 +874,6 @@ public class CarcassonneGameModel {
                 }
             }
         }
-        System.out.println("Mező pont első játékos: " + point[0] + ", második játékos: " + point[1]);
         return point;
     }
 
@@ -1022,7 +1017,6 @@ public class CarcassonneGameModel {
     private void initShuffledIdArray() {
         for (int i = 0; i < landTiles.length; i++) {
             shuffledIdArray[i] = landTiles[i].getId();
-            System.out.println(shuffledIdArray[i]);
         }
     }
 
@@ -1165,6 +1159,7 @@ public class CarcassonneGameModel {
         return false;
     }
 
+    // Levizsgálja, hogy érdemes-e az elmehez megpróbálkozni csatlakozni, a foglaltságtól függően
     public boolean isTheReservationConvinientToJoin(int index) {
         boolean good = false;
         for (Follower f : chosenLandTile.getReserved(index)) {

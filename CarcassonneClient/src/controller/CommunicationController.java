@@ -10,10 +10,12 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import view.FXMLLoadingScreenController;
@@ -35,6 +37,7 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     private String name;
     private String chooseInformation = null;
 
+    public int port;
     public Scene scene;
 
     public CommunicationController(Scene scene) throws RemoteException, IOException {
@@ -181,15 +184,15 @@ public class CommunicationController extends UnicastRemoteObject implements Remo
     }
 
     // A játékohoz való csatlakozásra kattintás
-    public void clickJoinGame(String name) {
-        try {
-            this.name = name;
-            remoteService = (RmiService) Naming.lookup("//localhost:8080/carcassonneServer"); // A távoli objektumhoz csatlakozás
-            remoteService.addObserver(this, name); // A kliens becsatlakoztatása
-            displayLoadingScreen(); // A betöltő felület meghívása
-        } catch (Exception ex) {
-            System.err.println("Hiba a távoli objektumhoz való csatlakozáskor kliensoldalon.");
-        }
+    public void clickJoinGame(String name) {        
+            try {
+                this.name = name;
+                remoteService = (RmiService) Naming.lookup("//localhost:" + port + "/carcassonneServer"); // A távoli objektumhoz csatlakozás
+                remoteService.addObserver(this, name); // A kliens becsatlakoztatása
+                displayLoadingScreen(); // A betöltő felület meghívása
+            } catch (Exception ex) {
+                System.err.println("Hiba a távoli objektumhoz való csatlakozáskor kliensoldalon.");
+            }
     }
     
     // Az alkalmazásból való kilépés
